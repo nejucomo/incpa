@@ -1,6 +1,6 @@
 # incpa
 
-`incpa` is an `inc`remental `pa`rser composition crate.
+`incpa` is an <u>inc</u>remental <u>pa</u>rser composition crate.
 
 Incremental parsers process a chunk of input, then either produce an error, a parsed output, or an updated parser state ready for future input. This primitive, codified by [Parser::feed], allows the same parser definition to support parsing streaming input from async or sync sources, as well as other "incremental" use cases such as interactive REPL loop parsing.
 
