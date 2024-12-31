@@ -20,7 +20,7 @@ impl<P, O, Q> Then<P, O, Q> {
 
 impl<P, Q, I, PO, QO, E> Parser<I, (PO, QO), E> for Then<P, PO, Q>
 where
-    I: Buffer,
+    I: Buffer + 'static,
     P: Parser<I, PO, E>,
     Q: Parser<I, QO, E>,
 {
@@ -57,9 +57,12 @@ where
         }
     }
 
-    fn unwrap_pending(self) -> Option<(PO, QO)> {
-        let pval = self.porval.right()?;
-        let qval = self.q.unwrap_pending()?;
+    fn unwrap_pending(self, final_input: &I) -> Option<(PO, QO)> {
+        let (pval, input) = self.porval.either(
+            |p| p.unwrap_pending(final_input).map(|pval| (pval, I::empty())),
+            |pval| Some((pval, final_input)),
+        )?;
+        let qval = self.q.unwrap_pending(input)?;
         Some((pval, qval))
     }
 }

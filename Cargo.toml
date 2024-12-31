@@ -10,3 +10,6 @@ tokio = ["dep:tokio"]
 derive-new = "0.7.0"
 either = "1.13.0"
 tokio = { version = "1.42.0", optional = true, default-features = false, features = ["io-util"] }
+
+[dev-dependencies]
+test-case = "3.3.1"

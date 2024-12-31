@@ -7,6 +7,7 @@ pub mod compose;
 mod error;
 mod outcome;
 mod parser;
+pub mod primitive;
 mod resultimpls;
 mod update;
 

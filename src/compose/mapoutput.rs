@@ -30,7 +30,7 @@ where
         })
     }
 
-    fn unwrap_pending(self) -> Option<O2> {
-        self.inner.unwrap_pending().map(self.f)
+    fn unwrap_pending(self, input: &I) -> Option<O2> {
+        self.inner.unwrap_pending(input).map(self.f)
     }
 }

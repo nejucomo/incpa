@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use crate::compose::{MapError, MapOutput, Then};
-use crate::Error::{self, ExpectedMoreInput, UnexpectedInput};
+use crate::Error::{self, ExpectedMoreInput};
 use crate::{Buffer, Outcome, Update};
 
 /// The essential incremental parser trait parses references to input `I` to produce an output `O` or an error `E`
@@ -17,7 +17,7 @@ where
     /// Unwrap a pending output
     ///
     /// Consumer code typically calls `self.end_input()` instead of this implementor method.
-    fn unwrap_pending(self) -> Option<O>;
+    fn unwrap_pending(self, final_input: &I) -> Option<O>;
 
     /// Parse an entire in-memory input completely
     fn parse(self, complete_input: &I) -> Result<O, E>
@@ -28,24 +28,21 @@ where
         use crate::Outcome::{Next, Parsed};
 
         let Update { consumed, outcome } = self.feed(complete_input)?;
-        if consumed == complete_input.len() {
-            match outcome {
-                Next(p) => p.end_input(),
-                Parsed(output) => Ok(output),
-            }
-        } else {
-            Err(E::from(UnexpectedInput))
+        match outcome {
+            Next(p) => p.end_input(complete_input.drop_prefix(consumed)),
+            Parsed(output) => Ok(output),
         }
     }
 
     // == Mid-level consumer methods
 
     /// Inform the parser there is no more input; it either produces a pending value or expects more input
-    fn end_input(self) -> Result<O, E>
+    fn end_input(self, final_input: &I) -> Result<O, E>
     where
         E: From<Error>,
     {
-        self.unwrap_pending().ok_or(E::from(ExpectedMoreInput))
+        self.unwrap_pending(final_input)
+            .ok_or(E::from(ExpectedMoreInput))
     }
 
     /// Repeatedly update a parser in a loop until it produces an error or value

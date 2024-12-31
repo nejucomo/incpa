@@ -42,13 +42,13 @@ impl BufferManager {
         use crate::Update;
         use Outcome::Parsed;
 
+        let end = self.rstart + readcnt;
+        let rslice = &self.buffer[..end];
+
         if readcnt == 0 {
-            let output = parser.end_input()?;
+            let output = parser.end_input(rslice)?;
             Ok(Parsed(output))
         } else {
-            let end = self.rstart + readcnt;
-            let rslice = &self.buffer[..end];
-
             let Update { consumed, outcome } = parser.feed(rslice)?;
 
             self.buffer.rotate_left(consumed);

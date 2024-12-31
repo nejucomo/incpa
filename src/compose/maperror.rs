@@ -28,7 +28,7 @@ where
         }
     }
 
-    fn unwrap_pending(self) -> Option<O> {
-        self.inner.unwrap_pending()
+    fn unwrap_pending(self, final_input: &I) -> Option<O> {
+        self.inner.unwrap_pending(final_input)
     }
 }
