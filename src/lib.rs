@@ -1,4 +1,4 @@
-//! Incremental parsers which produce either a parsed value or an updated parser state
+#![doc = include_str!("../README.md")]
 #![deny(missing_docs, unsafe_code)]
 
 mod buffer;
