@@ -2,6 +2,7 @@
 #![deny(missing_docs, unsafe_code)]
 
 mod buffer;
+mod byteparser;
 pub mod compose;
 mod error;
 mod outcome;
@@ -10,6 +11,7 @@ mod result;
 mod update;
 
 pub use self::buffer::Buffer;
+pub use self::byteparser::ByteParser;
 pub use self::error::Error;
 pub use self::outcome::Outcome;
 pub use self::parser::Parser;

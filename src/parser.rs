@@ -1,6 +1,6 @@
 use crate::compose::{MapError, MapOutput};
 use crate::Error::{self, ExpectedMoreInput, UnexpectedInput};
-use crate::{Buffer, Update};
+use crate::{Buffer, Outcome, Update};
 
 /// The essential incremental parser trait parses references to input `I` to produce an output `O` or an error `E`
 pub trait Parser<I, O, E = Error>: Sized
@@ -40,6 +40,27 @@ where
         E: From<Error>,
     {
         self.unwrap_pending().ok_or(E::from(ExpectedMoreInput))
+    }
+
+    /// Repeatedly update a parser in a loop until it produces an error or value
+    fn run_parser<F>(self, mut f: F) -> Result<O, E>
+    where
+        F: FnMut(Self) -> Result<Outcome<Self, O>, E>,
+    {
+        use Outcome::{Next, Parsed};
+
+        let mut parser = self;
+        loop {
+            match f(parser)? {
+                Next(p) => {
+                    parser = p;
+                }
+
+                Parsed(output) => {
+                    return Ok(output);
+                }
+            }
+        }
     }
 
     /// Compose a new parser with mapped output
