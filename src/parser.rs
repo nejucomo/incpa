@@ -1,3 +1,5 @@
+use std::future::Future;
+
 use crate::compose::{MapError, MapOutput};
 use crate::Error::{self, ExpectedMoreInput, UnexpectedInput};
 use crate::{Buffer, Outcome, Update};
@@ -58,6 +60,32 @@ where
 
                 Parsed(output) => {
                     return Ok(output);
+                }
+            }
+        }
+    }
+
+    /// Repeatedly update a parser in an async loop until it produces an error or value
+    fn run_parser_async<F, S, Fut>(self, init: S, f: F) -> impl Future<Output = Result<O, E>>
+    where
+        F: Fn(Self, S) -> Fut,
+        Fut: Future<Output = Result<Outcome<(Self, S), O>, E>>,
+    {
+        use Outcome::{Next, Parsed};
+
+        async move {
+            let mut parser = self;
+            let mut state = init;
+            loop {
+                match f(parser, state).await? {
+                    Next((p, st)) => {
+                        parser = p;
+                        state = st;
+                    }
+
+                    Parsed(output) => {
+                        return Ok(output);
+                    }
                 }
             }
         }
