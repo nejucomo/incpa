@@ -31,6 +31,7 @@ pub trait ByteParser<O, E = Error>: Parser<[u8], O, E> {
         R: tokio::io::AsyncRead,
         E: From<Error> + From<std::io::Error>,
     {
+        use crate::OutcomeExt;
         use tokio::io::AsyncReadExt;
 
         self.run_parser_async(
@@ -40,7 +41,7 @@ pub trait ByteParser<O, E = Error>: Parser<[u8], O, E> {
                 let readcnt = r.read(writeslice).await?;
                 bufmgr
                     .process_write(parser, readcnt)
-                    .map(|oc| oc.map_parser(|p| (p, (bufmgr, r))))
+                    .map_parser(|p| (p, (bufmgr, r)))
             },
         )
     }

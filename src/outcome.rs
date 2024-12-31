@@ -9,9 +9,27 @@ pub enum Outcome<P, O> {
 }
 use Outcome::*;
 
-impl<P, O> Outcome<P, O> {
+/// Extension methods to map outcomes within other structures
+pub trait OutcomeExt<P, O> {
+    /// The container type produced by mapping the outcome
+    type MappedOutcome<P2, O2>;
+
     /// Map the parser state
-    pub fn map_parser<F, P2>(self, f: F) -> Outcome<P2, O>
+    fn map_parser<F, P2>(self, f: F) -> Self::MappedOutcome<P2, O>
+    where
+        F: FnOnce(P) -> P2;
+
+    /// Map the output
+    fn map_output<F, O2>(self, f: F) -> Self::MappedOutcome<P, O2>
+    where
+        F: FnOnce(O) -> O2;
+}
+
+impl<P, O> OutcomeExt<P, O> for Outcome<P, O> {
+    type MappedOutcome<P2, O2> = Outcome<P2, O2>;
+
+    /// Map the parser state
+    fn map_parser<F, P2>(self, f: F) -> Outcome<P2, O>
     where
         F: FnOnce(P) -> P2,
     {
@@ -22,7 +40,7 @@ impl<P, O> Outcome<P, O> {
     }
 
     /// Map the output
-    pub fn map_output<F, O2>(self, f: F) -> Outcome<P, O2>
+    fn map_output<F, O2>(self, f: F) -> Outcome<P, O2>
     where
         F: FnOnce(O) -> O2,
     {

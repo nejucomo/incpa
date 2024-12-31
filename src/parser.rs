@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use crate::compose::{MapError, MapOutput};
+use crate::compose::{MapError, MapOutput, Then};
 use crate::Error::{self, ExpectedMoreInput, UnexpectedInput};
 use crate::{Buffer, Outcome, Update};
 
@@ -9,6 +9,8 @@ pub trait Parser<I, O, E = Error>: Sized
 where
     I: ?Sized,
 {
+    // == Primitive implementor methods
+
     /// Feed an input reference to the parser to produce an update
     fn feed(self, input: &I) -> Result<Update<Self, O>, E>;
 
@@ -35,6 +37,8 @@ where
             Err(E::from(UnexpectedInput))
         }
     }
+
+    // == Mid-level consumer methods
 
     /// Inform the parser there is no more input; it either produces a pending value or expects more input
     fn end_input(self) -> Result<O, E>
@@ -91,6 +95,8 @@ where
         }
     }
 
+    // == High-level implementer composition methods
+
     /// Compose a new parser with mapped output
     fn map<F, O2>(self, f: F) -> MapOutput<Self, F, O>
     where
@@ -105,5 +111,10 @@ where
         F: FnOnce(E) -> E2,
     {
         MapError::new(self, f)
+    }
+
+    /// Parse `self` then `other` and return a tuple pair of their outputs on success
+    fn then<Q>(self, other: Q) -> Then<Self, O, Q> {
+        Then::new(self, other)
     }
 }
