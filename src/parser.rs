@@ -1,5 +1,6 @@
 use crate::Update;
 
+/// The essential incremental parser trait parses references to input `I` to produce an output `O` or an error `E`
 pub trait Parser<I, O, E>: Sized
 where
     I: ?Sized,
