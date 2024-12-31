@@ -1,43 +1,43 @@
 /// The non-error outcome of incremental parsing
 #[derive(Debug, PartialEq)]
-pub enum Outcome<S, O> {
+pub enum Outcome<P, O> {
     /// The parser updated its state; a full output has not yet been parsed
-    Next(S),
+    Next(P),
 
     /// The parser successfully parsed an item
     Parsed(O),
 }
 use Outcome::*;
 
-impl<S, O> Outcome<S, O> {
-    /// Map the pending state
-    pub fn map_next<F, S2>(self, f: F) -> Outcome<S2, O>
+impl<P, O> Outcome<P, O> {
+    /// Map the parser state
+    pub fn map_parser<F, P2>(self, f: F) -> Outcome<P2, O>
     where
-        F: FnOnce(S) -> S2,
+        F: FnOnce(P) -> P2,
     {
         match self {
-            Next(s) => Next(f(s)),
+            Next(p) => Next(f(p)),
             Parsed(x) => Parsed(x),
         }
     }
 
     /// Map the output
-    pub fn map_output<F, O2>(self, f: F) -> Outcome<S, O2>
+    pub fn map_output<F, O2>(self, f: F) -> Outcome<P, O2>
     where
         F: FnOnce(O) -> O2,
     {
         match self {
-            Next(s) => Next(s),
+            Next(p) => Next(p),
             Parsed(x) => Parsed(f(x)),
         }
     }
 }
 
-impl<S, O, E> Outcome<S, Result<O, E>> {
+impl<P, O, E> Outcome<P, Result<O, E>> {
     /// Convert an [Outcome] with a [Result] output to a [Result] containing [Outcome]
     ///
     /// This may be useful after [Outcome::map_output] if mapped to a [Result].
-    pub fn transpose_output(self) -> Result<Outcome<S, O>, E> {
+    pub fn transpose_output(self) -> Result<Outcome<P, O>, E> {
         match self {
             Next(s) => Ok(Next(s)),
             Parsed(Ok(x)) => Ok(Parsed(x)),

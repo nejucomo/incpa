@@ -31,12 +31,12 @@ impl<S, O> Update<S, O> {
         }
     }
 
-    /// Map the pending state
-    pub fn map_next<F, S2>(self, f: F) -> Update<S2, O>
+    /// Map the parser state
+    pub fn map_parser<F, S2>(self, f: F) -> Update<S2, O>
     where
         F: FnOnce(S) -> S2,
     {
-        self.map_outcome(|oc| oc.map_next(f))
+        self.map_outcome(|oc| oc.map_parser(f))
     }
 
     /// Map the output
