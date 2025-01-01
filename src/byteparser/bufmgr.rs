@@ -8,6 +8,13 @@ pub struct BufferManager {
 }
 
 impl BufferManager {
+    pub fn with_initial_size(cap: usize) -> Self {
+        BufferManager {
+            buffer: vec![0; cap],
+            rstart: 0,
+        }
+    }
+
     /// Get a writable byte slice for inserting new data
     pub fn get_write_slice(&mut self) -> &mut [u8] {
         if self.rstart == self.buffer.len() {

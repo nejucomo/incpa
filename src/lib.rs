@@ -11,6 +11,9 @@ pub mod primitive;
 mod resultimpls;
 mod update;
 
+#[cfg(test)]
+pub mod testutils;
+
 pub use self::buffer::Buffer;
 pub use self::byteparser::ByteParser;
 pub use self::error::Error;
