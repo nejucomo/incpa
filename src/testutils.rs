@@ -13,7 +13,7 @@ where
     F: Fn(Result<O, E>) -> Result<(), E>,
 {
     for initsize in [0, 1, 2, 3, 5, 7, 1 << 10, 1 << 14] {
-        eprintln!("Checking parser.parse_reader_with_initial_buffer_size(..., {initsize}...");
+        eprintln!("Checking parser.parse_reader_with_initial_buffer_size(..., {initsize})");
 
         let res = parser
             .clone()
