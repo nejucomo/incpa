@@ -1,4 +1,4 @@
-use crate::{ByteParser, Error, Outcome};
+use crate::{BaseParserError, ByteParser, Outcome};
 
 /// Manage the buffering necessary for driving [ByteParser](crate::ByteParser) in an i/o agnostic manner
 #[derive(Debug, Default)]
@@ -44,13 +44,14 @@ impl BufferManager {
     pub fn process_write<P, O, E>(&mut self, parser: P, readcnt: usize) -> Result<Outcome<P, O>, E>
     where
         P: ByteParser<O, E>,
-        E: From<Error>,
+        E: From<BaseParserError> + From<std::io::Error>,
     {
         use crate::Update;
         use Outcome::Parsed;
 
         let end = self.rstart + readcnt;
         let rslice = &self.buffer[..end];
+        dbg!(String::from_utf8_lossy(rslice), readcnt);
 
         if readcnt == 0 {
             let output = parser.end_input(rslice)?;

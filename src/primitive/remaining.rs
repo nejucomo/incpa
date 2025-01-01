@@ -4,16 +4,17 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use crate::{Parser, Update};
+use crate::{BaseParserError, Parser, Syntax, Update};
 
 /// Captures all remaining input
 ///
 /// # Warning
 ///
 /// This requires holding all input in memory, by definition.
-pub fn remaining<I, E>() -> impl Parser<I, I::Owned, E> + Copy + Debug
+pub fn remaining<I, E>() -> impl Syntax<I, I::Owned, E> + Copy + Debug
 where
     I: ?Sized + ToOwned + 'static,
+    E: From<BaseParserError>,
 {
     Remaining(PhantomData)
 }
@@ -22,9 +23,22 @@ struct Remaining<I, E>(PhantomData<(&'static I, E)>)
 where
     I: ?Sized + 'static;
 
+impl<I, E> Syntax<I, I::Owned, E> for Remaining<I, E>
+where
+    I: ?Sized + ToOwned + 'static,
+    E: From<BaseParserError>,
+{
+    type State = Remaining<I, E>;
+
+    fn into_parser(self) -> Self::State {
+        Remaining(PhantomData)
+    }
+}
+
 impl<I, E> Parser<I, I::Owned, E> for Remaining<I, E>
 where
     I: ?Sized + ToOwned + 'static,
+    E: From<BaseParserError>,
 {
     fn feed(self, _: &I) -> Result<Update<Self, I::Owned>, E> {
         use crate::Outcome::Next;
@@ -35,8 +49,8 @@ where
         })
     }
 
-    fn unwrap_pending(self, final_input: &I) -> Option<I::Owned> {
-        Some(final_input.to_owned())
+    fn end_input(self, final_input: &I) -> Result<I::Owned, E> {
+        Ok(final_input.to_owned())
     }
 }
 

@@ -1,71 +1,36 @@
 #[cfg(test)]
 mod tests;
 
-use either::Either;
+mod state;
 
-use crate::{Buffer, Parser, Update, UpdateExt};
+pub use self::state::ThenState;
+
+use std::marker::PhantomData;
+
+use derive_new::new;
+
+use crate::{BaseParserError, Buffer, Syntax};
 
 /// Parses `P` then `Q`
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, new)]
+#[new(visibility = "pub(crate)")]
 pub struct Then<P, O, Q> {
-    porval: Either<P, O>,
+    p: P,
     q: Q,
+    #[new(default)]
+    ph: PhantomData<O>,
 }
 
-impl<P, O, Q> Then<P, O, Q> {
-    pub(crate) fn new(p: P, q: Q) -> Self {
-        Then {
-            porval: Either::Left(p),
-            q,
-        }
-    }
-}
-
-impl<P, Q, I, PO, QO, E> Parser<I, (PO, QO), E> for Then<P, PO, Q>
+impl<P, Q, I, PO, QO, E> Syntax<I, (PO, QO), E> for Then<P, PO, Q>
 where
     I: ?Sized + Buffer + 'static,
-    P: Parser<I, PO, E>,
-    Q: Parser<I, QO, E>,
+    P: Syntax<I, PO, E>,
+    Q: Syntax<I, QO, E>,
+    E: From<BaseParserError>,
 {
-    fn feed(self, input: &I) -> Result<crate::Update<Self, (PO, QO)>, E> {
-        use crate::Outcome::{Next, Parsed};
-        use Either::{Left, Right};
+    type State = ThenState<P::State, PO, Q::State>;
 
-        let Then { porval, q } = self;
-
-        match porval {
-            Left(p) => {
-                let Update { consumed, outcome } = p.feed(input)?;
-
-                match outcome {
-                    Next(p) => Ok(Update {
-                        consumed,
-                        outcome: Next(Then::new(p, q)),
-                    }),
-                    Parsed(pval) => Then {
-                        porval: Right(pval),
-                        q,
-                    }
-                    .feed(input.drop_prefix(consumed))
-                    .map_consumed(|c| c + consumed),
-                }
-            }
-            Right(pval) => q.feed(input).map_outcome(|oc| match oc {
-                Next(q) => Next(Then {
-                    porval: Right(pval),
-                    q,
-                }),
-                Parsed(qval) => Parsed((pval, qval)),
-            }),
-        }
-    }
-
-    fn unwrap_pending(self, final_input: &I) -> Option<(PO, QO)> {
-        let (pval, input) = self.porval.either(
-            |p| p.unwrap_pending(final_input).map(|pval| (pval, I::empty())),
-            |pval| Some((pval, final_input)),
-        )?;
-        let qval = self.q.unwrap_pending(input)?;
-        Some((pval, qval))
+    fn into_parser(self) -> Self::State {
+        ThenState::new(self.p.into_parser(), self.q.into_parser())
     }
 }

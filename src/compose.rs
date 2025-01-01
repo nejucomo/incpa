@@ -1,6 +1,6 @@
 //! Utilities for composing parsers
 //!
-//! Typically these utilities are produced by using methods of [Parser](crate::Parser) directly.
+//! Typically these utilities are produced by using methods of [Syntax](crate::Syntax) directly.
 
 mod maperror;
 mod mapoutput;

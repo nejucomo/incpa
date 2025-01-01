@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::{OutcomeExt, Parser, Update};
+use crate::{BaseParserError, OutcomeExt, Parser, Syntax, Update};
 
 /// A parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
@@ -14,10 +14,28 @@ pub struct MapError<P, F, E> {
     ph: PhantomData<E>,
 }
 
+impl<P, F, I, O, E, E2> Syntax<I, O, E2> for MapError<P, F, E>
+where
+    P: Syntax<I, O, E>,
+    F: FnOnce(E) -> E2,
+    E: From<BaseParserError>,
+    E2: From<BaseParserError>,
+{
+    type State = MapError<P::State, F, E>;
+
+    fn into_parser(self) -> Self::State {
+        let MapError { inner, f, .. } = self;
+
+        MapError::new(inner.into_parser(), f)
+    }
+}
+
 impl<P, F, I, O, E, E2> Parser<I, O, E2> for MapError<P, F, E>
 where
     P: Parser<I, O, E>,
     F: FnOnce(E) -> E2,
+    E: From<BaseParserError>,
+    E2: From<BaseParserError>,
 {
     fn feed(self, input: &I) -> Result<Update<Self, O>, E2> {
         let MapError { inner, f, .. } = self;
@@ -28,7 +46,9 @@ where
         }
     }
 
-    fn unwrap_pending(self, final_input: &I) -> Option<O> {
-        self.inner.unwrap_pending(final_input)
+    fn end_input(self, final_input: &I) -> Result<O, E2> {
+        let MapError { inner, f, .. } = self;
+
+        inner.end_input(final_input).map_err(f)
     }
 }

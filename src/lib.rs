@@ -9,6 +9,7 @@ mod outcome;
 mod parser;
 pub mod primitive;
 mod resultimpls;
+mod syntax;
 mod update;
 
 #[cfg(test)]
@@ -16,7 +17,8 @@ pub mod testutils;
 
 pub use self::buffer::Buffer;
 pub use self::byteparser::ByteParser;
-pub use self::error::Error;
+pub use self::error::BaseParserError;
 pub use self::outcome::{Outcome, OutcomeExt};
 pub use self::parser::Parser;
+pub use self::syntax::Syntax;
 pub use self::update::{Update, UpdateExt};

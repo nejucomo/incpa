@@ -5,15 +5,17 @@ pub use self::bufmgr::BufferManager;
 #[cfg(feature = "tokio")]
 use std::future::Future;
 
-use crate::{Error, Parser};
+use crate::{BaseParserError, Parser};
 
 /// Any [Parser] over `[u8]` input is a [ByteParser] by blanket impl
-pub trait ByteParser<O, E = Error>: Parser<[u8], O, E> {
+pub trait ByteParser<O, E>: Parser<[u8], O, E>
+where
+    E: From<BaseParserError> + From<std::io::Error>,
+{
     /// Consume and parse all of input from `r`
     fn parse_reader<R>(self, r: R) -> Result<O, E>
     where
         R: std::io::Read,
-        E: From<Error> + From<std::io::Error>,
     {
         self.parse_reader_with_initial_buffer_size(r, 1 << 12)
     }
@@ -22,7 +24,6 @@ pub trait ByteParser<O, E = Error>: Parser<[u8], O, E> {
     fn parse_reader_with_initial_buffer_size<R>(self, mut r: R, bufsize: usize) -> Result<O, E>
     where
         R: std::io::Read,
-        E: From<Error> + From<std::io::Error>,
     {
         let mut bufmgr = BufferManager::with_initial_size(bufsize);
 
@@ -38,7 +39,6 @@ pub trait ByteParser<O, E = Error>: Parser<[u8], O, E> {
     fn parse_reader_async<R>(self, r: R) -> impl Future<Output = Result<O, E>>
     where
         R: tokio::io::AsyncRead,
-        E: From<Error> + From<std::io::Error>,
     {
         self.parse_reader_with_initial_buffer_size_async(r, 1 << 12)
     }
@@ -52,7 +52,6 @@ pub trait ByteParser<O, E = Error>: Parser<[u8], O, E> {
     ) -> impl Future<Output = Result<O, E>>
     where
         R: tokio::io::AsyncRead,
-        E: From<Error> + From<std::io::Error>,
     {
         use crate::OutcomeExt;
         use tokio::io::AsyncReadExt;
@@ -70,4 +69,9 @@ pub trait ByteParser<O, E = Error>: Parser<[u8], O, E> {
     }
 }
 
-impl<P, O, E> ByteParser<O, E> for P where P: Parser<[u8], O, E> {}
+impl<P, O, E> ByteParser<O, E> for P
+where
+    P: Parser<[u8], O, E>,
+    E: From<BaseParserError> + From<std::io::Error>,
+{
+}

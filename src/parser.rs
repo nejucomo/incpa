@@ -1,29 +1,37 @@
 use std::future::Future;
 
-use crate::compose::{MapError, MapOutput, Then};
-use crate::Error::{self, ExpectedMoreInput};
+use crate::BaseParserError::{self, ExpectedMoreInput};
 use crate::{Buffer, Outcome, Update};
 
-/// The essential incremental parser trait parses references to input `I` to produce an output `O` or an error `E`
-pub trait Parser<I, O, E = Error>: Sized
+/// A [Parser] represents in-progress parsing
+///
+/// # Invariants
+///
+/// This crate assumes every [Parser] impl is deterministic, so that calling [Parser::feed] or [Parser::end_input] on two equivalent states with the same input parameters produces equivalent values.
+pub trait Parser<I, O, E>: Sized
 where
     I: ?Sized,
+    E: From<BaseParserError>,
 {
-    // == Primitive implementor methods
-
     /// Feed an input reference to the parser to produce an update
+    ///
+    /// Precondition: `input` includes a suffix which has not been seen previously by this parser.
     fn feed(self, input: &I) -> Result<Update<Self, O>, E>;
 
-    /// Unwrap a pending output
+    /// Inform the parser there is no more input; it either produces a pending value or expects more input
     ///
-    /// Consumer code typically calls `self.end_input()` instead of this implementor method.
-    fn unwrap_pending(self, final_input: &I) -> Option<O>;
+    /// The default implementation simply returns the [ExpectedMoreInput] error.
+    ///
+    /// Precondition: all of `final_input` must have been seen by a prior call to [Parser::feed]
+    fn end_input(self, final_input: &I) -> Result<O, E> {
+        let _ = final_input;
+        Err(E::from(ExpectedMoreInput))
+    }
 
     /// Parse an entire in-memory input completely
     fn parse(self, complete_input: &I) -> Result<O, E>
     where
         I: Buffer,
-        E: From<Error>,
     {
         use crate::Outcome::{Next, Parsed};
 
@@ -32,17 +40,6 @@ where
             Next(p) => p.end_input(complete_input.drop_prefix(consumed)),
             Parsed(output) => Ok(output),
         }
-    }
-
-    // == Mid-level consumer methods
-
-    /// Inform the parser there is no more input; it either produces a pending value or expects more input
-    fn end_input(self, final_input: &I) -> Result<O, E>
-    where
-        E: From<Error>,
-    {
-        self.unwrap_pending(final_input)
-            .ok_or(E::from(ExpectedMoreInput))
     }
 
     /// Repeatedly update a parser in a loop until it produces an error or value
@@ -90,28 +87,5 @@ where
                 }
             }
         }
-    }
-
-    // == High-level implementer composition methods
-
-    /// Compose a new parser with mapped output
-    fn map<F, O2>(self, f: F) -> MapOutput<Self, F, O>
-    where
-        F: FnOnce(O) -> O2,
-    {
-        MapOutput::new(self, f)
-    }
-
-    /// Compose a new parser with mapped error
-    fn map_error<F, E2>(self, f: F) -> MapError<Self, F, E>
-    where
-        F: FnOnce(E) -> E2,
-    {
-        MapError::new(self, f)
-    }
-
-    /// Parse `self` then `other` and return a tuple pair of their outputs on success
-    fn then<Q>(self, other: Q) -> Then<Self, O, Q> {
-        Then::new(self, other)
     }
 }
