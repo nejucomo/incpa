@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 use either::Either;
 
 use crate::{Buffer, Parser, Update, UpdateExt};
@@ -20,7 +23,7 @@ impl<P, O, Q> Then<P, O, Q> {
 
 impl<P, Q, I, PO, QO, E> Parser<I, (PO, QO), E> for Then<P, PO, Q>
 where
-    I: Buffer + 'static,
+    I: ?Sized + Buffer + 'static,
     P: Parser<I, PO, E>,
     Q: Parser<I, QO, E>,
 {
