@@ -2,9 +2,10 @@ use std::fmt::Debug;
 
 use test_case::test_case;
 
+use crate::parsing::Buffer;
 use crate::primitive::remaining;
 use crate::testutils::test_buffer_windows_output_no_res;
-use crate::{Buffer, Syntax};
+use crate::Syntax;
 
 #[test_case("hello world!")]
 #[test_case(b"hello world!".as_slice())]

@@ -1,4 +1,5 @@
-use crate::{BaseParserError, ByteParser, Outcome};
+use crate::parsing::{ByteParser, Outcome};
+use crate::BaseParserError;
 
 /// Manage the buffering necessary for driving [ByteParser](crate::ByteParser) in an i/o agnostic manner
 #[derive(Debug, Default)]
@@ -46,7 +47,7 @@ impl BufferManager {
         P: ByteParser<O, E>,
         E: From<BaseParserError> + From<std::io::Error>,
     {
-        use crate::Update;
+        use crate::parsing::Update;
         use Outcome::Parsed;
 
         let end = self.rstart + readcnt;

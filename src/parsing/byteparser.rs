@@ -5,7 +5,8 @@ pub use self::bufmgr::BufferManager;
 #[cfg(feature = "tokio")]
 use std::future::Future;
 
-use crate::{BaseParserError, Parser};
+use crate::parsing::Parser;
+use crate::BaseParserError;
 
 /// Any [Parser] over `[u8]` input is a [ByteParser] by blanket impl
 pub trait ByteParser<O, E>: Parser<[u8], O, E>

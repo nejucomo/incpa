@@ -2,7 +2,8 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::{BaseParserError, OutcomeExt, Parser, Syntax, Update};
+use crate::parsing::{OutcomeExt, Parser, Update};
+use crate::{BaseParserError, Syntax};
 
 /// A parser which maps its output
 #[derive(Copy, Clone, Debug, new)]

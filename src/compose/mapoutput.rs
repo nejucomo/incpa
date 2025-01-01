@@ -2,7 +2,8 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::{BaseParserError, Parser, Syntax, Update, UpdateExt};
+use crate::parsing::{Parser, Update, UpdateExt};
+use crate::{BaseParserError, Syntax};
 
 /// A parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
@@ -34,7 +35,7 @@ where
     E: From<BaseParserError>,
 {
     fn feed(self, input: &I) -> Result<Update<Self, O2>, E> {
-        use crate::Outcome::{Next, Parsed};
+        use crate::parsing::Outcome::{Next, Parsed};
 
         let MapOutput { inner, f, .. } = self;
 

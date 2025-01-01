@@ -1,7 +1,7 @@
 use std::future::Future;
 
+use crate::parsing::{Buffer, Outcome, Update};
 use crate::BaseParserError::{self, ExpectedMoreInput};
-use crate::{Buffer, Outcome, Update};
 
 /// A [Parser] represents in-progress parsing
 ///
@@ -33,7 +33,7 @@ where
     where
         I: Buffer,
     {
-        use crate::Outcome::{Next, Parsed};
+        use crate::parsing::Outcome::{Next, Parsed};
 
         let Update { consumed, outcome } = self.feed(complete_input)?;
         match outcome {

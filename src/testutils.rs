@@ -1,6 +1,7 @@
 //! Common parser testing utilities
 
-use crate::{BaseParserError, ByteParser, Parser, Syntax};
+use crate::parsing::{ByteParser, Parser};
+use crate::{BaseParserError, Syntax};
 
 /// Run the given parser with many different initial buffer sizes, calling `check` on the results each time
 ///

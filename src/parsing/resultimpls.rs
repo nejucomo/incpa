@@ -1,4 +1,4 @@
-use crate::{Outcome, OutcomeExt, UpdateExt};
+use crate::parsing::{Outcome, OutcomeExt, UpdateExt};
 
 impl<K, P, O, E> UpdateExt<P, O> for Result<K, E>
 where

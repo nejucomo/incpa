@@ -4,7 +4,8 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use crate::{BaseParserError, Parser, Syntax, Update};
+use crate::parsing::{Parser, Update};
+use crate::{BaseParserError, Syntax};
 
 /// Captures all remaining input
 ///
@@ -41,7 +42,7 @@ where
     E: From<BaseParserError>,
 {
     fn feed(self, _: &I) -> Result<Update<Self, I::Owned>, E> {
-        use crate::Outcome::Next;
+        use crate::parsing::Outcome::Next;
 
         Ok(Update {
             consumed: 0,

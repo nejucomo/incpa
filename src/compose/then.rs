@@ -9,7 +9,8 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::{BaseParserError, Buffer, Syntax};
+use crate::parsing::Buffer;
+use crate::{BaseParserError, Syntax};
 
 /// Parses `P` then `Q`
 #[derive(Copy, Clone, Debug, new)]

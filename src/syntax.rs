@@ -1,5 +1,6 @@
 use crate::compose::{MapError, MapOutput, Then};
-use crate::{BaseParserError, Parser};
+use crate::parsing::Parser;
+use crate::BaseParserError;
 
 /// A [Syntax] defines the syntax, grammar, or format to be parsed
 ///
