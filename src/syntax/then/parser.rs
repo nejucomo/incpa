@@ -4,21 +4,21 @@ use crate::parsing::{Buffer, Parser, Update, UpdateExt};
 use crate::BaseParserError;
 
 #[derive(Copy, Clone, Debug)]
-pub struct ThenState<P, O, Q> {
+pub struct ThenParser<P, O, Q> {
     porval: Either<P, O>,
     q: Q,
 }
 
-impl<P, O, Q> ThenState<P, O, Q> {
+impl<P, O, Q> ThenParser<P, O, Q> {
     pub(super) fn new(p: P, q: Q) -> Self {
-        ThenState {
+        ThenParser {
             porval: Either::Left(p),
             q,
         }
     }
 }
 
-impl<P, Q, I, PO, QO, E> Parser<I, (PO, QO), E> for ThenState<P, PO, Q>
+impl<P, Q, I, PO, QO, E> Parser<I, (PO, QO), E> for ThenParser<P, PO, Q>
 where
     I: ?Sized + Buffer + 'static,
     P: Parser<I, PO, E>,
@@ -29,7 +29,7 @@ where
         use crate::parsing::Outcome::{Next, Parsed};
         use Either::{Left, Right};
 
-        let ThenState { porval, q } = self;
+        let ThenParser { porval, q } = self;
 
         match porval {
             Left(p) => {
@@ -38,9 +38,9 @@ where
                 match outcome {
                     Next(p) => Ok(Update {
                         consumed,
-                        outcome: Next(ThenState::new(p, q)),
+                        outcome: Next(ThenParser::new(p, q)),
                     }),
-                    Parsed(pval) => ThenState {
+                    Parsed(pval) => ThenParser {
                         porval: Right(pval),
                         q,
                     }
@@ -49,7 +49,7 @@ where
                 }
             }
             Right(pval) => q.feed(input).map_outcome(|oc| match oc {
-                Next(q) => Next(ThenState {
+                Next(q) => Next(ThenParser {
                     porval: Right(pval),
                     q,
                 }),

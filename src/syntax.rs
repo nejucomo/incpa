@@ -1,4 +1,12 @@
-use crate::compose::{MapError, MapOutput, Then};
+//! [Syntax] and impls for composing syntaxes to specify a parser's behavior
+mod maperror;
+mod mapoutput;
+mod then;
+
+pub use self::maperror::MapError;
+pub use self::mapoutput::MapOutput;
+pub use self::then::Then;
+
 use crate::parsing::Parser;
 use crate::BaseParserError;
 

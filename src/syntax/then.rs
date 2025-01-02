@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests;
 
-mod state;
+mod parser;
 
-pub use self::state::ThenState;
+pub use self::parser::ThenParser;
 
 use std::marker::PhantomData;
 
@@ -12,7 +12,7 @@ use derive_new::new;
 use crate::parsing::Buffer;
 use crate::{BaseParserError, Syntax};
 
-/// Parses `P` then `Q`
+/// Parse `P` then `Q`
 #[derive(Copy, Clone, Debug, new)]
 #[new(visibility = "pub(crate)")]
 pub struct Then<P, O, Q> {
@@ -29,9 +29,9 @@ where
     Q: Syntax<I, QO, E>,
     E: From<BaseParserError>,
 {
-    type State = ThenState<P::State, PO, Q::State>;
+    type State = ThenParser<P::State, PO, Q::State>;
 
     fn into_parser(self) -> Self::State {
-        ThenState::new(self.p.into_parser(), self.q.into_parser())
+        ThenParser::new(self.p.into_parser(), self.q.into_parser())
     }
 }
