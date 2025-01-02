@@ -1,4 +1,4 @@
-//! Common parser primitives
+//! Common syntax primitives
 
 mod remaining;
 
