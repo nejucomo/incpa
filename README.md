@@ -6,7 +6,7 @@ Incremental parsers process a chunk of input, then either produce an error, a pa
 
 The term "parser composition" emphasizes how sophisticated parsers can be defined by composing simpler parsers.
 
-... [ ] TODO: Add example.
+- [ ] TODO: Add example.
 
 There is a fundamental trade-off between streaming parsers, such as this crate specializes in, versus "zero-copy" parsers which parse values which refer back to the original input buffer. Zero-copy parsers reduce the memory footprint and amount of copying at the cost of requiring all input to be held in memory, whereas streaming parsers can parse very large inputs at the cost of internally copying input where necessary.
 
