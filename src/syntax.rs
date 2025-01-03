@@ -9,7 +9,7 @@ pub use self::maperror::MapError;
 pub use self::mapoutput::MapOutput;
 pub use self::then::Then;
 
-use crate::parsing::Parser;
+use crate::parsing::{Buffer, Parser};
 use crate::BaseParserError;
 
 /// A [Syntax] defines the syntax, grammar, or format to be parsed
@@ -27,6 +27,21 @@ where
 
     /// Construct a state to drive low-level parsing
     fn into_parser(self) -> Self::State;
+
+    /// Parse an entire in-memory input to completion
+    fn parse(self, input: &I) -> Result<O, E>
+    where
+        I: Buffer,
+    {
+        use crate::parsing::Outcome::{Next, Parsed};
+        use crate::parsing::Update;
+
+        let Update { consumed, outcome } = self.into_parser().feed(input)?;
+        match outcome {
+            Next(p) => p.end_input(input.drop_prefix(consumed)),
+            Parsed(output) => Ok(output),
+        }
+    }
 
     /// Compose a new parser with mapped output
     fn map<F, O2>(self, f: F) -> MapOutput<Self, F, O>

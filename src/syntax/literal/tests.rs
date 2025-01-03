@@ -2,7 +2,8 @@ use std::fmt::Debug;
 
 use test_case::test_case;
 
-use crate::parsing::{Buffer, Parser};
+use crate::parsing::Outcome::{Next, Parsed};
+use crate::parsing::{Buffer, Parser, Update};
 use crate::syntax::Literal;
 
 #[test_case("Hello", "Hello World!")]
@@ -10,9 +11,16 @@ use crate::syntax::Literal;
 fn literal_ok<L, I>(literal: L, input: &I) -> anyhow::Result<()>
 where
     L: Literal<I, anyhow::Error> + PartialEq + Debug,
+    L::State: Debug,
     I: ?Sized + Buffer,
 {
-    let output = literal.into_parser().parse(input)?;
-    assert_eq!(literal, output);
-    Ok(())
+    let Update { consumed, outcome } = literal.into_parser().feed(input)?;
+    assert_eq!(consumed, literal.literal_len());
+    match outcome {
+        Next(p) => panic!("unexpected {p:?}"),
+        Parsed(output) => {
+            assert_eq!(literal, output);
+            Ok(())
+        }
+    }
 }

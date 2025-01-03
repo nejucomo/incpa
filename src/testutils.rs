@@ -1,6 +1,6 @@
 //! Common parser testing utilities
 
-use crate::parsing::{ByteParser, Parser};
+use crate::parsing::ByteParser;
 use crate::{BaseParserError, Syntax};
 
 /// Run the given parser with many different initial buffer sizes, calling `check` on the results each time
@@ -25,7 +25,7 @@ where
     }
 
     eprintln!("Checking parser.parse(...)");
-    check(pspec.into_parser().parse(input.as_ref()))
+    check(pspec.parse(input.as_ref()))
 }
 
 /// Run the given parser with many different initial buffer sizes, calling `check` on the outputs each time
