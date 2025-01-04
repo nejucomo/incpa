@@ -1,7 +1,7 @@
-use crate::parsing::{ByteParser, Outcome};
+use crate::parsing::{Outcome, Parser};
 use crate::BaseParserError;
 
-/// Manage the buffering necessary for driving [ByteParser](crate::ByteParser) in an i/o agnostic manner
+/// Manage the buffering necessary for driving [ByteFormat](crate::syntax::ByteFormat) in an i/o agnostic manner
 #[derive(Debug, Default)]
 pub struct BufferManager {
     buffer: Vec<u8>,
@@ -9,6 +9,7 @@ pub struct BufferManager {
 }
 
 impl BufferManager {
+    /// Construct a [BufferManager] with `cap` byte size initially.
     pub fn with_initial_size(cap: usize) -> Self {
         BufferManager {
             buffer: vec![0; cap],
@@ -44,7 +45,7 @@ impl BufferManager {
     /// ```
     pub fn process_write<P, O, E>(&mut self, parser: P, readcnt: usize) -> Result<Outcome<P, O>, E>
     where
-        P: ByteParser<O, E>,
+        P: Parser<[u8], O, E>,
         E: From<BaseParserError> + From<std::io::Error>,
     {
         use crate::parsing::Update;
@@ -52,7 +53,6 @@ impl BufferManager {
 
         let end = self.rstart + readcnt;
         let rslice = &self.buffer[..end];
-        dbg!(String::from_utf8_lossy(rslice), readcnt);
 
         if readcnt == 0 {
             let output = parser.end_input(rslice)?;

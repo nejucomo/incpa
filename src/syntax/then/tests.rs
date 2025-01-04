@@ -18,3 +18,16 @@ where
         assert!(second.is_empty());
     })
 }
+
+// #[test_case("hello ", "world!", "hello world!")]
+#[test_case(b"hello ", b"world!", b"hello world!")]
+fn a_then_b<S, I>(a: S, b: S, input: &I) -> anyhow::Result<()>
+where
+    S: Syntax<[u8], S, anyhow::Error> + Copy + PartialEq + Debug,
+    I: ?Sized + AsRef<[u8]>,
+{
+    test_buffer_windows_output_no_res(a.then(b), input.as_ref(), |(aval, bval)| {
+        assert_eq!(a, aval);
+        assert_eq!(b, bval);
+    })
+}

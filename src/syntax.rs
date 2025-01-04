@@ -1,9 +1,11 @@
 //! [Syntax] and impls for composing syntaxes to specify a parser's behavior
+mod byteformat;
 mod literal;
 mod maperror;
 mod mapoutput;
 mod then;
 
+pub use self::byteformat::ByteFormat;
 pub use self::literal::{Literal, LiteralParser};
 pub use self::maperror::MapError;
 pub use self::mapoutput::MapOutput;

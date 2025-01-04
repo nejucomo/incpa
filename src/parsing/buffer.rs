@@ -46,6 +46,7 @@ impl Buffer for str {
     }
 
     fn prefix_up_to(&self, n: usize) -> &Self {
+        let n = std::cmp::min(n, self.len());
         let (prefix, _) = self.split_at(std::cmp::min(self.len(), n));
         prefix
     }
@@ -68,6 +69,7 @@ impl<T> Buffer for [T] {
     }
 
     fn prefix_up_to(&self, n: usize) -> &Self {
+        let n = std::cmp::min(n, self.len());
         &self[..n]
     }
 }
