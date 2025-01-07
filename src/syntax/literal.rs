@@ -20,8 +20,11 @@ use crate::{BaseParserError, Syntax};
 /// use incpa::syntax::{Syntax,Literal};
 ///
 /// fn main() -> Result<(), BaseParserError> {
-///   let parsed = "Hello World!".parse_all("Hello World!")?;
-///   assert_eq!("Hello World!", "Hello World!");
+///   // &str is a Literal, so it can parse an input:
+///   let syntax = "Hello World!";
+///   let parsed = syntax.parse_all("Hello World!")?;
+///   // A literal syntax parses itself to output itself:
+///   assert_eq!(parsed, "Hello World!");
 ///   Ok(())
 /// }
 /// ```
