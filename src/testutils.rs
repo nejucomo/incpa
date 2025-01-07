@@ -24,7 +24,7 @@ where
     }
 
     eprintln!("Checking parser.parse(...)");
-    check(bfmt.parse(input.as_ref()))
+    check(bfmt.parse_all(input.as_ref()))
 }
 
 /// Run the given parser with many different initial buffer sizes, calling `check` on the outputs each time

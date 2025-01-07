@@ -11,7 +11,20 @@ use derive_new::new;
 use crate::parsing::{Buffer, Parser, Update};
 use crate::{BaseParserError, Syntax};
 
-/// A `Literal` is any value which is syntax for a parser of itself
+/// A [Literal] is any value which is syntax for a parser of itself
+///
+/// # Example
+///
+/// ```
+/// use incpa::BaseParserError;
+/// use incpa::syntax::{Syntax,Literal};
+///
+/// fn main() -> Result<(), BaseParserError> {
+///   let parsed = "Hello World!".parse_all("Hello World!")?;
+///   assert_eq!("Hello World!", "Hello World!");
+///   Ok(())
+/// }
+/// ```
 pub trait Literal<I, E>: Sized + Copy + Syntax<I, Self, E>
 where
     I: ?Sized + Buffer,

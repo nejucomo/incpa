@@ -31,7 +31,7 @@ where
     fn into_parser(self) -> Self::State;
 
     /// Parse an entire in-memory input to completion
-    fn parse(self, input: &I) -> Result<O, E>
+    fn parse_all(self, input: &I) -> Result<O, E>
     where
         I: Buffer,
     {

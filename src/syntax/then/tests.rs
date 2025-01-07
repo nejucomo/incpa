@@ -39,7 +39,7 @@ where
     S: Syntax<I, S, anyhow::Error> + Copy + PartialEq + Debug,
     I: ?Sized + Buffer + 'static,
 {
-    let (aval, bval) = a.then(b).parse(input)?;
+    let (aval, bval) = a.then(b).parse_all(input)?;
     assert_eq!(a, aval);
     assert_eq!(b, bval);
     Ok(())
