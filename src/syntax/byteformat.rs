@@ -2,25 +2,28 @@
 use std::future::Future;
 
 use crate::parsing::{BufferManager, Parser};
-use crate::{BaseParserError, Syntax};
+use crate::Syntax;
 
 /// Any [Parser] over `[u8]` input is a [ByteFormat] by blanket impl
-pub trait ByteFormat<O, E>: Syntax<[u8], O, E>
-where
-    E: From<BaseParserError> + From<std::io::Error>,
-{
+pub trait ByteFormat: Syntax<[u8]> {
     /// Consume and parse all of input from `r`
-    fn parse_reader<R>(self, r: R) -> Result<O, E>
+    fn parse_reader<R, E>(self, r: R) -> Result<Self::Output, E>
     where
         R: std::io::Read,
+        E: From<Self::Error> + From<std::io::Error>,
     {
         self.parse_reader_with_initial_buffer_size(r, 1 << 12)
     }
 
     /// Consume and parse all of input from `r` using an initial buffer size
-    fn parse_reader_with_initial_buffer_size<R>(self, mut r: R, bufsize: usize) -> Result<O, E>
+    fn parse_reader_with_initial_buffer_size<R, E>(
+        self,
+        mut r: R,
+        bufsize: usize,
+    ) -> Result<Self::Output, E>
     where
         R: std::io::Read,
+        E: From<Self::Error> + From<std::io::Error>,
     {
         let mut bufmgr = BufferManager::with_initial_size(bufsize);
 
@@ -33,22 +36,24 @@ where
 
     /// Consume and parse all of input from `r` asynchronously
     #[cfg(feature = "tokio")]
-    fn parse_reader_async<R>(self, r: R) -> impl Future<Output = Result<O, E>>
+    fn parse_reader_async<R, E>(self, r: R) -> impl Future<Output = Result<Self::Output, E>>
     where
         R: tokio::io::AsyncRead,
+        E: From<Self::Error> + From<std::io::Error>,
     {
         self.parse_reader_with_initial_buffer_size_async(r, 1 << 12)
     }
 
     /// Consume and parse all of input from `r` asynchronously while using an initial buffer size
     #[cfg(feature = "tokio")]
-    fn parse_reader_with_initial_buffer_size_async<R>(
+    fn parse_reader_with_initial_buffer_size_async<R, E>(
         self,
         r: R,
         bufsize: usize,
-    ) -> impl Future<Output = Result<O, E>>
+    ) -> impl Future<Output = Result<Self::Output, E>>
     where
         R: tokio::io::AsyncRead,
+        E: From<Self::Error> + From<std::io::Error>,
     {
         use crate::parsing::OutcomeExt;
         use tokio::io::AsyncReadExt;
@@ -66,9 +71,4 @@ where
     }
 }
 
-impl<S, O, E> ByteFormat<O, E> for S
-where
-    S: Syntax<[u8], O, E>,
-    E: From<BaseParserError> + From<std::io::Error>,
-{
-}
+impl<S> ByteFormat for S where S: Syntax<[u8]> {}

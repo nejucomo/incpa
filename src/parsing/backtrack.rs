@@ -1,7 +1,6 @@
 use derive_new::new;
 
 use crate::parsing::{Buffer, Parser, Update};
-use crate::BaseParserError;
 
 /// Try to parse `P`, but hold all input until a successful parse
 ///
@@ -15,13 +14,15 @@ pub struct Backtrack<P> {
 
 // impl<P, I, O, E> Syntax<I, O, E> for Backtrack<P> where P: Syntax<I, O, E> {}
 
-impl<P, I, O, E> Parser<I, O, E> for Backtrack<P>
+impl<P, I> Parser<I> for Backtrack<P>
 where
     I: ?Sized + Buffer,
-    P: Parser<I, O, E>,
-    E: From<BaseParserError>,
+    P: Parser<I>,
 {
-    fn feed(self, input: &I) -> Result<Update<Self, O>, E> {
+    type Output = P::Output;
+    type Error = P::Error;
+
+    fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, Self::Error> {
         use crate::parsing::Outcome::{Next, Parsed};
 
         let inner_input = input.drop_prefix(self.consumed);
@@ -40,7 +41,7 @@ where
         }
     }
 
-    fn end_input(self, final_input: &I) -> Result<O, E> {
+    fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
         self.inner.end_input(final_input.drop_prefix(self.consumed))
     }
 }

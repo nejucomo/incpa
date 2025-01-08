@@ -4,6 +4,7 @@ use test_case::test_case;
 
 use crate::parsing::Buffer;
 use crate::primitive::remaining;
+use crate::syntax::Literal;
 use crate::testutils::test_buffer_windows_output_no_res;
 use crate::Syntax;
 
@@ -23,7 +24,8 @@ where
 #[test_case(b"hello ", b"world!", b"hello world!")]
 fn a_then_b_buffer_windows<S, I>(a: S, b: S, input: &I) -> anyhow::Result<()>
 where
-    S: Syntax<[u8], S, anyhow::Error> + Copy + PartialEq + Debug,
+    S: Literal<[u8]> + Copy + PartialEq + Debug,
+    S::Error: std::error::Error + Send + Sync + 'static,
     I: ?Sized + AsRef<[u8]>,
 {
     test_buffer_windows_output_no_res(a.then(b), input.as_ref(), |(aval, bval)| {
@@ -36,7 +38,8 @@ where
 #[test_case(b"hello ", b"world!", b"hello world!")]
 fn a_then_b<S, I>(a: S, b: S, input: &I) -> anyhow::Result<()>
 where
-    S: Syntax<I, S, anyhow::Error> + Copy + PartialEq + Debug,
+    S: Literal<I> + Copy + PartialEq + Debug,
+    S::Error: std::error::Error + Send + Sync + 'static,
     I: ?Sized + Buffer + 'static,
 {
     let (aval, bval) = a.then(b).parse_all(input)?;

@@ -1,7 +1,6 @@
 use either::Either;
 
 use crate::parsing::{Backtrack, Buffer, OutcomeExt, Parser, Update};
-use crate::BaseParserError;
 
 #[derive(Copy, Clone, Debug)]
 pub struct OrParser<P, Q> {
@@ -18,14 +17,16 @@ impl<P, Q> OrParser<P, Q> {
     }
 }
 
-impl<P, Q, I, PO, QO, E> Parser<I, Either<PO, QO>, E> for OrParser<P, Q>
+impl<P, Q, I> Parser<I> for OrParser<P, Q>
 where
     I: ?Sized + Buffer + 'static,
-    P: Parser<I, PO, E>,
-    Q: Parser<I, QO, E>,
-    E: From<BaseParserError>,
+    P: Parser<I>,
+    Q: Parser<I, Error = P::Error>,
 {
-    fn feed(self, input: &I) -> Result<Update<Self, Either<PO, QO>>, E> {
+    type Output = Either<P::Output, Q::Output>;
+    type Error = P::Error;
+
+    fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, Self::Error> {
         use Either::{Left, Right};
 
         let OrParser { obp, q } = self;
@@ -43,7 +44,7 @@ where
             .map_output(Right)
     }
 
-    fn end_input(self, final_input: &I) -> Result<Either<PO, QO>, E> {
+    fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
         use Either::{Left, Right};
 
         let OrParser { obp, q } = self;

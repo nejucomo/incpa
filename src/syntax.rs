@@ -21,19 +21,24 @@ use crate::BaseParserError;
 /// Implementations can often specify the grammar to be parsed by [crate::primitive] types and the composition methods of this trait.
 ///
 /// The actual behind-the-scenes work of parsing is accomplished by creating [Syntax::State] from [Syntax::into_parser], then driving that.
-pub trait Syntax<I, O, E = BaseParserError>: Sized
+pub trait Syntax<I>: Sized
 where
     I: ?Sized,
-    E: From<BaseParserError>,
 {
+    /// The type of output on successful parse
+    type Output;
+
+    /// The type of errors this parser detects
+    type Error: From<BaseParserError>;
+
     /// The initial [Parser] to parse this specification
-    type State: Parser<I, O, E>;
+    type State: Parser<I, Output = Self::Output, Error = Self::Error>;
 
     /// Construct a state to drive low-level parsing
     fn into_parser(self) -> Self::State;
 
     /// Parse an entire in-memory input to completion
-    fn parse_all(self, input: &I) -> Result<O, E>
+    fn parse_all(self, input: &I) -> Result<Self::Output, Self::Error>
     where
         I: Buffer,
     {
@@ -48,17 +53,17 @@ where
     }
 
     /// Compose a new parser with mapped output
-    fn map<F, O2>(self, f: F) -> MapOutput<Self, F, O>
+    fn map<F, O>(self, f: F) -> MapOutput<Self, F, O>
     where
-        F: FnOnce(O) -> O2,
+        F: FnOnce(Self::Output) -> O,
     {
         MapOutput::new(self, f)
     }
 
     /// Compose a new parser with mapped error
-    fn map_error<F, E2>(self, f: F) -> MapError<Self, F, E>
+    fn map_error<F, E>(self, f: F) -> MapError<Self, F, Self::Error>
     where
-        F: FnOnce(E) -> E2,
+        F: FnOnce(Self::Error) -> E,
     {
         MapError::new(self, f)
     }

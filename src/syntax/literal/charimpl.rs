@@ -2,10 +2,7 @@ use crate::syntax::literal::LiteralParser;
 use crate::syntax::Literal;
 use crate::{BaseParserError, Syntax};
 
-impl<E> Literal<str, E> for char
-where
-    E: From<BaseParserError>,
-{
+impl Literal<str> for char {
     fn literal_len(self) -> usize {
         self.len_utf8()
     }
@@ -15,10 +12,7 @@ where
     }
 }
 
-impl<E> Literal<[u8], E> for char
-where
-    E: From<BaseParserError>,
-{
+impl Literal<[u8]> for char {
     fn literal_len(self) -> usize {
         self.len_utf8()
     }
@@ -30,10 +24,9 @@ where
     }
 }
 
-impl<E> Syntax<str, char, E> for char
-where
-    E: From<BaseParserError>,
-{
+impl Syntax<str> for char {
+    type Output = char;
+    type Error = BaseParserError;
     type State = LiteralParser<char>;
 
     fn into_parser(self) -> Self::State {
@@ -41,10 +34,9 @@ where
     }
 }
 
-impl<E> Syntax<[u8], char, E> for char
-where
-    E: From<BaseParserError>,
-{
+impl Syntax<[u8]> for char {
+    type Output = char;
+    type Error = BaseParserError;
     type State = LiteralParser<char>;
 
     fn into_parser(self) -> Self::State {

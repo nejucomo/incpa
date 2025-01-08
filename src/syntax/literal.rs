@@ -9,7 +9,7 @@ mod strimpl;
 use derive_new::new;
 
 use crate::parsing::{Buffer, Parser, Update};
-use crate::{BaseParserError, Syntax};
+use crate::Syntax;
 
 /// A [Literal] is any value which is syntax for a parser of itself
 ///
@@ -28,10 +28,9 @@ use crate::{BaseParserError, Syntax};
 ///   Ok(())
 /// }
 /// ```
-pub trait Literal<I, E>: Sized + Copy + Syntax<I, Self, E>
+pub trait Literal<I>: Sized + Copy + Syntax<I, Output = Self>
 where
     I: ?Sized + Buffer,
-    E: From<BaseParserError>,
 {
     /// The length of this literal in `I`'s units
     fn literal_len(self) -> usize;
@@ -48,13 +47,15 @@ where
 #[derive(Copy, Clone, Debug, new)]
 pub struct LiteralParser<L>(L);
 
-impl<I, L, E> Parser<I, L, E> for LiteralParser<L>
+impl<I, L> Parser<I> for LiteralParser<L>
 where
     I: ?Sized + Buffer,
-    L: Literal<I, E>,
-    E: From<BaseParserError>,
+    L: Literal<I>,
 {
-    fn feed(self, input: &I) -> Result<Update<Self, L>, E> {
+    type Output = L::Output;
+    type Error = L::Error;
+
+    fn feed(self, input: &I) -> Result<Update<Self, L>, Self::Error> {
         use crate::parsing::Outcome::{Next, Parsed};
         use crate::BaseParserError::UnexpectedInput;
 
@@ -66,7 +67,7 @@ where
         } else if self.0.literal_eq(prefix) {
             Ok(Update::new(n, Parsed(self.0)))
         } else {
-            Err(E::from(UnexpectedInput))
+            Err(Self::Error::from(UnexpectedInput))
         }
     }
 }

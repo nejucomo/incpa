@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use derive_new::new;
 
 use crate::parsing::{Parser, Update, UpdateExt};
-use crate::{BaseParserError, Syntax};
+use crate::Syntax;
 
 /// Specifies a parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
@@ -15,12 +15,13 @@ pub struct MapOutput<P, F, O> {
     ph: PhantomData<O>,
 }
 
-impl<P, F, I, O, O2, E> Syntax<I, O2, E> for MapOutput<P, F, O>
+impl<P, F, O, I> Syntax<I> for MapOutput<P, F, O>
 where
-    P: Syntax<I, O, E>,
-    F: FnOnce(O) -> O2,
-    E: From<BaseParserError>,
+    P: Syntax<I>,
+    F: FnOnce(P::Output) -> O,
 {
+    type Output = O;
+    type Error = P::Error;
     type State = MapOutputParser<P::State, F, O>;
 
     fn into_parser(self) -> Self::State {
@@ -33,13 +34,15 @@ where
 #[new(visibility = "pub(crate)")]
 pub struct MapOutputParser<P, F, O>(MapOutput<P, F, O>);
 
-impl<P, F, I, O, O2, E> Parser<I, O2, E> for MapOutputParser<P, F, O>
+impl<P, F, I, O> Parser<I> for MapOutputParser<P, F, O>
 where
-    P: Parser<I, O, E>,
-    F: FnOnce(O) -> O2,
-    E: From<BaseParserError>,
+    P: Parser<I>,
+    F: FnOnce(P::Output) -> O,
 {
-    fn feed(self, input: &I) -> Result<Update<Self, O2>, E> {
+    type Output = O;
+    type Error = P::Error;
+
+    fn feed(self, input: &I) -> Result<Update<Self, O>, Self::Error> {
         use crate::parsing::Outcome::{Next, Parsed};
 
         let MapOutput { inner, f, .. } = self.0;
@@ -50,7 +53,7 @@ where
         })
     }
 
-    fn end_input(self, final_input: &I) -> Result<O2, E> {
+    fn end_input(self, final_input: &I) -> Result<O, Self::Error> {
         self.0.inner.end_input(final_input).map(self.0.f)
     }
 }

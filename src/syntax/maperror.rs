@@ -15,13 +15,15 @@ pub struct MapError<P, F, E> {
     ph: PhantomData<E>,
 }
 
-impl<P, F, I, O, E, E2> Syntax<I, O, E2> for MapError<P, F, E>
+impl<P, F, E, I> Syntax<I> for MapError<P, F, E>
 where
-    P: Syntax<I, O, E>,
-    F: FnOnce(E) -> E2,
+    P: Syntax<I>,
+    F: FnOnce(P::Error) -> E,
     E: From<BaseParserError>,
-    E2: From<BaseParserError>,
+    I: ?Sized,
 {
+    type Output = P::Output;
+    type Error = E;
     type State = MapErrorParser<P::State, F, E>;
 
     fn into_parser(self) -> Self::State {
@@ -35,14 +37,17 @@ where
 #[new(visibility = "pub(crate)")]
 pub struct MapErrorParser<P, F, E>(MapError<P, F, E>);
 
-impl<P, F, I, O, E, E2> Parser<I, O, E2> for MapErrorParser<P, F, E>
+impl<P, F, E, I> Parser<I> for MapErrorParser<P, F, E>
 where
-    P: Parser<I, O, E>,
-    F: FnOnce(E) -> E2,
+    P: Parser<I>,
+    F: FnOnce(P::Error) -> E,
     E: From<BaseParserError>,
-    E2: From<BaseParserError>,
+    I: ?Sized,
 {
-    fn feed(self, input: &I) -> Result<Update<Self, O>, E2> {
+    type Output = P::Output;
+    type Error = E;
+
+    fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, E> {
         let MapError { inner, f, .. } = self.0;
 
         match inner.feed(input) {
@@ -51,7 +56,7 @@ where
         }
     }
 
-    fn end_input(self, final_input: &I) -> Result<O, E2> {
+    fn end_input(self, final_input: &I) -> Result<Self::Output, E> {
         let MapError { inner, f, .. } = self.0;
 
         inner.end_input(final_input).map_err(f)
