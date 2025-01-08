@@ -1,15 +1,11 @@
-mod bufmgr;
-
-pub use self::bufmgr::BufferManager;
-
 #[cfg(feature = "tokio")]
 use std::future::Future;
 
-use crate::parsing::Parser;
-use crate::BaseParserError;
+use crate::parsing::{BufferManager, Parser};
+use crate::{BaseParserError, Syntax};
 
-/// Any [Parser] over `[u8]` input is a [ByteParser] by blanket impl
-pub trait ByteParser<O, E>: Parser<[u8], O, E>
+/// Any [Parser] over `[u8]` input is a [ByteFormat] by blanket impl
+pub trait ByteFormat<O, E>: Syntax<[u8], O, E>
 where
     E: From<BaseParserError> + From<std::io::Error>,
 {
@@ -28,7 +24,7 @@ where
     {
         let mut bufmgr = BufferManager::with_initial_size(bufsize);
 
-        self.run_parser(|parser| {
+        self.into_parser().run_parser(|parser| {
             let writeslice = bufmgr.get_write_slice();
             let readcnt = r.read(writeslice)?;
             bufmgr.process_write(parser, readcnt)
@@ -54,10 +50,10 @@ where
     where
         R: tokio::io::AsyncRead,
     {
-        use crate::OutcomeExt;
+        use crate::parsing::OutcomeExt;
         use tokio::io::AsyncReadExt;
 
-        self.run_parser_async(
+        self.into_parser().run_parser_async(
             (BufferManager::with_initial_size(bufsize), Box::pin(r)),
             |parser, (mut bufmgr, mut r)| async {
                 let writeslice = bufmgr.get_write_slice();
@@ -70,9 +66,9 @@ where
     }
 }
 
-impl<P, O, E> ByteParser<O, E> for P
+impl<S, O, E> ByteFormat<O, E> for S
 where
-    P: Parser<[u8], O, E>,
+    S: Syntax<[u8], O, E>,
     E: From<BaseParserError> + From<std::io::Error>,
 {
 }

@@ -24,6 +24,32 @@ pub trait Buffer {
     fn drop_prefix(&self, n: usize) -> &Self {
         self.split_at(n).1
     }
+
+    /// Return the longest prefix with length `<= n`
+    fn prefix_up_to(&self, n: usize) -> &Self;
+}
+
+impl Buffer for str {
+    fn empty() -> &'static Self
+    where
+        Self: 'static,
+    {
+        ""
+    }
+
+    fn len(&self) -> usize {
+        self.len()
+    }
+
+    fn split_at(&self, n: usize) -> (&Self, &Self) {
+        str::split_at(self, n)
+    }
+
+    fn prefix_up_to(&self, n: usize) -> &Self {
+        let n = std::cmp::min(n, self.len());
+        let (prefix, _) = self.split_at(std::cmp::min(self.len(), n));
+        prefix
+    }
 }
 
 impl<T> Buffer for [T] {
@@ -41,21 +67,9 @@ impl<T> Buffer for [T] {
     fn split_at(&self, n: usize) -> (&Self, &Self) {
         <[T]>::split_at(self, n)
     }
-}
 
-impl Buffer for str {
-    fn empty() -> &'static Self
-    where
-        Self: 'static,
-    {
-        ""
-    }
-
-    fn len(&self) -> usize {
-        self.len()
-    }
-
-    fn split_at(&self, n: usize) -> (&Self, &Self) {
-        str::split_at(self, n)
+    fn prefix_up_to(&self, n: usize) -> &Self {
+        let n = std::cmp::min(n, self.len());
+        &self[..n]
     }
 }

@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use crate::parsing::{Buffer, Outcome, Update};
+use crate::parsing::{Outcome, Update};
 use crate::BaseParserError::{self, ExpectedMoreInput};
 
 /// A [Parser] represents in-progress parsing
@@ -26,20 +26,6 @@ where
     fn end_input(self, final_input: &I) -> Result<O, E> {
         let _ = final_input;
         Err(E::from(ExpectedMoreInput))
-    }
-
-    /// Parse an entire in-memory input completely
-    fn parse(self, complete_input: &I) -> Result<O, E>
-    where
-        I: Buffer,
-    {
-        use crate::parsing::Outcome::{Next, Parsed};
-
-        let Update { consumed, outcome } = self.feed(complete_input)?;
-        match outcome {
-            Next(p) => p.end_input(complete_input.drop_prefix(consumed)),
-            Parsed(output) => Ok(output),
-        }
     }
 
     /// Repeatedly update a parser in a loop until it produces an error or value
