@@ -3,12 +3,14 @@ mod byteformat;
 mod literal;
 mod maperror;
 mod mapoutput;
+mod or;
 mod then;
 
 pub use self::byteformat::ByteFormat;
 pub use self::literal::{Literal, LiteralParser};
 pub use self::maperror::MapError;
 pub use self::mapoutput::MapOutput;
+pub use self::or::Or;
 pub use self::then::Then;
 
 use crate::parsing::{Buffer, Parser};
@@ -64,5 +66,10 @@ where
     /// Parse `self` then `other` and return a tuple pair of their outputs on success
     fn then<Q>(self, other: Q) -> Then<Self, O, Q> {
         Then::new(self, other)
+    }
+
+    /// Attempt to parse `self`, and if it fails parse `other`
+    fn or<Q>(self, other: Q) -> Or<Self, Q> {
+        Or::new(self, other)
     }
 }
