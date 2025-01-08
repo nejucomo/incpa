@@ -64,7 +64,7 @@ where
     }
 
     /// Parse `self` then `other` and return a tuple pair of their outputs on success
-    fn then<Q>(self, other: Q) -> Then<Self, O, Q> {
+    fn then<Q>(self, other: Q) -> Then<Self, Q> {
         Then::new(self, other)
     }
 
