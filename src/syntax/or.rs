@@ -9,7 +9,7 @@ use derive_new::new;
 use either::Either;
 
 use crate::parsing::Buffer;
-use crate::{BaseParserError, Syntax};
+use crate::Syntax;
 
 /// Parse `P` or if that fails, parse `Q`
 ///
@@ -21,13 +21,14 @@ pub struct Or<P, Q> {
     q: Q,
 }
 
-impl<P, Q, I, PO, QO, E> Syntax<I, Either<PO, QO>, E> for Or<P, Q>
+impl<P, Q, I> Syntax<I> for Or<P, Q>
 where
     I: ?Sized + Buffer + 'static,
-    P: Syntax<I, PO, E>,
-    Q: Syntax<I, QO, E>,
-    E: From<BaseParserError>,
+    P: Syntax<I>,
+    Q: Syntax<I, Error = P::Error>,
 {
+    type Output = Either<P::Output, Q::Output>;
+    type Error = P::Error;
     type State = OrParser<P::State, Q::State>;
 
     fn into_parser(self) -> Self::State {

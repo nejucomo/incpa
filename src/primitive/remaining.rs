@@ -12,36 +12,38 @@ use crate::{BaseParserError, Syntax};
 /// # Warning
 ///
 /// This requires holding all input in memory, by definition.
-pub fn remaining<I, E>() -> impl Syntax<I, I::Owned, E> + Copy + Debug
+pub fn remaining<I>() -> impl Syntax<I, Output = I::Owned, Error = BaseParserError> + Copy + Debug
 where
     I: ?Sized + ToOwned + 'static,
-    E: From<BaseParserError>,
 {
     Remaining(PhantomData)
 }
 
-struct Remaining<I, E>(PhantomData<(&'static I, E)>)
+struct Remaining<I>(PhantomData<&'static I>)
 where
     I: ?Sized + 'static;
 
-impl<I, E> Syntax<I, I::Owned, E> for Remaining<I, E>
+impl<I> Syntax<I> for Remaining<I>
 where
     I: ?Sized + ToOwned + 'static,
-    E: From<BaseParserError>,
 {
-    type State = Remaining<I, E>;
+    type Output = I::Owned;
+    type Error = BaseParserError;
+    type State = Remaining<I>;
 
     fn into_parser(self) -> Self::State {
         Remaining(PhantomData)
     }
 }
 
-impl<I, E> Parser<I, I::Owned, E> for Remaining<I, E>
+impl<I> Parser<I> for Remaining<I>
 where
     I: ?Sized + ToOwned + 'static,
-    E: From<BaseParserError>,
 {
-    fn feed(self, _: &I) -> Result<Update<Self, I::Owned>, E> {
+    type Output = I::Owned;
+    type Error = BaseParserError;
+
+    fn feed(self, _: &I) -> Result<Update<Self, I::Owned>, Self::Error> {
         use crate::parsing::Outcome::Next;
 
         Ok(Update {
@@ -50,14 +52,14 @@ where
         })
     }
 
-    fn end_input(self, final_input: &I) -> Result<I::Owned, E> {
+    fn end_input(self, final_input: &I) -> Result<I::Owned, Self::Error> {
         Ok(final_input.to_owned())
     }
 }
 
-impl<I, E> Copy for Remaining<I, E> where I: ?Sized {}
+impl<I> Copy for Remaining<I> where I: ?Sized {}
 
-impl<I, E> Clone for Remaining<I, E>
+impl<I> Clone for Remaining<I>
 where
     I: ?Sized,
 {
@@ -66,16 +68,11 @@ where
     }
 }
 
-impl<I, E> Debug for Remaining<I, E>
+impl<I> Debug for Remaining<I>
 where
     I: ?Sized + ToOwned + 'static,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "remaining<I = {}, E = {}>()",
-            std::any::type_name::<I>(),
-            std::any::type_name::<E>()
-        )
+        write!(f, "remaining<I = {}>()", std::any::type_name::<I>())
     }
 }

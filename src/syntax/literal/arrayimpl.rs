@@ -2,10 +2,9 @@ use crate::syntax::literal::LiteralParser;
 use crate::syntax::Literal;
 use crate::{BaseParserError, Syntax};
 
-impl<T, const K: usize, E> Literal<[T], E> for &[T; K]
+impl<T, const K: usize> Literal<[T]> for &[T; K]
 where
     T: PartialEq,
-    E: From<BaseParserError>,
 {
     fn literal_len(self) -> usize {
         self.len()
@@ -16,11 +15,12 @@ where
     }
 }
 
-impl<'a, T, const K: usize, E> Syntax<[T], &'a [T; K], E> for &'a [T; K]
+impl<'a, T, const K: usize> Syntax<[T]> for &'a [T; K]
 where
     T: PartialEq,
-    E: From<BaseParserError>,
 {
+    type Output = Self;
+    type Error = BaseParserError;
     type State = LiteralParser<&'a [T; K]>;
 
     fn into_parser(self) -> Self::State {

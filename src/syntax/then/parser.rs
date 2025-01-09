@@ -1,7 +1,6 @@
 use either::Either;
 
 use crate::parsing::{Buffer, Parser, Update, UpdateExt};
-use crate::BaseParserError;
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -18,14 +17,16 @@ impl<P, O, Q> ThenParser<P, O, Q> {
     }
 }
 
-impl<P, Q, I, PO, QO, E> Parser<I, (PO, QO), E> for ThenParser<P, PO, Q>
+impl<P, Q, I> Parser<I> for ThenParser<P, P::Output, Q>
 where
     I: ?Sized + Buffer + 'static,
-    P: Parser<I, PO, E>,
-    Q: Parser<I, QO, E>,
-    E: From<BaseParserError>,
+    P: Parser<I>,
+    Q: Parser<I, Error = P::Error>,
 {
-    fn feed(self, input: &I) -> Result<Update<Self, (PO, QO)>, E> {
+    type Output = (P::Output, Q::Output);
+    type Error = P::Error;
+
+    fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, Self::Error> {
         use crate::parsing::Outcome::{Next, Parsed};
         use Either::{Left, Right};
 
@@ -58,7 +59,7 @@ where
         }
     }
 
-    fn end_input(self, final_input: &I) -> Result<(PO, QO), E> {
+    fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
         let (pval, input) = self.porval.either(
             |p| p.end_input(final_input).map(|pval| (pval, I::empty())),
             |pval| Ok((pval, final_input)),

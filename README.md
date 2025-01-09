@@ -6,7 +6,27 @@ Incremental parsers process a chunk of input, then either produce an error, a pa
 
 The term "parser composition" emphasizes how sophisticated parsers can be defined by composing simpler parsers.
 
-- [ ] TODO: Add example.
+## Example
+
+```rust
+use incpa::BaseParserError;
+use incpa::primitive::remaining;
+use incpa::syntax::Syntax;
+
+fn main() -> Result<(), BaseParserError> {
+    let syntax = define_syntax();
+    let input = "Hello World!";
+    let output = syntax.parse_all(input)?;
+    assert_eq!(output, ("Hello", " World!".to_string()));
+    Ok(())
+}
+
+fn define_syntax() -> impl Syntax<str, Output=(&'static str, String), Error=BaseParserError> {
+    "Hello".then(remaining())
+}
+```
+
+## Trade-offs
 
 There is a fundamental trade-off between streaming parsers, such as this crate specializes in, versus "zero-copy" parsers which parse values which refer back to the original input buffer. Zero-copy parsers reduce the memory footprint and amount of copying at the cost of requiring all input to be held in memory, whereas streaming parsers can parse very large inputs at the cost of internally copying input where necessary.
 

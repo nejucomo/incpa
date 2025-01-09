@@ -1,5 +1,4 @@
 use crate::parsing::{Outcome, Parser};
-use crate::BaseParserError;
 
 /// Manage the buffering necessary for driving [ByteFormat](crate::syntax::ByteFormat) in an i/o agnostic manner
 #[derive(Debug, Default)]
@@ -43,10 +42,14 @@ impl BufferManager {
     /// rotate | kept | uninit                  |
     ///        +------+-------------------------+
     /// ```
-    pub fn process_write<P, O, E>(&mut self, parser: P, readcnt: usize) -> Result<Outcome<P, O>, E>
+    pub fn process_write<P, E>(
+        &mut self,
+        parser: P,
+        readcnt: usize,
+    ) -> Result<Outcome<P, P::Output>, E>
     where
-        P: Parser<[u8], O, E>,
-        E: From<BaseParserError> + From<std::io::Error>,
+        P: Parser<[u8]>,
+        E: From<P::Error>,
     {
         use crate::parsing::Update;
         use Outcome::Parsed;

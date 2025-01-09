@@ -10,7 +10,8 @@ use crate::syntax::Literal;
 #[test_case(b"Hello", b"Hello World!".as_slice())]
 fn literal_ok<L, I>(literal: L, input: &I) -> anyhow::Result<()>
 where
-    L: Literal<I, anyhow::Error> + PartialEq + Debug,
+    L: Literal<I> + PartialEq + Debug,
+    L::Error: std::error::Error + Send + Sync + 'static,
     L::State: Debug,
     I: ?Sized + Buffer,
 {
