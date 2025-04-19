@@ -1,5 +1,5 @@
 [workspace.package]
-# For now we have a single version across crates, at least for 0.0.x series:
+# For now we have lockstepped versions across crates/requirements, at least for 0.0.x series:
 version = "0.0.1"
 edition = "2024"
 license-file = "LICENSE"
@@ -21,4 +21,4 @@ thiserror = "2.0.9"
 tokio = { version = "1.42.0", default-features = false }
 
 # Local crates:
-incpa = { path = "incpa" }
+incpa = { path = "incpa", version = "0.0.1" }
