@@ -1,4 +1,4 @@
-//! [tokio::io::AsyncRead] support via [ByteParserExt] makes parsing async sources concise
+//! [incpa] support for [tokio]
 #![deny(missing_docs, unsafe_code)]
 mod byteparserext;
 

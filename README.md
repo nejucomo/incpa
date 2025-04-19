@@ -4,6 +4,8 @@
 
 Incremental parsers process a chunk of input, then either produce an error, a parsed output, or an updated parser state ready for future input. This primitive, codified by [parsing::ParserState::feed], allows the same parser definition to support parsing streaming input from async or sync sources, as well as other "incremental" use cases such as interactive REPL loop parsing.
 
+Support for `async` input streams is provided in the downstream `incpa-tokio` crate.
+
 The term "parser composition" emphasizes how sophisticated parsers can be defined by composing simpler parsers.
 
 ## Example
