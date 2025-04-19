@@ -1,7 +1,19 @@
+//! [ParserState] and abstractions to support it
+mod backtrack;
+mod buffer;
+mod outcome;
+mod resultimpls;
+mod update;
+
+pub use self::backtrack::Backtrack;
+pub use self::buffer::Buffer;
+pub use self::outcome::{Outcome, OutcomeExt};
+pub use self::update::{Update, UpdateExt};
+
+// ParserState below
 use std::future::Future;
 
 use crate::BaseParserError::{self, ExpectedMoreInput};
-use crate::parsing::{Outcome, Update};
 
 /// A [ParserState] represents in-progress parsing
 ///

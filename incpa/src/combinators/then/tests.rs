@@ -2,8 +2,8 @@ use std::fmt::Debug;
 
 use test_case::test_case;
 
-use crate::parsing::Buffer;
 use crate::primitive::remaining;
+use crate::state::Buffer;
 use crate::testutils::test_buffer_windows_output_no_res;
 use crate::{Literal, Parser};
 

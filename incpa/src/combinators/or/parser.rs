@@ -1,6 +1,6 @@
 use either::Either;
 
-use crate::parsing::{Backtrack, Buffer, OutcomeExt, ParserState, Update};
+use crate::state::{Backtrack, Buffer, OutcomeExt, ParserState, Update};
 
 #[derive(Copy, Clone, Debug)]
 pub struct OrParser<P, Q> {

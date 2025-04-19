@@ -2,8 +2,8 @@ use std::fmt::Debug;
 
 use test_case::test_case;
 
-use crate::parsing::Outcome::{Next, Parsed};
-use crate::parsing::{Buffer, ParserState, Update};
+use crate::state::Outcome::{Next, Parsed};
+use crate::state::{Buffer, ParserState, Update};
 
 use super::Literal;
 

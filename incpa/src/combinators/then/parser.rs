@@ -1,6 +1,6 @@
 use either::Either;
 
-use crate::parsing::{Buffer, ParserState, Update, UpdateExt};
+use crate::state::{Buffer, ParserState, Update, UpdateExt};
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -27,7 +27,7 @@ where
     type Error = P::Error;
 
     fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, Self::Error> {
-        use crate::parsing::Outcome::{Next, Parsed};
+        use crate::state::Outcome::{Next, Parsed};
         use Either::{Left, Right};
 
         let ThenParser { porval, q } = self;

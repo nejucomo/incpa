@@ -1,4 +1,4 @@
-use crate::parsing::{Outcome, OutcomeExt};
+use crate::state::{Outcome, OutcomeExt};
 
 /// Provides the number of elements consumed and the outcome
 #[derive(Debug, PartialEq)]

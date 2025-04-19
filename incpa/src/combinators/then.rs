@@ -8,7 +8,7 @@ pub use self::parser::ThenParser;
 use derive_new::new;
 
 use crate::Parser;
-use crate::parsing::Buffer;
+use crate::state::Buffer;
 
 /// Parse `P` then `Q`
 #[derive(Copy, Clone, Debug, new)]

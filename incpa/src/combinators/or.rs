@@ -9,7 +9,7 @@ use derive_new::new;
 use either::Either;
 
 use crate::Parser;
-use crate::parsing::Buffer;
+use crate::state::Buffer;
 
 /// Parse `P` or if that fails, parse `Q`
 ///

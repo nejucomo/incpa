@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use either::Either::{self, Left, Right};
 use test_case::test_case;
 
-use crate::parsing::Buffer;
+use crate::state::Buffer;
 use crate::testutils::test_buffer_windows_res;
 use crate::{Literal, Parser};
 
