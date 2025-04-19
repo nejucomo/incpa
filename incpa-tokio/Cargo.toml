@@ -4,6 +4,8 @@ description = "Support for `tokio` in `incpa` parsers."
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
 
 [dependencies]
 incpa.workspace = true
