@@ -2,8 +2,7 @@ use std::future::Future;
 use std::pin::pin;
 
 use incpa::Parser;
-use incpa::byte::ByteParser;
-use incpa::state::BufferManager;
+use incpa::byte::{BufferManager, ByteParser};
 
 /// Every [ByteParser] is a [ByteParserExt]
 impl<P> ByteParserExt for P where P: ByteParser {}

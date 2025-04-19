@@ -1,14 +1,12 @@
 //! [ParserState] and abstractions to support it
 mod backtrack;
 mod buffer;
-mod bufmgr;
 mod outcome;
 mod resultimpls;
 mod update;
 
 pub use self::backtrack::Backtrack;
 pub use self::buffer::Buffer;
-pub use self::bufmgr::BufferManager;
 pub use self::outcome::{Outcome, OutcomeExt};
 pub use self::update::{Update, UpdateExt};
 
