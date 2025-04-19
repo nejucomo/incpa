@@ -2,10 +2,10 @@
 use std::future::Future;
 
 use crate::parsing::{BufferManager, ParserState};
-use crate::Syntax;
+use crate::Parser;
 
 /// Any [ParserState] over `[u8]` input is a [ByteFormat] by blanket impl
-pub trait ByteFormat: Syntax<[u8]> {
+pub trait ByteFormat: Parser<[u8]> {
     /// Consume and parse all of input from `r`
     fn parse_reader<R, E>(self, r: R) -> Result<Self::Output, E>
     where
@@ -71,4 +71,4 @@ pub trait ByteFormat: Syntax<[u8]> {
     }
 }
 
-impl<S> ByteFormat for S where S: Syntax<[u8]> {}
+impl<S> ByteFormat for S where S: Parser<[u8]> {}

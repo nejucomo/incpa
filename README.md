@@ -11,7 +11,7 @@ The term "parser composition" emphasizes how sophisticated parsers can be define
 ```rust
 use incpa::BaseParserError;
 use incpa::primitive::remaining;
-use incpa::syntax::Syntax;
+use incpa::syntax::Parser;
 
 fn main() -> Result<(), BaseParserError> {
     let syntax = define_syntax();
@@ -21,7 +21,7 @@ fn main() -> Result<(), BaseParserError> {
     Ok(())
 }
 
-fn define_syntax() -> impl Syntax<str, Output=(&'static str, String), Error=BaseParserError> {
+fn define_syntax() -> impl Parser<str, Output=(&'static str, String), Error=BaseParserError> {
     "Hello".then(remaining())
 }
 ```
@@ -40,7 +40,7 @@ This crate is in the version 0.0.x phase of early proof of concept with unstable
 
 ### 0.1.0 Feature Goals
 
-- [ ] A basic suite of general composition abstractions such as [Syntax::then] and `Syntax::or` with backtracking support.
+- [ ] A basic suite of general composition abstractions such as [Parser::then] and `Parser::or` with backtracking support.
 - [ ] Support for both string parsers and slice parsers (including byte slices)
 - [ ] Efficient streaming string parsing from byte-oriented I/O sources using UTF8 decoding
 - [ ] Common generic primitive parsers, such as end-of-input, constants, and literals

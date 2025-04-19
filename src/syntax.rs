@@ -1,4 +1,4 @@
-//! [Syntax] and impls for composing syntaxes to specify a parser's behavior
+//! [Parser] and impls for composing syntaxes to specify a parser's behavior
 mod byteformat;
 mod literal;
 mod maperror;
@@ -16,12 +16,12 @@ pub use self::then::Then;
 use crate::parsing::{Buffer, ParserState};
 use crate::BaseParserError;
 
-/// A [Syntax] defines the syntax, grammar, or format to be parsed
+/// A [Parser] defines the syntax, grammar, or format to be parsed
 ///
 /// Implementations can often specify the grammar to be parsed by [crate::primitive] types and the composition methods of this trait.
 ///
-/// The actual behind-the-scenes work of parsing is accomplished by creating [Syntax::State] from [Syntax::into_parser], then driving that.
-pub trait Syntax<I>: Sized
+/// The actual behind-the-scenes work of parsing is accomplished by creating [Parser::State] from [Parser::into_parser], then driving that.
+pub trait Parser<I>: Sized
 where
     I: ?Sized,
 {

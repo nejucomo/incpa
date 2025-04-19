@@ -8,4 +8,4 @@ pub mod syntax;
 pub mod testutils;
 
 pub use self::error::BaseParserError;
-pub use self::syntax::Syntax;
+pub use self::syntax::Parser;

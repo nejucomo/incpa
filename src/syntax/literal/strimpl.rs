@@ -1,5 +1,5 @@
 use crate::syntax::{Literal, LiteralParser};
-use crate::{BaseParserError, Syntax};
+use crate::{BaseParserError, Parser};
 
 impl Literal<str> for &str {
     fn literal_len(self) -> usize {
@@ -11,7 +11,7 @@ impl Literal<str> for &str {
     }
 }
 
-impl<'a> Syntax<str> for &'a str {
+impl<'a> Parser<str> for &'a str {
     type Output = Self;
     type Error = BaseParserError;
     type State = LiteralParser<&'a str>;

@@ -12,7 +12,7 @@ pub struct Backtrack<P> {
     consumed: usize,
 }
 
-// impl<P, I, O, E> Syntax<I, O, E> for Backtrack<P> where P: Syntax<I, O, E> {}
+// impl<P, I, O, E> Parser<I, O, E> for Backtrack<P> where P: Parser<I, O, E> {}
 
 impl<P, I> ParserState<I> for Backtrack<P>
 where

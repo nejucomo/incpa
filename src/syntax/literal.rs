@@ -9,7 +9,7 @@ mod strimpl;
 use derive_new::new;
 
 use crate::parsing::{Buffer, ParserState, Update};
-use crate::Syntax;
+use crate::Parser;
 
 /// A [Literal] is any value which is syntax for a parser of itself
 ///
@@ -17,7 +17,7 @@ use crate::Syntax;
 ///
 /// ```
 /// use incpa::BaseParserError;
-/// use incpa::syntax::{Syntax,Literal};
+/// use incpa::syntax::{Parser,Literal};
 ///
 /// fn main() -> Result<(), BaseParserError> {
 ///   // &str is a Literal, so it can parse an input:
@@ -28,7 +28,7 @@ use crate::Syntax;
 ///   Ok(())
 /// }
 /// ```
-pub trait Literal<I>: Sized + Copy + Syntax<I, Output = Self>
+pub trait Literal<I>: Sized + Copy + Parser<I, Output = Self>
 where
     I: ?Sized + Buffer,
 {

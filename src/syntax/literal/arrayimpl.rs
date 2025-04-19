@@ -1,6 +1,6 @@
 use crate::syntax::literal::LiteralParser;
 use crate::syntax::Literal;
-use crate::{BaseParserError, Syntax};
+use crate::{BaseParserError, Parser};
 
 impl<T, const K: usize> Literal<[T]> for &[T; K]
 where
@@ -15,7 +15,7 @@ where
     }
 }
 
-impl<'a, T, const K: usize> Syntax<[T]> for &'a [T; K]
+impl<'a, T, const K: usize> Parser<[T]> for &'a [T; K]
 where
     T: PartialEq,
 {
