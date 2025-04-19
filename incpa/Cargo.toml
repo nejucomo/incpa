@@ -4,6 +4,11 @@ description = "An INCremental PArser composition crate."
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
+include = [
+    "src/**",
+    "../../README.md",
+    "Cargo.toml",
+]
 
 [dependencies]
 derive-new.workspace = true
