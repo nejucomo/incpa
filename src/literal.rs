@@ -11,19 +11,19 @@ use derive_new::new;
 use crate::parsing::{Buffer, ParserState, Update};
 use crate::Parser;
 
-/// A [Literal] is any value which is syntax for a parser of itself
+/// A [Literal] is any value which is a [Parser] for itself
 ///
 /// # Example
 ///
 /// ```
 /// use incpa::BaseParserError;
-/// use incpa::syntax::{Parser,Literal};
+/// use incpa::{Parser, Literal};
 ///
 /// fn main() -> Result<(), BaseParserError> {
 ///   // &str is a Literal, so it can parse an input:
-///   let syntax = "Hello World!";
-///   let parsed = syntax.parse_all("Hello World!")?;
-///   // A literal syntax parses itself to output itself:
+///   let literal = "Hello World!";
+///   let parsed = literal.parse_all("Hello World!")?;
+///   // A literal parses itself as input to produce itself as output:
 ///   assert_eq!(parsed, "Hello World!");
 ///   Ok(())
 /// }

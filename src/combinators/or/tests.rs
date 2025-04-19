@@ -4,9 +4,8 @@ use either::Either::{self, Left, Right};
 use test_case::test_case;
 
 use crate::parsing::Buffer;
-use crate::syntax::Literal;
 use crate::testutils::test_buffer_windows_res;
-use crate::Parser;
+use crate::{Literal, Parser};
 
 #[test_case(b"hello", b"world", b"hello world!", Some(Left(b"hello")))]
 #[test_case(b"hello", b"world", b"world: hello!", Some(Right(b"world")))]

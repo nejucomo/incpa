@@ -1,13 +1,13 @@
 //! Common parser testing utilities
 
-use crate::syntax::ByteFormat;
+use crate::ByteParser;
 
 /// Run the given parser with many different initial buffer sizes, calling `check` on the results each time
 ///
 /// This test function helps catch bounds errors in `Parser` / `BufferManager` implementations
 pub fn test_buffer_windows_res<B, I, F, E>(bfmt: B, input: I, check: F) -> Result<(), E>
 where
-    B: Clone + ByteFormat,
+    B: Clone + ByteParser,
     I: AsRef<[u8]>,
     F: Fn(Result<B::Output, E>) -> Result<(), E>,
     E: From<B::Error> + From<std::io::Error>,
@@ -31,7 +31,7 @@ where
 /// This test function helps catch bounds errors in `Parser` / `BufferManager` implementations
 pub fn test_buffer_windows_outputs<B, I, F, E>(bfmt: B, input: I, check: F) -> Result<(), E>
 where
-    B: Clone + ByteFormat,
+    B: Clone + ByteParser,
     I: AsRef<[u8]>,
     F: Fn(B::Output) -> Result<(), E>,
     E: From<B::Error> + From<std::io::Error>,
@@ -47,7 +47,7 @@ where
 /// This test function helps catch bounds errors in `Parser` / `BufferManager` implementations
 pub fn test_buffer_windows_output_no_res<B, I, F, E>(bfmt: B, input: I, check: F) -> Result<(), E>
 where
-    B: Clone + ByteFormat,
+    B: Clone + ByteParser,
     I: AsRef<[u8]>,
     F: Fn(B::Output),
     E: From<B::Error> + From<std::io::Error>,

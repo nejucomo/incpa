@@ -1,6 +1,6 @@
 use crate::parsing::{Outcome, ParserState};
 
-/// Manage the buffering necessary for driving [ByteFormat](crate::syntax::ByteFormat) in an i/o agnostic manner
+/// Manage the buffering necessary for driving [ByteParser](crate::ByteParser) in an i/o agnostic manner
 #[derive(Debug, Default)]
 pub struct BufferManager {
     buffer: Vec<u8>,

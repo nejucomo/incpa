@@ -1,8 +1,8 @@
-use crate::syntax::literal::LiteralParser;
-use crate::syntax::Literal;
 use crate::{BaseParserError, Parser};
 
-impl<T> Literal<[T]> for &[T]
+use super::{Literal, LiteralParser};
+
+impl<T, const K: usize> Literal<[T]> for &[T; K]
 where
     T: PartialEq,
 {
@@ -15,13 +15,13 @@ where
     }
 }
 
-impl<'a, T> Parser<[T]> for &'a [T]
+impl<'a, T, const K: usize> Parser<[T]> for &'a [T; K]
 where
     T: PartialEq,
 {
     type Output = Self;
     type Error = BaseParserError;
-    type State = LiteralParser<&'a [T]>;
+    type State = LiteralParser<&'a [T; K]>;
 
     fn into_parser(self) -> Self::State {
         LiteralParser::new(self)

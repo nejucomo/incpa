@@ -1,6 +1,6 @@
-use crate::syntax::literal::LiteralParser;
-use crate::syntax::Literal;
 use crate::{BaseParserError, Parser};
+
+use super::{Literal, LiteralParser};
 
 impl Literal<str> for char {
     fn literal_len(self) -> usize {

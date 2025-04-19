@@ -1,20 +1,27 @@
-use crate::syntax::{Literal, LiteralParser};
 use crate::{BaseParserError, Parser};
 
-impl Literal<str> for &str {
+use super::{Literal, LiteralParser};
+
+impl<T> Literal<[T]> for &[T]
+where
+    T: PartialEq,
+{
     fn literal_len(self) -> usize {
         self.len()
     }
 
-    fn literal_eq(self, candidate: &str) -> bool {
+    fn literal_eq(self, candidate: &[T]) -> bool {
         self == candidate
     }
 }
 
-impl<'a> Parser<str> for &'a str {
+impl<'a, T> Parser<[T]> for &'a [T]
+where
+    T: PartialEq,
+{
     type Output = Self;
     type Error = BaseParserError;
-    type State = LiteralParser<&'a str>;
+    type State = LiteralParser<&'a [T]>;
 
     fn into_parser(self) -> Self::State {
         LiteralParser::new(self)

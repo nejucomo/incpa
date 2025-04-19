@@ -4,7 +4,8 @@ use test_case::test_case;
 
 use crate::parsing::Outcome::{Next, Parsed};
 use crate::parsing::{Buffer, ParserState, Update};
-use crate::syntax::Literal;
+
+use super::Literal;
 
 #[test_case("Hello", "Hello World!")]
 #[test_case(b"Hello", b"Hello World!".as_slice())]
