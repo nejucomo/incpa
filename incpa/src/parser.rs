@@ -1,6 +1,6 @@
+use crate::BaseParserError;
 use crate::combinators::{MapError, MapOutput, Or, Then};
 use crate::parsing::{Buffer, ParserState};
-use crate::BaseParserError;
 
 /// A [Parser] defines the syntax, grammar, or format to be parsed
 ///
