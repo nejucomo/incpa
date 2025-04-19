@@ -8,8 +8,8 @@ mod strimpl;
 
 use derive_new::new;
 
-use crate::parsing::{Buffer, ParserState, Update};
 use crate::Parser;
+use crate::parsing::{Buffer, ParserState, Update};
 
 /// A [Literal] is any value which is a [Parser] for itself
 ///
@@ -56,8 +56,8 @@ where
     type Error = L::Error;
 
     fn feed(self, input: &I) -> Result<Update<Self, L>, Self::Error> {
-        use crate::parsing::Outcome::{Next, Parsed};
         use crate::BaseParserError::UnexpectedInput;
+        use crate::parsing::Outcome::{Next, Parsed};
 
         let n = self.0.literal_len();
         let prefix = input.prefix_up_to(n);

@@ -8,8 +8,8 @@ pub use self::parser::OrParser;
 use derive_new::new;
 use either::Either;
 
-use crate::parsing::Buffer;
 use crate::Parser;
+use crate::parsing::Buffer;
 
 /// Parse `P` or if that fails, parse `Q`
 ///

@@ -1,7 +1,7 @@
 use std::future::Future;
 
-use crate::parsing::{Outcome, Update};
 use crate::BaseParserError::{self, ExpectedMoreInput};
+use crate::parsing::{Outcome, Update};
 
 /// A [ParserState] represents in-progress parsing
 ///
@@ -55,14 +55,14 @@ where
     }
 
     /// Repeatedly update a parser in an async loop until it produces an error or value
-    fn run_parser_async<F, S, Fut>(
+    fn run_parser_async<F, E, S, Fut>(
         self,
         init: S,
         f: F,
-    ) -> impl Future<Output = Result<Self::Output, Self::Error>>
+    ) -> impl Future<Output = Result<Self::Output, E>>
     where
         F: Fn(Self, S) -> Fut,
-        Fut: Future<Output = Result<Outcome<(Self, S), Self::Output>, Self::Error>>,
+        Fut: Future<Output = Result<Outcome<(Self, S), Self::Output>, E>>,
     {
         use Outcome::{Next, Parsed};
 
