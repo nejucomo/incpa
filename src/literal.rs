@@ -8,27 +8,27 @@ mod strimpl;
 
 use derive_new::new;
 
-use crate::parsing::{Buffer, Parser, Update};
-use crate::Syntax;
+use crate::parsing::{Buffer, ParserState, Update};
+use crate::Parser;
 
-/// A [Literal] is any value which is syntax for a parser of itself
+/// A [Literal] is any value which is a [Parser] for itself
 ///
 /// # Example
 ///
 /// ```
 /// use incpa::BaseParserError;
-/// use incpa::syntax::{Syntax,Literal};
+/// use incpa::{Parser, Literal};
 ///
 /// fn main() -> Result<(), BaseParserError> {
 ///   // &str is a Literal, so it can parse an input:
-///   let syntax = "Hello World!";
-///   let parsed = syntax.parse_all("Hello World!")?;
-///   // A literal syntax parses itself to output itself:
+///   let literal = "Hello World!";
+///   let parsed = literal.parse_all("Hello World!")?;
+///   // A literal parses itself as input to produce itself as output:
 ///   assert_eq!(parsed, "Hello World!");
 ///   Ok(())
 /// }
 /// ```
-pub trait Literal<I>: Sized + Copy + Syntax<I, Output = Self>
+pub trait Literal<I>: Sized + Copy + Parser<I, Output = Self>
 where
     I: ?Sized + Buffer,
 {
@@ -47,7 +47,7 @@ where
 #[derive(Copy, Clone, Debug, new)]
 pub struct LiteralParser<L>(L);
 
-impl<I, L> Parser<I> for LiteralParser<L>
+impl<I, L> ParserState<I> for LiteralParser<L>
 where
     I: ?Sized + Buffer,
     L: Literal<I>,

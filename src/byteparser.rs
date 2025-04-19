@@ -1,11 +1,11 @@
 #[cfg(feature = "tokio")]
 use std::future::Future;
 
-use crate::parsing::{BufferManager, Parser};
-use crate::Syntax;
+use crate::parsing::{BufferManager, ParserState};
+use crate::Parser;
 
-/// Any [Parser] over `[u8]` input is a [ByteFormat] by blanket impl
-pub trait ByteFormat: Syntax<[u8]> {
+/// Any [Parser] over `[u8]` input is a [ByteParser] by blanket impl
+pub trait ByteParser: Parser<[u8]> {
     /// Consume and parse all of input from `r`
     fn parse_reader<R, E>(self, r: R) -> Result<Self::Output, E>
     where
@@ -71,4 +71,4 @@ pub trait ByteFormat: Syntax<[u8]> {
     }
 }
 
-impl<S> ByteFormat for S where S: Syntax<[u8]> {}
+impl<S> ByteParser for S where S: Parser<[u8]> {}

@@ -4,15 +4,15 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use crate::parsing::{Parser, Update};
-use crate::{BaseParserError, Syntax};
+use crate::parsing::{ParserState, Update};
+use crate::{BaseParserError, Parser};
 
 /// Captures all remaining input
 ///
 /// # Warning
 ///
 /// This requires holding all input in memory, by definition.
-pub fn remaining<I>() -> impl Syntax<I, Output = I::Owned, Error = BaseParserError> + Copy + Debug
+pub fn remaining<I>() -> impl Parser<I, Output = I::Owned, Error = BaseParserError> + Copy + Debug
 where
     I: ?Sized + ToOwned + 'static,
 {
@@ -23,7 +23,7 @@ struct Remaining<I>(PhantomData<&'static I>)
 where
     I: ?Sized + 'static;
 
-impl<I> Syntax<I> for Remaining<I>
+impl<I> Parser<I> for Remaining<I>
 where
     I: ?Sized + ToOwned + 'static,
 {
@@ -36,7 +36,7 @@ where
     }
 }
 
-impl<I> Parser<I> for Remaining<I>
+impl<I> ParserState<I> for Remaining<I>
 where
     I: ?Sized + ToOwned + 'static,
 {

@@ -3,12 +3,12 @@ use std::future::Future;
 use crate::parsing::{Outcome, Update};
 use crate::BaseParserError::{self, ExpectedMoreInput};
 
-/// A [Parser] represents in-progress parsing
+/// A [ParserState] represents in-progress parsing
 ///
 /// # Invariants
 ///
-/// This crate assumes every [Parser] impl is deterministic, so that calling [Parser::feed] or [Parser::end_input] on two equivalent states with the same input parameters produces equivalent values.
-pub trait Parser<I>: Sized
+/// This crate assumes every [ParserState] impl is deterministic, so that calling [ParserState::feed] or [ParserState::end_input] on two equivalent states with the same input parameters produces equivalent values.
+pub trait ParserState<I>: Sized
 where
     I: ?Sized,
 {
@@ -27,7 +27,7 @@ where
     ///
     /// The default implementation simply returns the [ExpectedMoreInput] error.
     ///
-    /// Precondition: all of `final_input` must have been seen by a prior call to [Parser::feed]
+    /// Precondition: all of `final_input` must have been seen by a prior call to [ParserState::feed]
     fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
         let _ = final_input;
         Err(Self::Error::from(ExpectedMoreInput))

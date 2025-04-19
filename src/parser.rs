@@ -1,27 +1,13 @@
-//! [Syntax] and impls for composing syntaxes to specify a parser's behavior
-mod byteformat;
-mod literal;
-mod maperror;
-mod mapoutput;
-mod or;
-mod then;
-
-pub use self::byteformat::ByteFormat;
-pub use self::literal::{Literal, LiteralParser};
-pub use self::maperror::MapError;
-pub use self::mapoutput::MapOutput;
-pub use self::or::Or;
-pub use self::then::Then;
-
-use crate::parsing::{Buffer, Parser};
+use crate::combinators::{MapError, MapOutput, Or, Then};
+use crate::parsing::{Buffer, ParserState};
 use crate::BaseParserError;
 
-/// A [Syntax] defines the syntax, grammar, or format to be parsed
+/// A [Parser] defines the syntax, grammar, or format to be parsed
 ///
 /// Implementations can often specify the grammar to be parsed by [crate::primitive] types and the composition methods of this trait.
 ///
-/// The actual behind-the-scenes work of parsing is accomplished by creating [Syntax::State] from [Syntax::into_parser], then driving that.
-pub trait Syntax<I>: Sized
+/// The actual behind-the-scenes work of parsing is accomplished by creating [Parser::State] from [Parser::into_parser], then driving that.
+pub trait Parser<I>: Sized
 where
     I: ?Sized,
 {
@@ -31,8 +17,8 @@ where
     /// The type of errors this parser detects
     type Error: From<BaseParserError>;
 
-    /// The initial [Parser] to parse this specification
-    type State: Parser<I, Output = Self::Output, Error = Self::Error>;
+    /// The initial [ParserState] to parse this specification
+    type State: ParserState<I, Output = Self::Output, Error = Self::Error>;
 
     /// Construct a state to drive low-level parsing
     fn into_parser(self) -> Self::State;

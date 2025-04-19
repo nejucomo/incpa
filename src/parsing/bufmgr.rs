@@ -1,6 +1,6 @@
-use crate::parsing::{Outcome, Parser};
+use crate::parsing::{Outcome, ParserState};
 
-/// Manage the buffering necessary for driving [ByteFormat](crate::syntax::ByteFormat) in an i/o agnostic manner
+/// Manage the buffering necessary for driving [ByteParser](crate::ByteParser) in an i/o agnostic manner
 #[derive(Debug, Default)]
 pub struct BufferManager {
     buffer: Vec<u8>,
@@ -48,7 +48,7 @@ impl BufferManager {
         readcnt: usize,
     ) -> Result<Outcome<P, P::Output>, E>
     where
-        P: Parser<[u8]>,
+        P: ParserState<[u8]>,
         E: From<P::Error>,
     {
         use crate::parsing::Update;

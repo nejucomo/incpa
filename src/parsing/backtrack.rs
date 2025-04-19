@@ -1,10 +1,10 @@
 use derive_new::new;
 
-use crate::parsing::{Buffer, Parser, Update};
+use crate::parsing::{Buffer, ParserState, Update};
 
 /// Try to parse `P`, but hold all input until a successful parse
 ///
-/// This ensures if `P` fails with an error, no input will have been consumed. Typically this is used internally for conditional parsing, such as with [syntax::Or](crate::syntax::Or).
+/// This ensures if `P` fails with an error, no input will have been consumed. Typically this is used internally for conditional parsing, such as with [combinators::Or](crate::combinators::Or).
 #[derive(Copy, Clone, Debug, new)]
 pub struct Backtrack<P> {
     inner: P,
@@ -12,12 +12,12 @@ pub struct Backtrack<P> {
     consumed: usize,
 }
 
-// impl<P, I, O, E> Syntax<I, O, E> for Backtrack<P> where P: Syntax<I, O, E> {}
+// impl<P, I, O, E> Parser<I, O, E> for Backtrack<P> where P: Parser<I, O, E> {}
 
-impl<P, I> Parser<I> for Backtrack<P>
+impl<P, I> ParserState<I> for Backtrack<P>
 where
     I: ?Sized + Buffer,
-    P: Parser<I>,
+    P: ParserState<I>,
 {
     type Output = P::Output;
     type Error = P::Error;

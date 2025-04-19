@@ -1,6 +1,6 @@
-use crate::syntax::literal::LiteralParser;
-use crate::syntax::Literal;
-use crate::{BaseParserError, Syntax};
+use crate::{BaseParserError, Parser};
+
+use super::{Literal, LiteralParser};
 
 impl Literal<str> for char {
     fn literal_len(self) -> usize {
@@ -24,7 +24,7 @@ impl Literal<[u8]> for char {
     }
 }
 
-impl Syntax<str> for char {
+impl Parser<str> for char {
     type Output = char;
     type Error = BaseParserError;
     type State = LiteralParser<char>;
@@ -34,7 +34,7 @@ impl Syntax<str> for char {
     }
 }
 
-impl Syntax<[u8]> for char {
+impl Parser<[u8]> for char {
     type Output = char;
     type Error = BaseParserError;
     type State = LiteralParser<char>;
