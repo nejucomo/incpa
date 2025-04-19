@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::parsing::{OutcomeExt, ParserState, Update};
+use crate::state::{OutcomeExt, ParserState, Update};
 use crate::{BaseParserError, Parser};
 
 /// Specifies a parser which maps its error

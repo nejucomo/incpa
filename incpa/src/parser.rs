@@ -1,6 +1,6 @@
 use crate::BaseParserError;
 use crate::combinators::{MapError, MapOutput, Or, Then};
-use crate::parsing::{Buffer, ParserState};
+use crate::state::{Buffer, ParserState};
 
 /// A [Parser] defines the syntax, grammar, or format to be parsed
 ///
@@ -28,8 +28,8 @@ where
     where
         I: Buffer,
     {
-        use crate::parsing::Outcome::{Next, Parsed};
-        use crate::parsing::Update;
+        use crate::state::Outcome::{Next, Parsed};
+        use crate::state::Update;
 
         let Update { consumed, outcome } = self.into_parser().feed(input)?;
         match outcome {

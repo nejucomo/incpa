@@ -1,5 +1,5 @@
 use crate::Parser;
-use crate::parsing::{BufferManager, ParserState};
+use crate::state::{BufferManager, ParserState};
 
 /// Every `Parser<[u8]>` is a [ByteParser]
 impl<S> ByteParser for S where S: Parser<[u8]> {}

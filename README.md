@@ -2,7 +2,7 @@
 
 `incpa` is an <u>inc</u>remental <u>pa</u>rser composition crate.
 
-Incremental parsers process a chunk of input, then either produce an error, a parsed output, or an updated parser state ready for future input. This primitive, codified by [parsing::ParserState::feed], allows the same parser definition to support parsing streaming input from async or sync sources, as well as other "incremental" use cases such as interactive REPL loop parsing.
+Incremental parsers process a chunk of input, then either produce an error, a parsed output, or an updated parser state ready for future input. This primitive, codified by [ParserState::feed](crate::state::ParserState::feed), allows the same parser definition to support parsing streaming input from async or sync sources, as well as other "incremental" use cases such as interactive REPL loop parsing.
 
 Support for `async` input streams is provided in the downstream `incpa-tokio` crate.
 

@@ -1,7 +1,7 @@
 use std::future::Future;
 use std::pin::pin;
 
-use incpa::parsing::BufferManager;
+use incpa::state::BufferManager;
 use incpa::{ByteParser, Parser};
 
 /// Every [ByteParser] is a [ByteParserExt]
@@ -28,7 +28,7 @@ pub trait ByteParserExt: ByteParser {
         R: tokio::io::AsyncRead,
         E: From<<Self as Parser<[u8]>>::Error> + From<std::io::Error>,
     {
-        use incpa::parsing::Outcome::{Next, Parsed};
+        use incpa::state::Outcome::{Next, Parsed};
         use tokio::io::AsyncReadExt;
 
         async move {

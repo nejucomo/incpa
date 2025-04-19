@@ -6,8 +6,8 @@ pub mod combinators;
 mod error;
 mod literal;
 mod parser;
-pub mod parsing;
 pub mod primitive;
+pub mod state;
 pub mod testutils;
 
 pub use self::byteparser::ByteParser;

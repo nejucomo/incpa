@@ -1,6 +1,6 @@
 use derive_new::new;
 
-use crate::parsing::{Buffer, ParserState, Update};
+use crate::state::{Buffer, ParserState, Update};
 
 /// Try to parse `P`, but hold all input until a successful parse
 ///
@@ -23,7 +23,7 @@ where
     type Error = P::Error;
 
     fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, Self::Error> {
-        use crate::parsing::Outcome::{Next, Parsed};
+        use crate::state::Outcome::{Next, Parsed};
 
         let inner_input = input.drop_prefix(self.consumed);
         let Update { consumed, outcome } = self.inner.feed(inner_input)?;
