@@ -8,7 +8,7 @@ mod strimpl;
 
 use derive_new::new;
 
-use crate::parsing::{Buffer, Parser, Update};
+use crate::parsing::{Buffer, ParserState, Update};
 use crate::Syntax;
 
 /// A [Literal] is any value which is syntax for a parser of itself
@@ -47,7 +47,7 @@ where
 #[derive(Copy, Clone, Debug, new)]
 pub struct LiteralParser<L>(L);
 
-impl<I, L> Parser<I> for LiteralParser<L>
+impl<I, L> ParserState<I> for LiteralParser<L>
 where
     I: ?Sized + Buffer,
     L: Literal<I>,

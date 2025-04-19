@@ -4,7 +4,7 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use crate::parsing::{Parser, Update};
+use crate::parsing::{ParserState, Update};
 use crate::{BaseParserError, Syntax};
 
 /// Captures all remaining input
@@ -36,7 +36,7 @@ where
     }
 }
 
-impl<I> Parser<I> for Remaining<I>
+impl<I> ParserState<I> for Remaining<I>
 where
     I: ?Sized + ToOwned + 'static,
 {

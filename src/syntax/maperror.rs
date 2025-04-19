@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::parsing::{OutcomeExt, Parser, Update};
+use crate::parsing::{OutcomeExt, ParserState, Update};
 use crate::{BaseParserError, Syntax};
 
 /// Specifies a parser which maps its error
@@ -37,9 +37,9 @@ where
 #[new(visibility = "pub(crate)")]
 pub struct MapErrorParser<P, F, E>(MapError<P, F, E>);
 
-impl<P, F, E, I> Parser<I> for MapErrorParser<P, F, E>
+impl<P, F, E, I> ParserState<I> for MapErrorParser<P, F, E>
 where
-    P: Parser<I>,
+    P: ParserState<I>,
     F: FnOnce(P::Error) -> E,
     E: From<BaseParserError>,
     I: ?Sized,

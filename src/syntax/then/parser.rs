@@ -1,6 +1,6 @@
 use either::Either;
 
-use crate::parsing::{Buffer, Parser, Update, UpdateExt};
+use crate::parsing::{Buffer, ParserState, Update, UpdateExt};
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -17,11 +17,11 @@ impl<P, O, Q> ThenParser<P, O, Q> {
     }
 }
 
-impl<P, Q, I> Parser<I> for ThenParser<P, P::Output, Q>
+impl<P, Q, I> ParserState<I> for ThenParser<P, P::Output, Q>
 where
     I: ?Sized + Buffer + 'static,
-    P: Parser<I>,
-    Q: Parser<I, Error = P::Error>,
+    P: ParserState<I>,
+    Q: ParserState<I, Error = P::Error>,
 {
     type Output = (P::Output, Q::Output);
     type Error = P::Error;

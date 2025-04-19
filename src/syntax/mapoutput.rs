@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::parsing::{Parser, Update, UpdateExt};
+use crate::parsing::{ParserState, Update, UpdateExt};
 use crate::Syntax;
 
 /// Specifies a parser which maps its output
@@ -34,9 +34,9 @@ where
 #[new(visibility = "pub(crate)")]
 pub struct MapOutputParser<P, F, O>(MapOutput<P, F, O>);
 
-impl<P, F, I, O> Parser<I> for MapOutputParser<P, F, O>
+impl<P, F, I, O> ParserState<I> for MapOutputParser<P, F, O>
 where
-    P: Parser<I>,
+    P: ParserState<I>,
     F: FnOnce(P::Output) -> O,
 {
     type Output = O;

@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use test_case::test_case;
 
 use crate::parsing::Outcome::{Next, Parsed};
-use crate::parsing::{Buffer, Parser, Update};
+use crate::parsing::{Buffer, ParserState, Update};
 use crate::syntax::Literal;
 
 #[test_case("Hello", "Hello World!")]
