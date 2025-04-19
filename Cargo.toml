@@ -1,5 +1,8 @@
 [workspace.package]
+# For now we have a single version across crates, at least for 0.0.x series:
+version = "0.0.1"
 edition = "2024"
+license-file = "LICENSE"
 
 [workspace]
 resolver = "3"
