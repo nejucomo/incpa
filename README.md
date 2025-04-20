@@ -4,9 +4,14 @@
 
 Incremental parsers process a chunk of input, then either produce an error, a parsed output, or an updated parser state ready for future input. This primitive, codified by [ParserState::feed](crate::state::ParserState::feed), allows the same parser definition to support parsing streaming input from async or sync sources, as well as other "incremental" use cases such as interactive REPL loop parsing.
 
-Support for `async` input streams is provided in the downstream `incpa-tokio` crate.
-
 The term "parser composition" emphasizes how sophisticated parsers can be defined by composing simpler parsers.
+
+## Related Crates
+
+The `incpa` project functionality is separated into multiple distinct crates:
+
+- The `incpa-byte` crate provides byte-wise input functionality, such as UTF8 decoding (so that any string parser can read byte-oriented sources).
+- Support for `async` input streams is provided in the downstream `incpa-tokio` crate.
 
 ## Example
 
@@ -29,7 +34,9 @@ fn define_my_parser() -> impl Parser<str, Output=(&'static str, String), Error=B
 
 ## Trade-offs
 
-There is a fundamental trade-off between streaming parsers, such as this crate specializes in, versus "zero-copy" parsers which parse values which refer back to the original input buffer. Zero-copy parsers reduce the memory footprint and amount of copying at the cost of requiring all input to be held in memory, whereas streaming parsers can parse very large inputs at the cost of internally copying input where necessary.
+There is a fundamental trade-off between streaming parsers, like `incpa`-based parsers, versus "zero-copy" parsers which parse values which refer back to the original input buffer.
+
+Zero-copy parsers reduce the memory footprint and amount of copying at the cost of requiring all input to be held in memory, whereas streaming parsers can parse very large inputs at the cost of internally copying input where necessary.
 
 ## Related Projects
 
@@ -67,6 +74,10 @@ This crate is in the version 0.0.x phase of early proof of concept with unstable
 <details>
 <summary>Changelog</summary>
 
+#### v0.0.3 (Not Yet Released)
+
+- Split out `incpa-byte` crate.
+
 #### v0.0.2
 
 This release just fixed some missing `Cargo.toml` metadata: `homepage` and `repository`.
@@ -77,6 +88,6 @@ Basic core structure with:
 
 - [Parser], [Parser::map], [Parser::map_error], [Parser::then], [Parser::or]
 - [state::ParserState]
-- [byte::ByteParser], hardcoded [byte::BufferManager] strategy
+- `incpa_byte::ByteParser`, hardcoded `incpa_byte::BufferManager` strategy (later moved to separate `incpa_byte` crate.
 
 </details>

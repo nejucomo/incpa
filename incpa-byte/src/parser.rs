@@ -1,6 +1,7 @@
-use crate::Parser;
-use crate::byte::BufferManager;
-use crate::state::ParserState;
+use incpa::Parser;
+use incpa::state::ParserState;
+
+use crate::BufferManager;
 
 /// Every `Parser<[u8]>` is a [ByteParser]
 impl<S> ByteParser for S where S: Parser<[u8]> {}

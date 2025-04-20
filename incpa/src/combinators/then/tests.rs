@@ -4,45 +4,28 @@ use test_case::test_case;
 
 use crate::primitive::remaining;
 use crate::state::Buffer;
-use crate::testutils::test_buffer_windows_output_no_res;
 use crate::{Literal, Parser};
 
-#[test_case("hello world!")]
-#[test_case(b"hello world!".as_slice())]
-fn remaining_then_remaining<I>(input: &I) -> anyhow::Result<()>
+#[test_case("hello world!" => ("hello world!".to_string(), "".to_string()))]
+#[test_case(b"hello world!".as_slice() => (Vec::from(b"hello world!"), vec![]))]
+fn remaining_then_remaining<I>(input: &I) -> (I::Owned, I::Owned)
 where
-    I: ?Sized + AsRef<[u8]> + Buffer + Debug + PartialEq + 'static,
+    I: ?Sized + Buffer + Debug + PartialEq + ToOwned + 'static,
 {
-    test_buffer_windows_output_no_res(remaining().then(remaining()), input, |(first, second)| {
-        assert_eq!(first.as_slice(), input.as_ref());
-        assert!(second.is_empty());
-    })
+    remaining().then(remaining()).parse_all(input).unwrap()
 }
 
-// #[test_case("hello ", "world!", "hello world!")]
-#[test_case(b"hello ", b"world!", b"hello world!")]
-fn a_then_b_buffer_windows<S, I>(a: S, b: S, input: &I) -> anyhow::Result<()>
+#[test_case("hello ", "world!", "hello world!" => ("hello ", "world!"))]
+#[test_case("hello ", "world!", "hello world! SUFFIX" => ("hello ", "world!"))]
+#[test_case(b"hello ", b"world!", b"hello world!" => (b"hello ", b"world!"))]
+#[test_case(b"hell", '0', b"hell0 world!" => (b"hell", '0'))]
+#[test_case("hell", '0', "hell0 world!" => ("hell", '0'))]
+fn a_then_b<A, B, I>(a: A, b: B, input: &I) -> (A, B)
 where
-    S: Literal<[u8]> + Copy + PartialEq + Debug,
-    S::Error: std::error::Error + Send + Sync + 'static,
-    I: ?Sized + AsRef<[u8]>,
-{
-    test_buffer_windows_output_no_res(a.then(b), input.as_ref(), |(aval, bval)| {
-        assert_eq!(a, aval);
-        assert_eq!(b, bval);
-    })
-}
-
-#[test_case("hello ", "world!", "hello world!")]
-#[test_case(b"hello ", b"world!", b"hello world!")]
-fn a_then_b<S, I>(a: S, b: S, input: &I) -> anyhow::Result<()>
-where
-    S: Literal<I> + Copy + PartialEq + Debug,
-    S::Error: std::error::Error + Send + Sync + 'static,
+    A: Literal<I> + Copy + PartialEq,
+    A::Error: Debug,
+    B: Literal<I, Error = A::Error> + Copy + PartialEq,
     I: ?Sized + Buffer + 'static,
 {
-    let (aval, bval) = a.then(b).parse_all(input)?;
-    assert_eq!(a, aval);
-    assert_eq!(b, bval);
-    Ok(())
+    a.then(b).parse_all(input).unwrap()
 }
