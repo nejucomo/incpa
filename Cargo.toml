@@ -9,8 +9,9 @@ repository = "https://github.com/nejucomo/incpa"
 [workspace]
 resolver = "3"
 members = [
-  "incpa",
-  "incpa-tokio",
+  ".",
+  "byte",
+  "tokio",
 ]
 
 # Note: this serves as a roster of all dependencies w/ versions, not only common dependencies.
@@ -23,4 +24,24 @@ thiserror = "2.0.9"
 tokio = { version = "1.42.0", default-features = false }
 
 # Local crates:
-incpa = { path = "incpa", version = "0.0.2" }
+incpa = { path = ".", version = "0.0.2" }
+incpa-byte = { path = "byte", version = "0.0.2" }
+
+# incpa itself is in .:
+[package]
+name = "incpa"
+description = "An INCremental PArser composition crate."
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+derive-new.workspace = true
+either.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+anyhow.workspace = true
+test-case.workspace = true

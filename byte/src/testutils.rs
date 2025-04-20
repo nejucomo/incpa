@@ -1,6 +1,6 @@
 //! Common parser testing utilities
 
-use crate::byte::ByteParser;
+use crate::ByteParser;
 
 /// Run the given parser with many different initial buffer sizes, calling `check` on the results each time
 ///

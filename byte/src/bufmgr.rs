@@ -1,6 +1,6 @@
-use crate::state::{Outcome, ParserState};
+use incpa::state::{Outcome, ParserState};
 
-/// Manage the buffering necessary for driving [ByteParser](crate::byte::ByteParser) in an i/o agnostic manner
+/// Manage the buffering necessary for driving [ByteParser](crate::ByteParser) in an i/o agnostic manner
 #[derive(Debug, Default)]
 pub struct BufferManager {
     buffer: Vec<u8>,
@@ -51,8 +51,8 @@ impl BufferManager {
         P: ParserState<[u8]>,
         E: From<P::Error>,
     {
-        use crate::state::Update;
         use Outcome::Parsed;
+        use incpa::state::Update;
 
         let end = self.rstart + readcnt;
         let rslice = &self.buffer[..end];
