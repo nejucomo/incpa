@@ -10,8 +10,9 @@ The term "parser composition" emphasizes how sophisticated parsers can be define
 
 The `incpa` project functionality is separated into multiple distinct crates:
 
-- The `incpa-byte` crate provides byte-wise input functionality, such as UTF8 decoding (so that any string parser can read byte-oriented sources).
-- Support for `async` input streams is provided in the downstream `incpa-tokio` crate.
+- [`incpa-byte`](https://docs.rs/incpa-byte): byte-oriented parsing, parsers, and input
+- [`incpa-str`](https://docs.rs/incpa-str): str-oriented parsing, parsers, and input
+- [`incpa-tokio`](https://docs.rs/incpa-tokio): support for async streaming input via [`tokio`](https://docs.rs/tokio)`::io::AsyncRead` sources
 
 ## Example
 

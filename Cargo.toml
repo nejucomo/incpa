@@ -11,6 +11,7 @@ resolver = "3"
 members = [
   ".",
   "byte",
+  "str",
   "tokio",
 ]
 
