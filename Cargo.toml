@@ -1,6 +1,6 @@
 [workspace.package]
 # For now we have lockstepped versions across crates/requirements, at least for 0.0.x series:
-version = "0.0.2"
+version = "0.0.3"
 edition = "2024"
 license-file = "LICENSE"
 homepage = "https://github.com/nejucomo/incpa"
@@ -24,8 +24,8 @@ thiserror = "2.0.9"
 tokio = { version = "1.42.0", default-features = false }
 
 # Local crates:
-incpa = { path = ".", version = "0.0.2" }
-incpa-byte = { path = "byte", version = "0.0.2" }
+incpa = { path = ".", version = "0.0.3" }
+incpa-byte = { path = "byte", version = "0.0.3" }
 
 # incpa itself is in .:
 [package]
