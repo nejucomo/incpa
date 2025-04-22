@@ -1,6 +1,6 @@
 [package]
-name = "incpa-byte"
-description = "byte-oriented parsing and input for `incpa` parsers"
+name = "incpa-str"
+description = "str-oriented parsing and input for `incpa` parsers`"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
