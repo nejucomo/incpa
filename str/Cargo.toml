@@ -8,4 +8,6 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
+derive_more = { workspace = true, features = ["from"] }
 incpa.workspace = true
+thiserror.workspace = true
