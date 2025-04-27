@@ -1,0 +1,12 @@
+[package]
+name = "incpa-recursion"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+derive_more.workspace = true
+derive-new.workspace = true
+incpa.workspace = true
