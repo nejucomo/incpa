@@ -1,14 +1,11 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+//! Recursive [incpa] parser support via recursion continuations
+#![deny(missing_docs, unsafe_code)]
+mod cont;
+mod parser;
+mod state;
+mod step;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::cont::Continuation;
+pub use self::parser::ParseRecursive;
+pub use self::state::ParseRecursiveState;
+pub use self::step::Step;
