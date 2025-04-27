@@ -1,7 +1,7 @@
 //! UTF8 support
 
 use derive_more::From;
-use incpa::state::{OutcomeExt as _, ParserState, Update, UpdateExt as _};
+use incpa::state::{ChompedExt as _, FeedChomped, OutcomeExt as _, ParserState};
 use incpa::{BaseParserError, Parser};
 use thiserror::Error;
 
@@ -51,7 +51,7 @@ where
     type Output = S::Output;
     type Error = Utf8AdapterError<S::Error>;
 
-    fn feed(self, input: &[u8]) -> Result<Update<Self, Self::Output>, Self::Error> {
+    fn feed(self, input: &[u8]) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
         let s = std::str::from_utf8(input)?;
         let update = self.0.feed(s).map_err(Utf8AdapterError::StrParser)?;
         Ok(update

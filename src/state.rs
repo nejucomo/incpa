@@ -1,14 +1,14 @@
 //! [ParserState] and abstractions to support it
 mod backtrack;
 mod buffer;
+mod chomped;
 mod outcome;
 mod resultimpls;
-mod update;
 
 pub use self::backtrack::Backtrack;
 pub use self::buffer::Buffer;
+pub use self::chomped::{Chomped, ChompedExt, FeedChomped};
 pub use self::outcome::{Outcome, OutcomeExt};
-pub use self::update::{FeedUpdate, Update, UpdateExt};
 
 // ParserState below
 use std::future::Future;
@@ -33,7 +33,7 @@ where
     /// Feed an input reference to the parser to produce an update
     ///
     /// Precondition: `input` includes a suffix which has not been seen previously by this parser.
-    fn feed(self, input: &I) -> Result<FeedUpdate<Self, Self::Output>, Self::Error>;
+    fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error>;
 
     /// Inform the parser there is no more input; it either produces a pending value or expects more input
     ///

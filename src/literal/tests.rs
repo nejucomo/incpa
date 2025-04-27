@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use test_case::test_case;
 
 use crate::state::Outcome::{Next, Parsed};
-use crate::state::{Buffer, ParserState, Update};
+use crate::state::{Buffer, ParserState, Chomped};
 
 use super::Literal;
 
@@ -16,7 +16,7 @@ where
     L::State: Debug,
     I: ?Sized + Buffer,
 {
-    let Update {
+    let Chomped {
         consumed,
         value: outcome,
     } = literal.into_parser().feed(input)?;

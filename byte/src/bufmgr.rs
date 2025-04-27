@@ -52,7 +52,7 @@ impl BufferManager {
         E: From<P::Error>,
     {
         use Outcome::Parsed;
-        use incpa::state::Update;
+        use incpa::state::Chomped;
 
         let end = self.rstart + readcnt;
         let rslice = &self.buffer[..end];
@@ -61,7 +61,10 @@ impl BufferManager {
             let output = parser.end_input(rslice)?;
             Ok(Parsed(output))
         } else {
-            let Update { consumed, outcome } = parser.feed(rslice)?;
+            let Chomped {
+                consumed,
+                value: outcome,
+            } = parser.feed(rslice)?;
 
             self.buffer.rotate_left(consumed);
             self.rstart = end - consumed;

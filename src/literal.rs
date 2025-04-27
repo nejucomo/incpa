@@ -9,7 +9,7 @@ mod strimpl;
 use derive_new::new;
 
 use crate::Parser;
-use crate::state::{Buffer, FeedUpdate, ParserState, Update};
+use crate::state::{Buffer, Chomped, FeedChomped, ParserState};
 
 /// A [Literal] is any value which is a [Parser] for itself
 ///
@@ -55,7 +55,7 @@ where
     type Output = L::Output;
     type Error = L::Error;
 
-    fn feed(self, input: &I) -> Result<FeedUpdate<Self, L>, Self::Error> {
+    fn feed(self, input: &I) -> Result<FeedChomped<Self, L>, Self::Error> {
         use crate::BaseParserError::UnexpectedInput;
         use crate::state::Outcome::{Next, Parsed};
 
@@ -63,9 +63,9 @@ where
         let prefix = input.prefix_up_to(n);
 
         if prefix.len() < n {
-            Ok(Update::new(0, Next(self)))
+            Ok(Chomped::new(0, Next(self)))
         } else if self.0.literal_eq(prefix) {
-            Ok(Update::new(n, Parsed(self.0)))
+            Ok(Chomped::new(n, Parsed(self.0)))
         } else {
             Err(Self::Error::from(UnexpectedInput))
         }

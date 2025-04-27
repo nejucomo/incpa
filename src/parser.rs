@@ -28,10 +28,10 @@ where
     where
         I: Buffer,
     {
+        use crate::state::Chomped;
         use crate::state::Outcome::{Next, Parsed};
-        use crate::state::Update;
 
-        let Update { consumed, value } = self.into_parser().feed(input)?;
+        let Chomped { consumed, value } = self.into_parser().feed(input)?;
         match value {
             Next(p) => p.end_input(input.drop_prefix(consumed)),
             Parsed(output) => Ok(output),

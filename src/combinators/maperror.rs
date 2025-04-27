@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::state::{FeedUpdate, OutcomeExt, ParserState};
+use crate::state::{FeedChomped, OutcomeExt, ParserState};
 use crate::{BaseParserError, Parser};
 
 /// Specifies a parser which maps its error
@@ -47,7 +47,7 @@ where
     type Output = P::Output;
     type Error = E;
 
-    fn feed(self, input: &I) -> Result<FeedUpdate<Self, Self::Output>, E> {
+    fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, E> {
         let MapError { inner, f, .. } = self.0;
 
         match inner.feed(input) {
