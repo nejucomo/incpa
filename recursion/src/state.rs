@@ -1,65 +1,93 @@
 use std::marker::PhantomData;
 
-use derive_new::new;
-use incpa::Parser;
 use incpa::state::Outcome::{Next, Parsed};
 use incpa::state::{ParserState, Update, UpdateExt as _};
 
-use crate::Continuation;
-use crate::Step::{self, ParsedRec, RequestRec};
+use crate::Step::{ParsedRec, RequestRec};
+use crate::{Continuation, RecursiveParser};
 
-#[derive(Debug, new)]
-pub struct ParseRecursiveState<P, S, C, O> {
+/// A [RecursionPivot] is a [ParserState] which internally dispatches to [`P::Continuation`] when necessary to produce a final parsed value
+#[derive(Debug)]
+pub struct RecursionPivot<P, I, O>
+where
+    P: RecursiveParser<I, O, O>,
+    I: ?Sized,
+{
     parser: P,
-    inner: S,
-    #[new(default)]
-    pending: Vec<C>,
-    #[new(default)]
+    state: P::State,
+    pending: Vec<P::Continuation>,
     ph: PhantomData<O>,
 }
 
-impl<I, P, S, C, O> ParserState<I> for ParseRecursiveState<P, S, C, O>
+impl<P, I, O> RecursionPivot<P, I, O>
 where
-    P: Clone + Parser<I, State = S>,
-    S: ParserState<I, Output = Step<O, C>>,
-    C: Continuation<O, O>,
+    P: RecursiveParser<I, O, O>,
+    I: ?Sized,
+{
+    /// Construct a new state from a [RecursiveParser]
+    pub fn new(parser: P) -> Self {
+        RecursionPivot {
+            parser: parser.clone(),
+            state: parser.into_parser(),
+            pending: vec![],
+            ph: PhantomData,
+        }
+    }
+}
+
+impl<P, I, O> ParserState<I> for RecursionPivot<P, I, O>
+where
+    P: RecursiveParser<I, O, O>,
+    I: ?Sized,
 {
     type Output = O;
-    type Error = S::Error;
+    type Error = P::Error;
 
     fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, Self::Error> {
-        let ParseRecursiveState {
+        let RecursionPivot {
             parser,
-            inner,
+            state,
             mut pending,
             ph,
         } = self;
 
-        inner.feed(input).map_outcome(|oc| match oc {
-            Next(inner) => Next(ParseRecursiveState {
+        state.feed(input).try_map_outcome(|oc| match oc {
+            Next(state) => Ok(Next(RecursionPivot {
                 parser,
-                inner,
+                state,
                 pending,
                 ph,
-            }),
+            })),
             Parsed(mut step) => loop {
                 match step {
                     ParsedRec(output) => {
                         if let Some(c) = pending.pop() {
-                            step = c.recurse_from(output);
+                            match c.recurse_from(output)? {
+                                Next(state) => {
+                                    return Ok(Next(RecursionPivot {
+                                        parser,
+                                        state,
+                                        pending,
+                                        ph,
+                                    }));
+                                }
+                                Parsed(next_step) => {
+                                    step = next_step;
+                                }
+                            }
                         } else {
-                            return Parsed(output);
+                            return Ok(Parsed(output));
                         }
                     }
                     RequestRec(c) => {
                         pending.push(c);
-                        let inner = parser.clone().into_parser();
-                        return Next(ParseRecursiveState {
+                        let state = parser.clone().into_parser();
+                        return Ok(Next(RecursionPivot {
                             parser,
-                            inner,
+                            state,
                             pending,
                             ph,
-                        });
+                        }));
                     }
                 }
             },
