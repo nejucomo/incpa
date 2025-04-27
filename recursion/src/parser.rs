@@ -3,24 +3,48 @@ use std::marker::PhantomData;
 use derive_new::new;
 use incpa::Parser;
 
-use crate::{ParseRecursiveState, Step};
+use crate::{Continuation, RecursionPivot, Step};
 
-#[derive(Debug, new)]
-pub struct ParseRecursive<P, C, O> {
-    inner: P,
-    #[new(default)]
-    ph: PhantomData<(C, O)>,
+/// Given a [RecursiveParser] that may request internal recursive parses of the output `O` in order to parse an outer `O`, transform it into a [Parser]
+pub fn parse_recursive<P, I, O>(parser: P) -> impl Parser<I, Output = O>
+where
+    P: RecursiveParser<I, O, O>,
+    I: ?Sized,
+{
+    ParseRecursive::new(parser)
 }
 
-impl<I, P, C, O> Parser<I> for ParseRecursive<P, C, O>
+#[derive(Debug, new)]
+pub struct ParseRecursive<P, I, O>
 where
-    P: Parser<I, Output = Step<O, C>>,
+    P: RecursiveParser<I, O, O>,
+    I: ?Sized,
+{
+    inner: P,
+    #[new(default)]
+    ph: PhantomData<(O, I)>,
+}
+
+impl<P, I, O> Parser<I> for ParseRecursive<P, I, O>
+where
+    P: RecursiveParser<I, O, O>,
+    I: ?Sized,
 {
     type Output = O;
     type Error = P::Error;
-    type State = ParseRecursiveState<P::State, C, O>;
+    type State = RecursionPivot<P, I, O>;
 
     fn into_parser(self) -> Self::State {
-        ParseRecursiveState::new(self.inner.into_parser())
+        RecursionPivot::new(self.inner)
     }
+}
+
+/// A [RecursiveParser] is a [Parser] which either produces an output, or a request for recursively parsing `R` and a [Continuation] to continue with the resulting `R` value
+pub trait RecursiveParser<I, R, O>:
+    Clone + Parser<I, Output = Step<O, Self::Continuation>>
+where
+    I: ?Sized,
+{
+    /// Given a recursively parsed `R` value, take the next parsing step for our `O` output
+    type Continuation: Continuation<Self::State, R, O, Self::Error>;
 }

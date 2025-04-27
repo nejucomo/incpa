@@ -17,9 +17,12 @@ impl<P, O> Update<P, O> {
 }
 
 /// Extension methods to map updates within other structures
-pub trait UpdateExt<P, O> {
+pub trait UpdateExt<P, O, E> {
     /// The container type produced by mapping the update
     type MappedUpdate<P2, O2>;
+
+    /// The container type produced by trying to map the update
+    type TryMappedUpdate<P2, O2, E2>;
 
     /// Map the consumed amount
     fn map_consumed<F>(self, f: F) -> Self::MappedUpdate<P, O>
@@ -30,10 +33,16 @@ pub trait UpdateExt<P, O> {
     fn map_outcome<F, P2, O2>(self, f: F) -> Self::MappedUpdate<P2, O2>
     where
         F: FnOnce(Outcome<P, O>) -> Outcome<P2, O2>;
+
+    /// Map the outcome, propagating errors
+    fn try_map_outcome<F, P2, O2>(self, f: F) -> Self::TryMappedUpdate<P2, O2, E>
+    where
+        F: FnOnce(Outcome<P, O>) -> Result<Outcome<P2, O2>, E>;
 }
 
-impl<P, O> UpdateExt<P, O> for Update<P, O> {
+impl<P, O, E> UpdateExt<P, O, E> for Update<P, O> {
     type MappedUpdate<P2, O2> = Update<P2, O2>;
+    type TryMappedUpdate<P2, O2, E2> = Result<Update<P2, O2>, E2>;
 
     fn map_consumed<F>(self, f: F) -> Self::MappedUpdate<P, O>
     where
@@ -50,6 +59,15 @@ impl<P, O> UpdateExt<P, O> for Update<P, O> {
             consumed: self.consumed,
             outcome: f(self.outcome),
         }
+    }
+
+    fn try_map_outcome<F, P2, O2>(self, f: F) -> Result<Self::MappedUpdate<P2, O2>, E>
+    where
+        F: FnOnce(Outcome<P, O>) -> Result<Outcome<P2, O2>, E>,
+    {
+        let Update { consumed, outcome } = self;
+        let outcome = f(outcome)?;
+        Ok(Update { consumed, outcome })
     }
 }
 
