@@ -1,6 +1,6 @@
 use either::Either;
 
-use crate::state::{Buffer, ParserState, Update, UpdateExt};
+use crate::state::{Buffer, FeedUpdate, ParserState, Update, UpdateExt};
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -26,7 +26,7 @@ where
     type Output = (P::Output, Q::Output);
     type Error = P::Error;
 
-    fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, Self::Error> {
+    fn feed(self, input: &I) -> Result<FeedUpdate<Self, Self::Output>, Self::Error> {
         use crate::state::Outcome::{Next, Parsed};
         use Either::{Left, Right};
 
@@ -34,12 +34,15 @@ where
 
         match porval {
             Left(p) => {
-                let Update { consumed, outcome } = p.feed(input)?;
+                let Update {
+                    consumed,
+                    value: outcome,
+                } = p.feed(input)?;
 
                 match outcome {
                     Next(p) => Ok(Update {
                         consumed,
-                        outcome: Next(ThenParser::new(p, q)),
+                        value: Next(ThenParser::new(p, q)),
                     }),
                     Parsed(pval) => ThenParser {
                         porval: Right(pval),

@@ -1,6 +1,6 @@
 use either::Either;
 
-use crate::state::{Backtrack, Buffer, OutcomeExt, ParserState, Update};
+use crate::state::{Backtrack, Buffer, FeedUpdate, OutcomeExt, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct OrParser<P, Q> {
@@ -26,7 +26,7 @@ where
     type Output = Either<P::Output, Q::Output>;
     type Error = P::Error;
 
-    fn feed(self, input: &I) -> Result<Update<Self, Self::Output>, Self::Error> {
+    fn feed(self, input: &I) -> Result<FeedUpdate<Self, Self::Output>, Self::Error> {
         use Either::{Left, Right};
 
         let OrParser { obp, q } = self;

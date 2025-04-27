@@ -31,8 +31,8 @@ where
         use crate::state::Outcome::{Next, Parsed};
         use crate::state::Update;
 
-        let Update { consumed, outcome } = self.into_parser().feed(input)?;
-        match outcome {
+        let Update { consumed, value } = self.into_parser().feed(input)?;
+        match value {
             Next(p) => p.end_input(input.drop_prefix(consumed)),
             Parsed(output) => Ok(output),
         }

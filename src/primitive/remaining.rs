@@ -4,7 +4,7 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use crate::state::{ParserState, Update};
+use crate::state::{FeedUpdate, ParserState, Update};
 use crate::{BaseParserError, Parser};
 
 /// Captures all remaining input
@@ -43,13 +43,10 @@ where
     type Output = I::Owned;
     type Error = BaseParserError;
 
-    fn feed(self, _: &I) -> Result<Update<Self, I::Owned>, Self::Error> {
+    fn feed(self, _: &I) -> Result<FeedUpdate<Self, I::Owned>, Self::Error> {
         use crate::state::Outcome::Next;
 
-        Ok(Update {
-            consumed: 0,
-            outcome: Next(self),
-        })
+        Ok(Update::new(0, Next(self)))
     }
 
     fn end_input(self, final_input: &I) -> Result<I::Owned, Self::Error> {

@@ -1,62 +1,74 @@
+use derive_new::new;
+
 use crate::state::{Outcome, OutcomeExt};
 
-/// Provides the number of elements consumed and the outcome
-#[derive(Debug, PartialEq)]
-pub struct Update<P, O> {
+/// The [Ok] result of [Parser::feed](crate::Parser::feed)
+pub type FeedUpdate<P, O> = Update<Outcome<P, O>>;
+
+/// Tracks a number of elements consumed for a `value`
+///
+/// The element units are implicitly defined by the `I` input parameter to [Parser](crate::Parser)
+#[derive(Debug, PartialEq, new)]
+pub struct Update<T> {
     /// The number of input units consumed
     pub consumed: usize,
-    /// The outcome of incremental parsing
-    pub outcome: Outcome<P, O>,
+    /// The associated value
+    pub value: T,
 }
 
-impl<P, O> Update<P, O> {
+impl<T, E> Update<Result<T, E>> {
     /// Construct a new [Update]
-    pub fn new(consumed: usize, outcome: Outcome<P, O>) -> Self {
-        Update { consumed, outcome }
+    pub fn transpose(self) -> Result<Update<T>, E> {
+        let Update { consumed, value } = self;
+        let value = value?;
+        Ok(Update { consumed, value })
     }
 }
 
 /// Extension methods to map updates within other structures
-pub trait UpdateExt<P, O> {
+pub trait UpdateExt<T> {
     /// The container type produced by mapping the update
-    type MappedUpdate<P2, O2>;
+    type MappedUpdate<U>;
 
     /// Map the consumed amount
-    fn map_consumed<F>(self, f: F) -> Self::MappedUpdate<P, O>
+    fn map_consumed<F>(self, f: F) -> Self::MappedUpdate<T>
     where
         F: FnOnce(usize) -> usize;
 
     /// Map the outcome
-    fn map_outcome<F, P2, O2>(self, f: F) -> Self::MappedUpdate<P2, O2>
+    fn map_outcome<F, U>(self, f: F) -> Self::MappedUpdate<U>
     where
-        F: FnOnce(Outcome<P, O>) -> Outcome<P2, O2>;
+        F: FnOnce(T) -> U;
 }
 
-impl<P, O> UpdateExt<P, O> for Update<P, O> {
-    type MappedUpdate<P2, O2> = Update<P2, O2>;
+impl<T> UpdateExt<T> for Update<T> {
+    type MappedUpdate<U> = Update<U>;
 
-    fn map_consumed<F>(self, f: F) -> Self::MappedUpdate<P, O>
+    fn map_consumed<F>(self, f: F) -> Self::MappedUpdate<T>
     where
         F: FnOnce(usize) -> usize,
     {
-        Update::new(f(self.consumed), self.outcome)
+        Update {
+            consumed: f(self.consumed),
+            value: self.value,
+        }
     }
 
-    fn map_outcome<F, P2, O2>(self, f: F) -> Update<P2, O2>
+    fn map_outcome<F, U>(self, f: F) -> Self::MappedUpdate<U>
     where
-        F: FnOnce(Outcome<P, O>) -> Outcome<P2, O2>,
+        F: FnOnce(T) -> U,
     {
         Update {
             consumed: self.consumed,
-            outcome: f(self.outcome),
+            value: f(self.value),
         }
     }
 }
 
-impl<P, O> OutcomeExt<P, O> for Update<P, O> {
-    type MappedOutcome<MOP, MOO> = Update<MOP, MOO>;
+impl<P, O> OutcomeExt<P, O> for FeedUpdate<P, O> {
+    type MappedOutcome<MOP, MOO> = FeedUpdate<MOP, MOO>;
 
-    fn map_parser<F, P2>(self, f: F) -> Update<P2, O>
+    fn map_parser<F, P2>(self, f: F) -> FeedUpdate<P2, O>
     where
         F: FnOnce(P) -> P2,
     {
@@ -64,7 +76,7 @@ impl<P, O> OutcomeExt<P, O> for Update<P, O> {
     }
 
     /// Map the output
-    fn map_output<F, O2>(self, f: F) -> Update<P, O2>
+    fn map_output<F, O2>(self, f: F) -> FeedUpdate<P, O2>
     where
         F: FnOnce(O) -> O2,
     {

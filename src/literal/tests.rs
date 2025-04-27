@@ -16,7 +16,10 @@ where
     L::State: Debug,
     I: ?Sized + Buffer,
 {
-    let Update { consumed, outcome } = literal.into_parser().feed(input)?;
+    let Update {
+        consumed,
+        value: outcome,
+    } = literal.into_parser().feed(input)?;
     assert_eq!(consumed, literal.literal_len());
     match outcome {
         Next(p) => panic!("unexpected {p:?}"),
