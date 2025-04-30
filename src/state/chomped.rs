@@ -2,7 +2,7 @@ use derive_new::new;
 
 use crate::state::{Outcome, OutcomeExt};
 
-/// The [Ok] result of [Parser::feed](crate::Parser::feed)
+/// The [Ok] result of [ParserState::feed](crate::state::ParserState::feed)
 pub type FeedChomped<P, O> = Chomped<Outcome<P, O>>;
 
 /// Tracks a number of elements consumed for a `value`
@@ -17,7 +17,7 @@ pub struct Chomped<T> {
 }
 
 impl<T, E> Chomped<Result<T, E>> {
-    /// Construct a new [Update]
+    /// Transpose a [Chomped] [Result]
     pub fn transpose(self) -> Result<Chomped<T>, E> {
         let Chomped { consumed, value } = self;
         let value = value?;

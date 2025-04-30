@@ -1,4 +1,4 @@
-use crate::BaseParserError;
+use crate::UniversalParserError;
 use crate::combinators::{MapError, MapOutput, Or, Then};
 use crate::state::{Buffer, ParserState};
 
@@ -15,7 +15,7 @@ where
     type Output;
 
     /// The type of errors this parser detects
-    type Error: From<BaseParserError>;
+    type Error: From<UniversalParserError>;
 
     /// The initial [ParserState] to parse this specification
     type State: ParserState<I, Output = Self::Output, Error = Self::Error>;

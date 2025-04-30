@@ -1,5 +1,5 @@
 use crate::Literal;
-use crate::{BaseParserError, Parser};
+use crate::{Parser, UniversalParserError};
 
 use super::LiteralParser;
 
@@ -15,7 +15,7 @@ impl Literal<str> for &str {
 
 impl<'a> Parser<str> for &'a str {
     type Output = Self;
-    type Error = BaseParserError;
+    type Error = UniversalParserError;
     type State = LiteralParser<&'a str>;
 
     fn start_parser(self) -> Self::State {

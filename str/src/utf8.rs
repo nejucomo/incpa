@@ -2,7 +2,7 @@
 
 use derive_more::From;
 use incpa::state::{ChompedExt as _, FeedChomped, OutcomeExt as _, ParserState};
-use incpa::{BaseParserError, Parser};
+use incpa::{Parser, UniversalParserError};
 use thiserror::Error;
 
 use crate::StrParser;
@@ -33,7 +33,7 @@ pub enum Utf8AdapterError<E> {
 impl<P> Parser<[u8]> for Utf8Adapter<P>
 where
     P: StrParser,
-    P::Error: From<BaseParserError>,
+    P::Error: From<UniversalParserError>,
 {
     type Output = P::Output;
     type Error = Utf8AdapterError<P::Error>;
@@ -60,11 +60,11 @@ where
     }
 }
 
-impl<E> From<BaseParserError> for Utf8AdapterError<E>
+impl<E> From<UniversalParserError> for Utf8AdapterError<E>
 where
-    E: From<BaseParserError>,
+    E: From<UniversalParserError>,
 {
-    fn from(bpe: BaseParserError) -> Self {
+    fn from(bpe: UniversalParserError) -> Self {
         Utf8AdapterError::StrParser(E::from(bpe))
     }
 }

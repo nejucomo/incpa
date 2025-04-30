@@ -16,10 +16,10 @@ use crate::state::{Buffer, Chomped, FeedChomped, ParserState};
 /// # Example
 ///
 /// ```
-/// use incpa::BaseParserError;
+/// use incpa::UniversalParserError;
 /// use incpa::{Parser, Literal};
 ///
-/// fn main() -> Result<(), BaseParserError> {
+/// fn main() -> Result<(), UniversalParserError> {
 ///   // &str is a Literal, so it can parse an input:
 ///   let literal = "Hello World!";
 ///   let parsed = literal.parse_all("Hello World!")?;
@@ -56,7 +56,7 @@ where
     type Error = L::Error;
 
     fn feed(self, input: &I) -> Result<FeedChomped<Self, L>, Self::Error> {
-        use crate::BaseParserError::UnexpectedInput;
+        use crate::UniversalParserError::UnexpectedInput;
         use crate::state::Outcome::{Next, Parsed};
 
         let n = self.0.literal_len();

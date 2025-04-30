@@ -13,7 +13,7 @@ pub use self::outcome::{Outcome, OutcomeExt};
 // ParserState below
 use std::future::Future;
 
-use crate::BaseParserError::{self, ExpectedMoreInput};
+use crate::UniversalParserError::{self, ExpectedMoreInput};
 
 /// A [ParserState] represents in-progress parsing
 ///
@@ -28,7 +28,7 @@ where
     type Output;
 
     /// The type of errors this parser detects
-    type Error: From<BaseParserError>;
+    type Error: From<UniversalParserError>;
 
     /// Feed an input reference to the parser to produce an update
     ///
