@@ -31,7 +31,7 @@ where
     type Error = BaseParserError;
     type State = Remaining<I>;
 
-    fn into_parser(self) -> Self::State {
+    fn start_parser(self) -> Self::State {
         Remaining(PhantomData)
     }
 }

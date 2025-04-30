@@ -39,8 +39,8 @@ where
     type Error = Utf8AdapterError<P::Error>;
     type State = Utf8AdapterState<P::State>;
 
-    fn into_parser(self) -> Self::State {
-        Utf8AdapterState::from(self.0.into_parser())
+    fn start_parser(self) -> Self::State {
+        Utf8AdapterState::from(self.0.start_parser())
     }
 }
 

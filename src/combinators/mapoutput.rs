@@ -24,8 +24,8 @@ where
     type Error = P::Error;
     type State = MapOutputParser<P::State, F, O>;
 
-    fn into_parser(self) -> Self::State {
-        MapOutputParser(MapOutput::new(self.inner.into_parser(), self.f))
+    fn start_parser(self) -> Self::State {
+        MapOutputParser(MapOutput::new(self.inner.start_parser(), self.f))
     }
 }
 

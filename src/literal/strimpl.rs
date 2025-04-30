@@ -18,7 +18,7 @@ impl<'a> Parser<str> for &'a str {
     type Error = BaseParserError;
     type State = LiteralParser<&'a str>;
 
-    fn into_parser(self) -> Self::State {
+    fn start_parser(self) -> Self::State {
         LiteralParser::new(self)
     }
 }

@@ -26,10 +26,10 @@ where
     type Error = E;
     type State = MapErrorParser<P::State, F, E>;
 
-    fn into_parser(self) -> Self::State {
+    fn start_parser(self) -> Self::State {
         let MapError { inner, f, .. } = self;
 
-        MapErrorParser(MapError::new(inner.into_parser(), f))
+        MapErrorParser(MapError::new(inner.start_parser(), f))
     }
 }
 

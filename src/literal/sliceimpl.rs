@@ -23,7 +23,7 @@ where
     type Error = BaseParserError;
     type State = LiteralParser<&'a [T]>;
 
-    fn into_parser(self) -> Self::State {
+    fn start_parser(self) -> Self::State {
         LiteralParser::new(self)
     }
 }

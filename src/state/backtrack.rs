@@ -1,6 +1,6 @@
 use derive_new::new;
 
-use crate::state::{Buffer, FeedChomped, ParserState, Chomped};
+use crate::state::{Buffer, Chomped, FeedChomped, ParserState};
 
 /// Try to parse `P`, but hold all input until a successful parse
 ///

@@ -29,7 +29,7 @@ impl Parser<str> for char {
     type Error = BaseParserError;
     type State = LiteralParser<char>;
 
-    fn into_parser(self) -> Self::State {
+    fn start_parser(self) -> Self::State {
         LiteralParser::new(self)
     }
 }
@@ -39,7 +39,7 @@ impl Parser<[u8]> for char {
     type Error = BaseParserError;
     type State = LiteralParser<char>;
 
-    fn into_parser(self) -> Self::State {
+    fn start_parser(self) -> Self::State {
         LiteralParser::new(self)
     }
 }

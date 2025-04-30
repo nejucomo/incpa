@@ -29,7 +29,7 @@ pub trait ByteParser: Parser<[u8]> {
     {
         let mut bufmgr = BufferManager::with_initial_size(bufsize);
 
-        self.into_parser().run_parser(|parser| {
+        self.start_parser().run_parser(|parser| {
             let writeslice = bufmgr.get_write_slice();
             let readcnt = r.read(writeslice)?;
             bufmgr.process_write(parser, readcnt)

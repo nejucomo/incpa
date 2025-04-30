@@ -32,7 +32,7 @@ pub trait ByteParserExt: ByteParser {
         use tokio::io::AsyncReadExt;
 
         async move {
-            let mut update = Next(self.into_parser());
+            let mut update = Next(self.start_parser());
             let mut bufmgr = BufferManager::with_initial_size(bufsize);
             let mut rpin = pin!(r);
 

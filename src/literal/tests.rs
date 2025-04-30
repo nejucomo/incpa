@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use test_case::test_case;
 
 use crate::state::Outcome::{Next, Parsed};
-use crate::state::{Buffer, ParserState, Chomped};
+use crate::state::{Buffer, Chomped, ParserState};
 
 use super::Literal;
 
@@ -19,7 +19,7 @@ where
     let Chomped {
         consumed,
         value: outcome,
-    } = literal.into_parser().feed(input)?;
+    } = literal.start_parser().feed(input)?;
     assert_eq!(consumed, literal.literal_len());
     match outcome {
         Next(p) => panic!("unexpected {p:?}"),
