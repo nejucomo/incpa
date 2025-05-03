@@ -7,3 +7,4 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
+incpa.workspace = true

@@ -1,14 +1,2 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+//! Support parsing recursive grammars with [incpa] parsers
+#![deny(missing_docs, unsafe_code)]
