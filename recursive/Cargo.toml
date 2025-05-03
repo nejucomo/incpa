@@ -7,4 +7,5 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
+derive-new.workspace = true
 incpa.workspace = true
