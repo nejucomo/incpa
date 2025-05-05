@@ -5,7 +5,7 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use crate::state::{Chomped, FeedChomped, ParserState};
-use crate::{Parser, UniversalParserError};
+use crate::{Parser, ParserCombinator, ParserOutput, UniversalParserError};
 
 /// Captures all remaining input
 ///
@@ -24,12 +24,20 @@ struct Remaining<I>(PhantomData<&'static I>)
 where
     I: ?Sized + 'static;
 
-impl<I> Parser<I> for Remaining<I>
+impl<I> ParserOutput for Remaining<I>
 where
     I: ?Sized + ToOwned + 'static,
 {
     type Output = I::Owned;
     type Error = UniversalParserError;
+}
+
+impl<I> ParserCombinator for Remaining<I> where I: ?Sized + ToOwned + 'static {}
+
+impl<I> Parser<I> for Remaining<I>
+where
+    I: ?Sized + ToOwned + 'static,
+{
     type State = Remaining<I>;
 
     fn start_parser(self) -> Self::State {
@@ -41,9 +49,6 @@ impl<I> ParserState<I> for Remaining<I>
 where
     I: ?Sized + ToOwned + 'static,
 {
-    type Output = I::Owned;
-    type Error = UniversalParserError;
-
     fn feed(self, _: &I) -> Result<FeedChomped<Self, I::Owned>, Self::Error> {
         use crate::state::Outcome::Next;
 

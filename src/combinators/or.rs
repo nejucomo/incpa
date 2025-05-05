@@ -1,15 +1,15 @@
 #[cfg(test)]
 mod tests;
 
-mod parser;
+mod state;
 
-pub use self::parser::OrParser;
+pub use self::state::OrState;
 
 use derive_new::new;
 use either::Either;
 
-use crate::Parser;
 use crate::state::Buffer;
+use crate::{Parser, ParserCombinator, ParserOutput};
 
 /// Parse `P` or if that fails, parse `Q`
 ///
@@ -21,17 +21,31 @@ pub struct Or<P, Q> {
     q: Q,
 }
 
+impl<P, Q> ParserOutput for Or<P, Q>
+where
+    P: ParserOutput,
+    Q: ParserOutput<Error = P::Error>,
+{
+    type Output = Either<P::Output, Q::Output>;
+    type Error = P::Error;
+}
+
+impl<P, Q> ParserCombinator for Or<P, Q>
+where
+    P: ParserCombinator,
+    Q: ParserCombinator<Error = P::Error>,
+{
+}
+
 impl<P, Q, I> Parser<I> for Or<P, Q>
 where
     I: ?Sized + Buffer + 'static,
     P: Parser<I>,
     Q: Parser<I, Error = P::Error>,
 {
-    type Output = Either<P::Output, Q::Output>;
-    type Error = P::Error;
-    type State = OrParser<P::State, Q::State>;
+    type State = OrState<P::State, Q::State>;
 
     fn start_parser(self) -> Self::State {
-        OrParser::new(self.p.start_parser(), self.q.start_parser())
+        OrState::new(self.p.start_parser(), self.q.start_parser())
     }
 }

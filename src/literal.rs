@@ -8,8 +8,8 @@ mod strimpl;
 
 use derive_new::new;
 
-use crate::Parser;
 use crate::state::{Buffer, Chomped, FeedChomped, ParserState};
+use crate::{Parser, ParserOutput, UniversalParserError};
 
 /// A [Literal] is any value which is a [Parser] for itself
 ///
@@ -45,16 +45,18 @@ where
 
 /// Parse a literal value
 #[derive(Copy, Clone, Debug, new)]
-pub struct LiteralParser<L>(L);
+pub struct LiteralParserState<L>(L);
 
-impl<I, L> ParserState<I> for LiteralParser<L>
+impl<L> ParserOutput for LiteralParserState<L> {
+    type Output = L;
+    type Error = UniversalParserError;
+}
+
+impl<I, L> ParserState<I> for LiteralParserState<L>
 where
     I: ?Sized + Buffer,
     L: Literal<I>,
 {
-    type Output = L::Output;
-    type Error = L::Error;
-
     fn feed(self, input: &I) -> Result<FeedChomped<Self, L>, Self::Error> {
         use crate::UniversalParserError::UnexpectedInput;
         use crate::state::Outcome::{Next, Parsed};
@@ -67,7 +69,7 @@ where
         } else if self.0.literal_eq(prefix) {
             Ok(Chomped::new(n, Parsed(self.0)))
         } else {
-            Err(Self::Error::from(UnexpectedInput))
+            Err(UnexpectedInput)
         }
     }
 }

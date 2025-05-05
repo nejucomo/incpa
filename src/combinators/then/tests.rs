@@ -4,7 +4,7 @@ use test_case::test_case;
 
 use crate::primitive::remaining;
 use crate::state::Buffer;
-use crate::{Literal, Parser};
+use crate::{Literal, Parser as _, ParserCombinator as _};
 
 #[test_case("hello world!" => ("hello world!".to_string(), "".to_string()))]
 #[test_case(b"hello world!".as_slice() => (Vec::from(b"hello world!"), vec![]))]

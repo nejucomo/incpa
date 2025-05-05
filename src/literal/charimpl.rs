@@ -1,6 +1,6 @@
-use crate::{Parser, UniversalParserError};
+use crate::{Parser, ParserCombinator, ParserOutput, UniversalParserError};
 
-use super::{Literal, LiteralParser};
+use super::{Literal, LiteralParserState};
 
 impl Literal<str> for char {
     fn literal_len(self) -> usize {
@@ -24,22 +24,25 @@ impl Literal<[u8]> for char {
     }
 }
 
-impl Parser<str> for char {
+impl ParserOutput for char {
     type Output = char;
     type Error = UniversalParserError;
-    type State = LiteralParser<char>;
+}
+
+impl ParserCombinator for char {}
+
+impl Parser<str> for char {
+    type State = LiteralParserState<char>;
 
     fn start_parser(self) -> Self::State {
-        LiteralParser::new(self)
+        LiteralParserState::new(self)
     }
 }
 
 impl Parser<[u8]> for char {
-    type Output = char;
-    type Error = UniversalParserError;
-    type State = LiteralParser<char>;
+    type State = LiteralParserState<char>;
 
     fn start_parser(self) -> Self::State {
-        LiteralParser::new(self)
+        LiteralParserState::new(self)
     }
 }

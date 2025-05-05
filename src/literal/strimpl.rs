@@ -1,7 +1,7 @@
-use crate::Literal;
+use crate::{Literal, ParserCombinator, ParserOutput};
 use crate::{Parser, UniversalParserError};
 
-use super::LiteralParser;
+use super::LiteralParserState;
 
 impl Literal<str> for &str {
     fn literal_len(self) -> usize {
@@ -13,12 +13,17 @@ impl Literal<str> for &str {
     }
 }
 
-impl<'a> Parser<str> for &'a str {
+impl ParserOutput for &str {
     type Output = Self;
     type Error = UniversalParserError;
-    type State = LiteralParser<&'a str>;
+}
+
+impl ParserCombinator for &str {}
+
+impl Parser<str> for &str {
+    type State = LiteralParserState<Self>;
 
     fn start_parser(self) -> Self::State {
-        LiteralParser::new(self)
+        LiteralParserState::new(self)
     }
 }

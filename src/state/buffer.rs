@@ -1,5 +1,5 @@
 /// A common interface many parsers use for manipulating input
-pub trait Buffer {
+pub trait Buffer: PartialEq {
     /// Produce an empty buffer
     fn empty() -> &'static Self
     where
@@ -52,7 +52,10 @@ impl Buffer for str {
     }
 }
 
-impl<T> Buffer for [T] {
+impl<T> Buffer for [T]
+where
+    T: PartialEq,
+{
     fn empty() -> &'static Self
     where
         Self: 'static,

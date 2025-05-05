@@ -13,23 +13,22 @@ pub use self::outcome::{Outcome, OutcomeExt};
 // ParserState below
 use std::future::Future;
 
-use crate::UniversalParserError::{self, ExpectedMoreInput};
+use crate::ParserOutput;
+use crate::UniversalParserError::ExpectedMoreInput;
 
 /// A [ParserState] represents in-progress parsing
 ///
 /// # Invariants
 ///
 /// This crate assumes every [ParserState] impl is deterministic, so that calling [ParserState::feed] or [ParserState::end_input] on two equivalent states with the same input parameters produces equivalent values.
-pub trait ParserState<I>: Sized
+///
+/// # TODO
+///
+/// - Can we drop [ParserOutput] and rely on an associated [Parser] to reduce duplicate definitions?
+pub trait ParserState<I>: ParserOutput + Sized
 where
     I: ?Sized,
 {
-    /// The type of output on successful parse
-    type Output;
-
-    /// The type of errors this parser detects
-    type Error: From<UniversalParserError>;
-
     /// Feed an input reference to the parser to produce an update
     ///
     /// Precondition: `input` includes a suffix which has not been seen previously by this parser.
