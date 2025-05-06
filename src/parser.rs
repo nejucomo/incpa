@@ -18,7 +18,7 @@ where
     type Error: From<UniversalParserError>;
 
     /// The initial [ParserState] to parse this specification
-    type State: ParserState<I, Output = Self::Output, Error = Self::Error>;
+    type State: ParserState<I, Self::Output, Self::Error>;
 
     /// Construct a state to drive low-level parsing
     fn start_parser(self) -> Self::State;
