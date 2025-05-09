@@ -8,14 +8,17 @@ use crate::{Parser, UniversalParserError};
 /// Specifies a parser which maps its error
 #[derive(Copy, Clone, Debug, new)]
 #[new(visibility = "pub(crate)")]
-pub struct MapError<P, F, E> {
+pub struct MapError<I, P, F, E>
+where
+    I: ?Sized,
+{
     inner: P,
     f: F,
     #[new(default)]
-    ph: PhantomData<E>,
+    ph: PhantomData<(E, I)>,
 }
 
-impl<P, F, E, I> Parser<I> for MapError<P, F, E>
+impl<I, P, F, E> Parser<I> for MapError<I, P, F, E>
 where
     P: Parser<I>,
     F: FnOnce(P::Error) -> E,
@@ -24,7 +27,7 @@ where
 {
     type Output = P::Output;
     type Error = E;
-    type State = MapErrorParser<P::State, F, E>;
+    type State = MapErrorParser<I, P::State, F, E>;
 
     fn start_parser(self) -> Self::State {
         let MapError { inner, f, .. } = self;
@@ -35,14 +38,16 @@ where
 
 #[derive(Copy, Clone, Debug, new)]
 #[new(visibility = "pub(crate)")]
-pub struct MapErrorParser<P, F, E>(MapError<P, F, E>);
-
-impl<P, F, E, I> ParserState<I> for MapErrorParser<P, F, E>
+pub struct MapErrorParser<I, S, F, E>(MapError<I, S, F, E>)
 where
+    I: ?Sized;
+
+impl<I, P, F, E> ParserState<I> for MapErrorParser<I, P, F, E>
+where
+    I: ?Sized,
     P: ParserState<I>,
     F: FnOnce(P::Error) -> E,
     E: From<UniversalParserError>,
-    I: ?Sized,
 {
     type Output = P::Output;
     type Error = E;

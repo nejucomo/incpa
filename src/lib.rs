@@ -6,6 +6,7 @@ mod error;
 mod literal;
 mod parser;
 pub mod primitive;
+pub mod recursive;
 pub mod state;
 
 pub use self::error::UniversalParserError;

@@ -8,21 +8,25 @@ use crate::state::{ChompedExt, FeedChomped, ParserState};
 /// Specifies a parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
 #[new(visibility = "pub(crate)")]
-pub struct MapOutput<P, F, O> {
+pub struct MapOutput<I, P, F, O>
+where
+    I: ?Sized,
+{
     inner: P,
     f: F,
     #[new(default)]
-    ph: PhantomData<O>,
+    ph: PhantomData<(O, I)>,
 }
 
-impl<P, F, O, I> Parser<I> for MapOutput<P, F, O>
+impl<I, P, F, O> Parser<I> for MapOutput<I, P, F, O>
 where
+    I: ?Sized,
     P: Parser<I>,
     F: FnOnce(P::Output) -> O,
 {
     type Output = O;
     type Error = P::Error;
-    type State = MapOutputParser<P::State, F, O>;
+    type State = MapOutputParser<I, P::State, F, O>;
 
     fn start_parser(self) -> Self::State {
         MapOutputParser(MapOutput::new(self.inner.start_parser(), self.f))
@@ -32,15 +36,18 @@ where
 /// A parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
 #[new(visibility = "pub(crate)")]
-pub struct MapOutputParser<P, F, O>(MapOutput<P, F, O>);
-
-impl<P, F, I, O> ParserState<I> for MapOutputParser<P, F, O>
+pub struct MapOutputParser<I, S, F, O>(MapOutput<I, S, F, O>)
 where
-    P: ParserState<I>,
-    F: FnOnce(P::Output) -> O,
+    I: ?Sized;
+
+impl<I, S, F, O> ParserState<I> for MapOutputParser<I, S, F, O>
+where
+    I: ?Sized,
+    S: ParserState<I>,
+    F: FnOnce(S::Output) -> O,
 {
     type Output = O;
-    type Error = P::Error;
+    type Error = S::Error;
 
     fn feed(self, input: &I) -> Result<FeedChomped<Self, O>, Self::Error> {
         use crate::state::Outcome::{Next, Parsed};

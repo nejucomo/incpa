@@ -3,6 +3,8 @@ mod tests;
 
 mod parser;
 
+use std::marker::PhantomData;
+
 pub use self::parser::ThenParser;
 
 use derive_new::new;
@@ -13,12 +15,19 @@ use crate::state::Buffer;
 /// Parse `P` then `Q`
 #[derive(Copy, Clone, Debug, new)]
 #[new(visibility = "pub(crate)")]
-pub struct Then<P, Q> {
+pub struct Then<I, P, Q>
+where
+    I: ?Sized + Buffer + 'static,
+    P: Parser<I>,
+    Q: Parser<I, Error = P::Error>,
+{
     p: P,
     q: Q,
+    #[new(default)]
+    ph: PhantomData<I>,
 }
 
-impl<P, Q, I> Parser<I> for Then<P, Q>
+impl<I, P, Q> Parser<I> for Then<I, P, Q>
 where
     I: ?Sized + Buffer + 'static,
     P: Parser<I>,

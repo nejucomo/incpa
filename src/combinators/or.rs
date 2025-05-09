@@ -3,6 +3,8 @@ mod tests;
 
 mod parser;
 
+use std::marker::PhantomData;
+
 pub use self::parser::OrParser;
 
 use derive_new::new;
@@ -16,12 +18,19 @@ use crate::state::Buffer;
 /// This holds all input while parsing `P`.
 #[derive(Copy, Clone, Debug, new)]
 #[new(visibility = "pub(crate)")]
-pub struct Or<P, Q> {
+pub struct Or<I, P, Q>
+where
+    I: ?Sized + Buffer + 'static,
+    P: Parser<I>,
+    Q: Parser<I, Error = P::Error>,
+{
     p: P,
     q: Q,
+    #[new(default)]
+    ph: PhantomData<I>,
 }
 
-impl<P, Q, I> Parser<I> for Or<P, Q>
+impl<I, P, Q> Parser<I> for Or<I, P, Q>
 where
     I: ?Sized + Buffer + 'static,
     P: Parser<I>,

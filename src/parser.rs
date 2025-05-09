@@ -39,7 +39,7 @@ where
     }
 
     /// Compose a new parser with mapped output
-    fn map<F, O>(self, f: F) -> MapOutput<Self, F, O>
+    fn map<F, O>(self, f: F) -> MapOutput<I, Self, F, O>
     where
         F: FnOnce(Self::Output) -> O,
     {
@@ -47,7 +47,7 @@ where
     }
 
     /// Compose a new parser with mapped error
-    fn map_error<F, E>(self, f: F) -> MapError<Self, F, Self::Error>
+    fn map_error<F, E>(self, f: F) -> MapError<I, Self, F, Self::Error>
     where
         F: FnOnce(Self::Error) -> E,
     {
@@ -55,12 +55,20 @@ where
     }
 
     /// Parse `self` then `other` and return a tuple pair of their outputs on success
-    fn then<Q>(self, other: Q) -> Then<Self, Q> {
+    fn then<Q>(self, other: Q) -> Then<I, Self, Q>
+    where
+        I: Buffer + 'static,
+        Q: Parser<I, Error = Self::Error>,
+    {
         Then::new(self, other)
     }
 
     /// Attempt to parse `self`, and if it fails parse `other`
-    fn or<Q>(self, other: Q) -> Or<Self, Q> {
+    fn or<Q>(self, other: Q) -> Or<I, Self, Q>
+    where
+        I: Buffer + 'static,
+        Q: Parser<I, Error = Self::Error>,
+    {
         Or::new(self, other)
     }
 }
