@@ -57,7 +57,7 @@ where
     /// Parse `self` then `other` and return a tuple pair of their outputs on success
     fn then<Q>(self, other: Q) -> Then<I, Self, Q>
     where
-        I: Buffer + 'static,
+        I: Buffer,
         Q: Parser<I, Error = Self::Error>,
     {
         Then::new(self, other)
@@ -66,7 +66,7 @@ where
     /// Attempt to parse `self`, and if it fails parse `other`
     fn or<Q>(self, other: Q) -> Or<I, Self, Q>
     where
-        I: Buffer + 'static,
+        I: Buffer,
         Q: Parser<I, Error = Self::Error>,
     {
         Or::new(self, other)

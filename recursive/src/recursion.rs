@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
-use crate::state::{FeedChomped, ParserState};
-use crate::{Parser, UniversalParserError};
+use incpa::state::{FeedChomped, ParserState};
+use incpa::{Parser, UniversalParserError};
 
 /// An opaque type which parses the inner instances of a recursive grammar
 pub struct Recursion<O, E>(PhantomData<(O, E)>);

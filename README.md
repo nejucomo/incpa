@@ -13,6 +13,7 @@ The `incpa` project functionality is separated into multiple distinct crates:
 - [`incpa-byte`](https://docs.rs/incpa-byte): byte-oriented parsing, parsers, and input
 - [`incpa-str`](https://docs.rs/incpa-str): str-oriented parsing, parsers, and input
 - [`incpa-tokio`](https://docs.rs/incpa-tokio): support for async streaming input via [`tokio`](https://docs.rs/tokio)`::io::AsyncRead` sources
+- [`incpa-recursive`](https://docs.rs/incpa-recursive): support for parsing recursive grammars
 
 ## Example
 

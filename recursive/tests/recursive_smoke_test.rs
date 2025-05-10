@@ -1,5 +1,5 @@
-use incpa::Parser;
-use incpa::recursive::recursive_parser;
+use incpa::Parser as _;
+use incpa_recursive::recursive_parser;
 
 fn main() {
     let p = recursive_parser(|r| {

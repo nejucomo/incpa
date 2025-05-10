@@ -1,9 +1,6 @@
-//! Support for recursive parsers via [recursive_parser]
-mod recursion;
+use incpa::Parser;
 
-pub use self::recursion::Recursion;
-
-use crate::Parser;
+use crate::Recursion;
 
 /// Return a parser for a recursive grammar, defined by `F`
 ///
