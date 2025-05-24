@@ -31,7 +31,7 @@ where
     type Error = P::Error;
     type State = OrParser<P::State, Q::State>;
 
-    fn into_parser(self) -> Self::State {
-        OrParser::new(self.p.into_parser(), self.q.into_parser())
+    fn start_parser(self) -> Self::State {
+        OrParser::new(self.p.start_parser(), self.q.start_parser())
     }
 }

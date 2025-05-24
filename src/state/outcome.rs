@@ -1,3 +1,5 @@
+use self::Outcome::*;
+
 /// The non-error outcome of incremental parsing
 #[derive(Debug, PartialEq)]
 pub enum Outcome<P, O> {
@@ -7,7 +9,19 @@ pub enum Outcome<P, O> {
     /// The parser successfully parsed an item
     Parsed(O),
 }
-use Outcome::*;
+
+impl<P, O, E> Outcome<P, Result<O, E>> {
+    /// Convert an [Outcome] with a [Result] output to a [Result] containing [Outcome]
+    ///
+    /// This may be useful after [Outcome::map_output] if mapped to a [Result].
+    pub fn transpose_output(self) -> Result<Outcome<P, O>, E> {
+        match self {
+            Next(s) => Ok(Next(s)),
+            Parsed(Ok(x)) => Ok(Parsed(x)),
+            Parsed(Err(e)) => Err(e),
+        }
+    }
+}
 
 /// Extension methods to map outcomes within other structures
 pub trait OutcomeExt<P, O> {
@@ -47,19 +61,6 @@ impl<P, O> OutcomeExt<P, O> for Outcome<P, O> {
         match self {
             Next(p) => Next(p),
             Parsed(x) => Parsed(f(x)),
-        }
-    }
-}
-
-impl<P, O, E> Outcome<P, Result<O, E>> {
-    /// Convert an [Outcome] with a [Result] output to a [Result] containing [Outcome]
-    ///
-    /// This may be useful after [Outcome::map_output] if mapped to a [Result].
-    pub fn transpose_output(self) -> Result<Outcome<P, O>, E> {
-        match self {
-            Next(s) => Ok(Next(s)),
-            Parsed(Ok(x)) => Ok(Parsed(x)),
-            Parsed(Err(e)) => Err(e),
         }
     }
 }

@@ -17,18 +17,18 @@ The `incpa` project functionality is separated into multiple distinct crates:
 ## Example
 
 ```rust
-use incpa::BaseParserError;
+use incpa::UniversalParserError;
 use incpa::primitive::remaining;
 use incpa::Parser;
 
-fn main() -> Result<(), BaseParserError> {
+fn main() -> Result<(), UniversalParserError> {
     let parser = define_my_parser();
     let output = parser.parse_all("Hello World!")?;
     assert_eq!(output, ("Hello", " World!".to_string()));
     Ok(())
 }
 
-fn define_my_parser() -> impl Parser<str, Output=(&'static str, String), Error=BaseParserError> {
+fn define_my_parser() -> impl Parser<str, Output=(&'static str, String), Error=UniversalParserError> {
     "Hello".then(remaining())
 }
 ```

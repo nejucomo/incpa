@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use derive_new::new;
 
 use crate::Parser;
-use crate::state::{ParserState, Update, UpdateExt};
+use crate::state::{ChompedExt, FeedChomped, ParserState};
 
 /// Specifies a parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
@@ -24,8 +24,8 @@ where
     type Error = P::Error;
     type State = MapOutputParser<P::State, F, O>;
 
-    fn into_parser(self) -> Self::State {
-        MapOutputParser(MapOutput::new(self.inner.into_parser(), self.f))
+    fn start_parser(self) -> Self::State {
+        MapOutputParser(MapOutput::new(self.inner.start_parser(), self.f))
     }
 }
 
@@ -42,12 +42,12 @@ where
     type Output = O;
     type Error = P::Error;
 
-    fn feed(self, input: &I) -> Result<Update<Self, O>, Self::Error> {
+    fn feed(self, input: &I) -> Result<FeedChomped<Self, O>, Self::Error> {
         use crate::state::Outcome::{Next, Parsed};
 
         let MapOutput { inner, f, .. } = self.0;
 
-        inner.feed(input).map_outcome(|oc| match oc {
+        inner.feed(input).map_value(|oc| match oc {
             Next(p) => Next(MapOutputParser(MapOutput::new(p, f))),
             Parsed(o) => Parsed(f(o)),
         })

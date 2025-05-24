@@ -1,23 +1,23 @@
-use crate::state::{Outcome, OutcomeExt, UpdateExt};
+use crate::state::{ChompedExt, OutcomeExt};
 
-impl<K, P, O, E> UpdateExt<P, O> for Result<K, E>
+impl<K, T, E> ChompedExt<T> for Result<K, E>
 where
-    K: UpdateExt<P, O>,
+    K: ChompedExt<T>,
 {
-    type MappedUpdate<P2, O2> = Result<<K as UpdateExt<P, O>>::MappedUpdate<P2, O2>, E>;
+    type MapChomp<U> = Result<K::MapChomp<U>, E>;
 
-    fn map_consumed<F>(self, f: F) -> Self::MappedUpdate<P, O>
+    fn map_consumed<F>(self, f: F) -> Self::MapChomp<T>
     where
         F: FnOnce(usize) -> usize,
     {
-        self.map(|up| up.map_consumed(f))
+        self.map(|k| k.map_consumed(f))
     }
 
-    fn map_outcome<F, P2, O2>(self, f: F) -> Self::MappedUpdate<P2, O2>
+    fn map_value<F, U>(self, f: F) -> Self::MapChomp<U>
     where
-        F: FnOnce(Outcome<P, O>) -> Outcome<P2, O2>,
+        F: FnOnce(T) -> U,
     {
-        self.map(|up| up.map_outcome(f))
+        self.map(|k| k.map_value(f))
     }
 }
 

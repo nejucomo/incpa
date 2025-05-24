@@ -1,4 +1,4 @@
-use crate::{BaseParserError, Parser};
+use crate::{Parser, UniversalParserError};
 
 use super::{Literal, LiteralParser};
 
@@ -20,10 +20,10 @@ where
     T: PartialEq,
 {
     type Output = Self;
-    type Error = BaseParserError;
+    type Error = UniversalParserError;
     type State = LiteralParser<&'a [T; K]>;
 
-    fn into_parser(self) -> Self::State {
+    fn start_parser(self) -> Self::State {
         LiteralParser::new(self)
     }
 }

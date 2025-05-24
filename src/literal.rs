@@ -9,17 +9,17 @@ mod strimpl;
 use derive_new::new;
 
 use crate::Parser;
-use crate::state::{Buffer, ParserState, Update};
+use crate::state::{Buffer, Chomped, FeedChomped, ParserState};
 
 /// A [Literal] is any value which is a [Parser] for itself
 ///
 /// # Example
 ///
 /// ```
-/// use incpa::BaseParserError;
+/// use incpa::UniversalParserError;
 /// use incpa::{Parser, Literal};
 ///
-/// fn main() -> Result<(), BaseParserError> {
+/// fn main() -> Result<(), UniversalParserError> {
 ///   // &str is a Literal, so it can parse an input:
 ///   let literal = "Hello World!";
 ///   let parsed = literal.parse_all("Hello World!")?;
@@ -55,17 +55,17 @@ where
     type Output = L::Output;
     type Error = L::Error;
 
-    fn feed(self, input: &I) -> Result<Update<Self, L>, Self::Error> {
-        use crate::BaseParserError::UnexpectedInput;
+    fn feed(self, input: &I) -> Result<FeedChomped<Self, L>, Self::Error> {
+        use crate::UniversalParserError::UnexpectedInput;
         use crate::state::Outcome::{Next, Parsed};
 
         let n = self.0.literal_len();
         let prefix = input.prefix_up_to(n);
 
         if prefix.len() < n {
-            Ok(Update::new(0, Next(self)))
+            Ok(Chomped::new(0, Next(self)))
         } else if self.0.literal_eq(prefix) {
-            Ok(Update::new(n, Parsed(self.0)))
+            Ok(Chomped::new(n, Parsed(self.0)))
         } else {
             Err(Self::Error::from(UnexpectedInput))
         }

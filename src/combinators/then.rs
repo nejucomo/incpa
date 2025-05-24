@@ -28,7 +28,7 @@ where
     type Error = P::Error;
     type State = ThenParser<P::State, P::Output, Q::State>;
 
-    fn into_parser(self) -> Self::State {
-        ThenParser::new(self.p.into_parser(), self.q.into_parser())
+    fn start_parser(self) -> Self::State {
+        ThenParser::new(self.p.start_parser(), self.q.start_parser())
     }
 }

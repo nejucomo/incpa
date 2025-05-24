@@ -4,15 +4,16 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use crate::state::{ParserState, Update};
-use crate::{BaseParserError, Parser};
+use crate::state::{Chomped, FeedChomped, ParserState};
+use crate::{Parser, UniversalParserError};
 
 /// Captures all remaining input
 ///
 /// # Warning
 ///
 /// This requires holding all input in memory, by definition.
-pub fn remaining<I>() -> impl Parser<I, Output = I::Owned, Error = BaseParserError> + Copy + Debug
+pub fn remaining<I>()
+-> impl Parser<I, Output = I::Owned, Error = UniversalParserError> + Copy + Debug
 where
     I: ?Sized + ToOwned + 'static,
 {
@@ -28,10 +29,10 @@ where
     I: ?Sized + ToOwned + 'static,
 {
     type Output = I::Owned;
-    type Error = BaseParserError;
+    type Error = UniversalParserError;
     type State = Remaining<I>;
 
-    fn into_parser(self) -> Self::State {
+    fn start_parser(self) -> Self::State {
         Remaining(PhantomData)
     }
 }
@@ -41,15 +42,12 @@ where
     I: ?Sized + ToOwned + 'static,
 {
     type Output = I::Owned;
-    type Error = BaseParserError;
+    type Error = UniversalParserError;
 
-    fn feed(self, _: &I) -> Result<Update<Self, I::Owned>, Self::Error> {
+    fn feed(self, _: &I) -> Result<FeedChomped<Self, I::Owned>, Self::Error> {
         use crate::state::Outcome::Next;
 
-        Ok(Update {
-            consumed: 0,
-            outcome: Next(self),
-        })
+        Ok(Chomped::new(0, Next(self)))
     }
 
     fn end_input(self, final_input: &I) -> Result<I::Owned, Self::Error> {

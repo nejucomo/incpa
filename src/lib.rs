@@ -8,6 +8,6 @@ mod parser;
 pub mod primitive;
 pub mod state;
 
-pub use self::error::BaseParserError;
+pub use self::error::UniversalParserError;
 pub use self::literal::Literal;
 pub use self::parser::Parser;

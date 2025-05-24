@@ -1,8 +1,8 @@
 //! UTF8 support
 
 use derive_more::From;
-use incpa::state::{OutcomeExt as _, ParserState, Update, UpdateExt as _};
-use incpa::{BaseParserError, Parser};
+use incpa::state::{ChompedExt as _, FeedChomped, OutcomeExt as _, ParserState};
+use incpa::{Parser, UniversalParserError};
 use thiserror::Error;
 
 use crate::StrParser;
@@ -33,14 +33,14 @@ pub enum Utf8AdapterError<E> {
 impl<P> Parser<[u8]> for Utf8Adapter<P>
 where
     P: StrParser,
-    P::Error: From<BaseParserError>,
+    P::Error: From<UniversalParserError>,
 {
     type Output = P::Output;
     type Error = Utf8AdapterError<P::Error>;
     type State = Utf8AdapterState<P::State>;
 
-    fn into_parser(self) -> Self::State {
-        Utf8AdapterState::from(self.0.into_parser())
+    fn start_parser(self) -> Self::State {
+        Utf8AdapterState::from(self.0.start_parser())
     }
 }
 
@@ -51,7 +51,7 @@ where
     type Output = S::Output;
     type Error = Utf8AdapterError<S::Error>;
 
-    fn feed(self, input: &[u8]) -> Result<Update<Self, Self::Output>, Self::Error> {
+    fn feed(self, input: &[u8]) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
         let s = std::str::from_utf8(input)?;
         let update = self.0.feed(s).map_err(Utf8AdapterError::StrParser)?;
         Ok(update
@@ -60,11 +60,11 @@ where
     }
 }
 
-impl<E> From<BaseParserError> for Utf8AdapterError<E>
+impl<E> From<UniversalParserError> for Utf8AdapterError<E>
 where
-    E: From<BaseParserError>,
+    E: From<UniversalParserError>,
 {
-    fn from(bpe: BaseParserError) -> Self {
+    fn from(bpe: UniversalParserError) -> Self {
         Utf8AdapterError::StrParser(E::from(bpe))
     }
 }
