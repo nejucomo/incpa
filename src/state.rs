@@ -32,14 +32,22 @@ where
 
     /// Feed an input reference to the parser to produce an update
     ///
-    /// Precondition: `input` includes a suffix which has not been seen previously by this parser.
+    /// # Precondition
+    ///
+    /// `input` includes a suffix which has not been seen previously by this parser.
+    ///
+    /// # Postcondition
+    ///
+    /// This state _must_ consume as much of `input` as possible. This upholds a contract between the driver and [Self]
     fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error>;
 
     /// Inform the parser there is no more input; it either produces a pending value or expects more input
     ///
     /// The default implementation simply returns the [ExpectedMoreInput] error.
     ///
-    /// Precondition: all of `final_input` must have been seen by a prior call to [ParserState::feed]
+    /// # Precondition
+    ///
+    /// All of `final_input` must have been seen by a prior call to [ParserState::feed].
     fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
         let _ = final_input;
         Err(Self::Error::from(ExpectedMoreInput))
