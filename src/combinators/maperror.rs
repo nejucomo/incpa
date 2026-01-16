@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use derive_new::new;
 
 use crate::state::{FeedChomped, OutcomeExt, ParserState};
-use crate::{Parser, UniversalParserError};
+use crate::{Input, Parser, UniversalParserError};
 
 /// Specifies a parser which maps its error
 #[derive(Copy, Clone, Debug, new)]
@@ -20,7 +20,7 @@ where
     P: Parser<I>,
     F: FnOnce(P::Error) -> E,
     E: From<UniversalParserError>,
-    I: ?Sized,
+    I: ?Sized + Input,
 {
     type Output = P::Output;
     type Error = E;
@@ -42,7 +42,7 @@ where
     P: ParserState<I>,
     F: FnOnce(P::Error) -> E,
     E: From<UniversalParserError>,
-    I: ?Sized,
+    I: ?Sized + Input,
 {
     type Output = P::Output;
     type Error = E;

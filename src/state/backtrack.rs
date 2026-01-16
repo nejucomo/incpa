@@ -1,6 +1,7 @@
 use derive_new::new;
 
-use crate::state::{Buffer, Chomped, FeedChomped, ParserState};
+use crate::Input;
+use crate::state::{Chomped, FeedChomped, ParserState};
 
 /// Try to parse `P`, but hold all input until a successful parse
 ///
@@ -14,11 +15,7 @@ pub struct Backtrack<P> {
 
 // impl<P, I, O, E> Parser<I, O, E> for Backtrack<P> where P: Parser<I, O, E> {}
 
-impl<P, I> ParserState<I> for Backtrack<P>
-where
-    I: ?Sized + Buffer,
-    P: ParserState<I>,
-{
+impl<P: ParserState<I>, I: ?Sized + Input> ParserState<I> for Backtrack<P> {
     type Output = P::Output;
     type Error = P::Error;
 

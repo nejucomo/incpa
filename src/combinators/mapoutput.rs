@@ -2,8 +2,8 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::Parser;
 use crate::state::{ChompedExt, FeedChomped, ParserState};
+use crate::{Input, Parser};
 
 /// Specifies a parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
@@ -17,6 +17,7 @@ pub struct MapOutput<P, F, O> {
 
 impl<P, F, O, I> Parser<I> for MapOutput<P, F, O>
 where
+    I: ?Sized + Input,
     P: Parser<I>,
     F: FnOnce(P::Output) -> O,
 {
@@ -36,6 +37,7 @@ pub struct MapOutputParser<P, F, O>(MapOutput<P, F, O>);
 
 impl<P, F, I, O> ParserState<I> for MapOutputParser<P, F, O>
 where
+    I: ?Sized + Input,
     P: ParserState<I>,
     F: FnOnce(P::Output) -> O,
 {

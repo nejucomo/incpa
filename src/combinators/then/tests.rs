@@ -3,14 +3,13 @@ use std::fmt::Debug;
 use test_case::test_case;
 
 use crate::primitive::remaining;
-use crate::state::Buffer;
-use crate::{Literal, Parser};
+use crate::{Input, Literal, Parser};
 
 #[test_case("hello world!" => ("hello world!".to_string(), "".to_string()))]
 #[test_case(b"hello world!".as_slice() => (Vec::from(b"hello world!"), vec![]))]
 fn remaining_then_remaining<I>(input: &I) -> (I::Owned, I::Owned)
 where
-    I: ?Sized + Buffer + Debug + PartialEq + ToOwned + 'static,
+    I: ?Sized + Input + Debug + PartialEq + ToOwned + 'static,
 {
     remaining().then(remaining()).parse_all(input).unwrap()
 }
@@ -25,7 +24,7 @@ where
     A: Literal<I> + Copy + PartialEq,
     A::Error: Debug,
     B: Literal<I, Error = A::Error> + Copy + PartialEq,
-    I: ?Sized + Buffer + 'static,
+    I: ?Sized + Input + 'static,
 {
     a.then(b).parse_all(input).unwrap()
 }

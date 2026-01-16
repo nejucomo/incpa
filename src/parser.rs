@@ -1,16 +1,13 @@
-use crate::UniversalParserError;
 use crate::combinators::{MapError, MapOutput, Or, Then};
-use crate::state::{Buffer, ParserState};
+use crate::state::ParserState;
+use crate::{Input, UniversalParserError};
 
 /// A [Parser] defines the syntax, grammar, or format to be parsed
 ///
 /// Implementations can often specify the grammar to be parsed by [crate::primitive] types and the composition methods of this trait.
 ///
 /// The actual behind-the-scenes work of parsing is accomplished by creating [Parser::State] from [Parser::start_parser], then driving that.
-pub trait Parser<I>: Sized
-where
-    I: ?Sized,
-{
+pub trait Parser<I: ?Sized + Input>: Sized {
     /// The type of output on successful parse
     type Output;
 
@@ -24,10 +21,7 @@ where
     fn start_parser(self) -> Self::State;
 
     /// Parse an entire in-memory input to completion
-    fn parse_all(self, input: &I) -> Result<Self::Output, Self::Error>
-    where
-        I: Buffer,
-    {
+    fn parse_all(self, input: &I) -> Result<Self::Output, Self::Error> {
         use crate::state::Chomped;
         use crate::state::Outcome::{Next, Parsed};
 

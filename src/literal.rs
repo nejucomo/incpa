@@ -8,8 +8,8 @@ mod strimpl;
 
 use derive_new::new;
 
-use crate::Parser;
-use crate::state::{Buffer, Chomped, FeedChomped, ParserState};
+use crate::state::{Chomped, FeedChomped, ParserState};
+use crate::{Input, Parser};
 
 /// A [Literal] is any value which is a [Parser] for itself
 ///
@@ -28,10 +28,7 @@ use crate::state::{Buffer, Chomped, FeedChomped, ParserState};
 ///   Ok(())
 /// }
 /// ```
-pub trait Literal<I>: Sized + Copy + Parser<I, Output = Self>
-where
-    I: ?Sized + Buffer,
-{
+pub trait Literal<I: ?Sized + Input>: Sized + Copy + Parser<I, Output = Self> {
     /// The length of this literal in `I`'s units
     fn literal_len(self) -> usize;
 
@@ -47,11 +44,7 @@ where
 #[derive(Copy, Clone, Debug, new)]
 pub struct LiteralParser<L>(L);
 
-impl<I, L> ParserState<I> for LiteralParser<L>
-where
-    I: ?Sized + Buffer,
-    L: Literal<I>,
-{
+impl<I: ?Sized + Input, L: Literal<I>> ParserState<I> for LiteralParser<L> {
     type Output = L::Output;
     type Error = L::Error;
 

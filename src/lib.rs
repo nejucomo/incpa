@@ -3,11 +3,13 @@
 
 pub mod combinators;
 mod error;
+mod input;
 mod literal;
 mod parser;
 pub mod primitive;
 pub mod state;
 
 pub use self::error::UniversalParserError;
+pub use self::input::Input;
 pub use self::literal::Literal;
 pub use self::parser::Parser;

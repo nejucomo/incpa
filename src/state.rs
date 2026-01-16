@@ -1,18 +1,17 @@
 //! [ParserState] and abstractions to support it
 mod backtrack;
-mod buffer;
 mod chomped;
 mod outcome;
 mod resultimpls;
 
 pub use self::backtrack::Backtrack;
-pub use self::buffer::Buffer;
 pub use self::chomped::{Chomped, ChompedExt, FeedChomped};
 pub use self::outcome::{Outcome, OutcomeExt};
 
 // ParserState below
 use std::future::Future;
 
+use crate::Input;
 use crate::UniversalParserError::{self, ExpectedMoreInput};
 
 /// A [ParserState] represents in-progress parsing
@@ -20,10 +19,7 @@ use crate::UniversalParserError::{self, ExpectedMoreInput};
 /// # Invariants
 ///
 /// This crate assumes every [ParserState] impl is deterministic, so that calling [ParserState::feed] or [ParserState::end_input] on two equivalent states with the same input parameters produces equivalent values.
-pub trait ParserState<I>: Sized
-where
-    I: ?Sized,
-{
+pub trait ParserState<I: ?Sized + Input>: Sized {
     /// The type of output on successful parse
     type Output;
 
