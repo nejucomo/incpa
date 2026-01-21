@@ -1,4 +1,4 @@
-use crate::{Parser, UniversalParserError};
+use crate::{Parser, ParserCompose, UniversalParserError};
 
 use super::{Literal, LiteralParser};
 
@@ -15,12 +15,18 @@ where
     }
 }
 
-impl<'a, T, const K: usize> Parser<[T]> for &'a [T; K]
+impl<T, const K: usize> ParserCompose for &[T; K]
 where
     T: PartialEq,
 {
     type Output = Self;
     type Error = UniversalParserError;
+}
+
+impl<'a, T, const K: usize> Parser<[T]> for &'a [T; K]
+where
+    T: PartialEq,
+{
     type State = LiteralParser<&'a [T; K]>;
 
     fn start_parser(self) -> Self::State {

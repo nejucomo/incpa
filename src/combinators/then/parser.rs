@@ -20,7 +20,7 @@ impl<P, O, Q> ThenParser<P, O, Q> {
 
 impl<P, Q, I> ParserState<I> for ThenParser<P, P::Output, Q>
 where
-    I: ?Sized + Input + 'static,
+    I: ?Sized + Input,
     P: ParserState<I>,
     Q: ParserState<I, Error = P::Error>,
 {
@@ -64,8 +64,9 @@ where
     }
 
     fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
+        let empty = final_input.drop_prefix(final_input.len());
         let (pval, input) = self.porval.either(
-            |p| p.end_input(final_input).map(|pval| (pval, I::empty())),
+            |p| p.end_input(final_input).map(|pval| (pval, empty)),
             |pval| Ok((pval, final_input)),
         )?;
         let qval = self.q.end_input(input)?;
