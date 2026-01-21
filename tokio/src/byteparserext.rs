@@ -1,7 +1,6 @@
 use std::future::Future;
 use std::pin::pin;
 
-use incpa::ParserCompose;
 use incpa_byte::{BufferManager, ByteParser};
 
 /// Every [ByteParser] is a [ByteParserExt]
@@ -13,7 +12,7 @@ pub trait ByteParserExt: ByteParser {
     fn parse_reader_async<R, E>(self, r: R) -> impl Future<Output = Result<Self::Output, E>>
     where
         R: tokio::io::AsyncRead,
-        E: From<<Self as ParserCompose>::Error> + From<std::io::Error>,
+        E: From<Self::Error> + From<std::io::Error>,
     {
         self.parse_reader_with_initial_buffer_size_async(r, 1 << 12)
     }
@@ -26,7 +25,7 @@ pub trait ByteParserExt: ByteParser {
     ) -> impl Future<Output = Result<Self::Output, E>>
     where
         R: tokio::io::AsyncRead,
-        E: From<<Self as ParserCompose>::Error> + From<std::io::Error>,
+        E: From<Self::Error> + From<std::io::Error>,
     {
         use incpa::state::Outcome::{Next, Parsed};
         use tokio::io::AsyncReadExt;

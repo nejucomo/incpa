@@ -1,4 +1,4 @@
-use crate::{Parser, ParserCompose, UniversalParserError};
+use crate::{Parser, ParserCompose, ParserOutErr, UniversalParserError};
 
 use super::{Literal, LiteralParser};
 
@@ -24,10 +24,12 @@ impl Literal<[u8]> for char {
     }
 }
 
-impl ParserCompose for char {
+impl ParserOutErr for char {
     type Output = char;
     type Error = UniversalParserError;
 }
+
+impl ParserCompose for char {}
 
 impl Parser<str> for char {
     type State = LiteralParser<char>;

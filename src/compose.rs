@@ -1,14 +1,8 @@
-use crate::UniversalParserError;
+use crate::ParserOutErr;
 use crate::combinators::{MapError, MapOutput, Or, Then};
 
 /// A base trait for parser which enable high-level composition methods
-pub trait ParserCompose: Sized {
-    /// The type of output on successful parse
-    type Output;
-
-    /// The type of errors this parser detects
-    type Error: From<UniversalParserError>;
-
+pub trait ParserCompose: ParserOutErr {
     /// Compose a new parser with mapped output
     fn map<F, O>(self, f: F) -> MapOutput<Self, F, O>
     where

@@ -11,21 +11,15 @@ pub use self::outcome::{Outcome, OutcomeExt};
 // ParserState below
 use std::future::Future;
 
-use crate::Input;
-use crate::UniversalParserError::{self, ExpectedMoreInput};
+use crate::UniversalParserError::ExpectedMoreInput;
+use crate::{Input, ParserOutErr};
 
 /// A [ParserState] represents in-progress parsing
 ///
 /// # Invariants
 ///
 /// This crate assumes every [ParserState] impl is deterministic, so that calling [ParserState::feed] or [ParserState::end_input] on two equivalent states with the same input parameters produces equivalent values.
-pub trait ParserState<I: ?Sized + Input>: Sized {
-    /// The type of output on successful parse
-    type Output;
-
-    /// The type of errors this parser detects
-    type Error: From<UniversalParserError>;
-
+pub trait ParserState<I: ?Sized + Input>: ParserOutErr {
     /// Feed an input reference to the parser to produce an update
     ///
     /// Precondition: `input` includes a suffix which has not been seen previously by this parser.

@@ -1,4 +1,4 @@
-use crate::{Literal, ParserCompose};
+use crate::{Literal, ParserCompose, ParserOutErr};
 use crate::{Parser, UniversalParserError};
 
 use super::LiteralParser;
@@ -13,10 +13,12 @@ impl Literal<str> for &str {
     }
 }
 
-impl ParserCompose for &str {
+impl ParserOutErr for &str {
     type Output = Self;
     type Error = UniversalParserError;
 }
+
+impl ParserCompose for &str {}
 
 impl<'a> Parser<str> for &'a str {
     type State = LiteralParser<&'a str>;

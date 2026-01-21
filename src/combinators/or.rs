@@ -8,7 +8,7 @@ pub use self::parser::OrParser;
 use derive_new::new;
 use either::Either;
 
-use crate::{Input, Parser, ParserCompose};
+use crate::{Input, Parser, ParserCompose, ParserOutErr};
 
 /// Parse `P` or if that fails, parse `Q`
 ///
@@ -20,13 +20,20 @@ pub struct Or<P, Q> {
     q: Q,
 }
 
+impl<P, Q> ParserOutErr for Or<P, Q>
+where
+    P: ParserOutErr,
+    Q: ParserOutErr<Error = P::Error>,
+{
+    type Output = Either<P::Output, Q::Output>;
+    type Error = P::Error;
+}
+
 impl<P, Q> ParserCompose for Or<P, Q>
 where
     P: ParserCompose,
     Q: ParserCompose<Error = P::Error>,
 {
-    type Output = Either<P::Output, Q::Output>;
-    type Error = P::Error;
 }
 
 impl<P, Q, I> Parser<I> for Or<P, Q>

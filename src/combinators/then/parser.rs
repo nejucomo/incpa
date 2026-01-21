@@ -1,7 +1,7 @@
 use either::Either;
 
-use crate::Input;
 use crate::state::{Chomped, ChompedExt, FeedChomped, ParserState};
+use crate::{Input, ParserOutErr};
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -18,15 +18,21 @@ impl<P, O, Q> ThenParser<P, O, Q> {
     }
 }
 
+impl<P, Q> ParserOutErr for ThenParser<P, P::Output, Q>
+where
+    P: ParserOutErr,
+    Q: ParserOutErr<Error = P::Error>,
+{
+    type Output = (P::Output, Q::Output);
+    type Error = P::Error;
+}
+
 impl<P, Q, I> ParserState<I> for ThenParser<P, P::Output, Q>
 where
     I: ?Sized + Input,
     P: ParserState<I>,
     Q: ParserState<I, Error = P::Error>,
 {
-    type Output = (P::Output, Q::Output);
-    type Error = P::Error;
-
     fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
         use crate::state::Outcome::{Next, Parsed};
         use Either::{Left, Right};

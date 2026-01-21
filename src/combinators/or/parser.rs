@@ -1,7 +1,7 @@
 use either::Either;
 
-use crate::Input;
 use crate::state::{Backtrack, FeedChomped, OutcomeExt, ParserState};
+use crate::{Input, ParserOutErr};
 
 #[derive(Copy, Clone, Debug)]
 pub struct OrParser<P, Q> {
@@ -18,15 +18,21 @@ impl<P, Q> OrParser<P, Q> {
     }
 }
 
+impl<P, Q> ParserOutErr for OrParser<P, Q>
+where
+    P: ParserOutErr,
+    Q: ParserOutErr<Error = P::Error>,
+{
+    type Output = Either<P::Output, Q::Output>;
+    type Error = P::Error;
+}
+
 impl<P, Q, I> ParserState<I> for OrParser<P, Q>
 where
     I: ?Sized + Input + 'static,
     P: ParserState<I>,
     Q: ParserState<I, Error = P::Error>,
 {
-    type Output = Either<P::Output, Q::Output>;
-    type Error = P::Error;
-
     fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
         use Either::{Left, Right};
 

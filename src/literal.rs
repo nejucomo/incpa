@@ -9,7 +9,7 @@ mod strimpl;
 use derive_new::new;
 
 use crate::state::{Chomped, FeedChomped, ParserState};
-use crate::{Input, Parser};
+use crate::{Input, Parser, ParserOutErr};
 
 /// A [Literal] is any value which is a [Parser] for itself
 ///
@@ -44,10 +44,12 @@ pub trait Literal<I: ?Sized + Input>: Sized + Copy + Parser<I, Output = Self> {
 #[derive(Copy, Clone, Debug, new)]
 pub struct LiteralParser<L>(L);
 
-impl<I: ?Sized + Input, L: Literal<I>> ParserState<I> for LiteralParser<L> {
+impl<L: ParserOutErr> ParserOutErr for LiteralParser<L> {
     type Output = L::Output;
     type Error = L::Error;
+}
 
+impl<I: ?Sized + Input, L: Literal<I>> ParserState<I> for LiteralParser<L> {
     fn feed(self, input: &I) -> Result<FeedChomped<Self, L>, Self::Error> {
         use crate::UniversalParserError::UnexpectedInput;
         use crate::state::Outcome::{Next, Parsed};
