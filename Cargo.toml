@@ -29,6 +29,7 @@ tokio = { version = "1.42.0", default-features = false }
 # Local crates:
 incpa = { path = ".", version = "0.0.3" }
 incpa-byte = { path = "byte", version = "0.0.3" }
+incpa-str = { path = "str", version = "0.0.3" }
 
 # incpa itself is in .:
 [package]
