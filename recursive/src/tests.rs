@@ -1,7 +1,8 @@
-/*
+use incpa::ParserCompose as _;
 use incpa_str::StrParser;
 
-use crate::recursive;
+use crate::recursive::recursive;
+use crate::{AutoRecursingParser, IntoRecursingParser, RecursingParser, Recursion};
 
 #[derive(Debug)]
 enum Expr {
@@ -14,10 +15,14 @@ fn expr() -> impl StrParser<Output = Expr> {
     recursive(expr_rec)
 }
 
-fn expr_rec(rec: ()) -> impl StrParser<Output = Expr> {
+fn expr_rec(rec: Recursion<Expr>) -> impl AutoRecursingParser<str, Output = Expr> {
     use Expr::*;
 
-    num().map(Num).or(sym().map(Sym)).or(list(rec).map(List))
+    num()
+        .map(Num)
+        .or(sym().map(Sym))
+        .into_recursing_parser()
+        .or(list(rec).map(List))
 }
 
 fn num() -> impl StrParser<Output = u64> {
@@ -30,18 +35,18 @@ fn sym() -> impl StrParser<Output = String> {
     "x".map(|_| "x".to_string())
 }
 
-fn list(rec: ()) -> impl StrParser<Output = Vec<Expr>> {
+fn list(rec: Recursion<Expr>) -> impl RecursingParser<str, Expr, Output = Vec<Expr>> {
     '['.ignore_then(list_tail(rec))
 }
 
-fn list_tail(rec: ()) -> impl StrParser<Output = Vec<Expr>> {
+fn list_tail(_rec: Recursion<Expr>) -> impl RecursingParser<str, Expr, Output = Vec<Expr>> {
     ']'.map(|_| vec![])
-        .or(expr_rec(rec))
-        .then_ignore(", ")
-        .then(list_tail(rec))
-        .map(|x, mut xs| {
-            xs.insert(0, x);
-            xs
-        })
+    // .or(rec
+    //     .then_ignore(", ")
+    //     .then(list_tail(rec))
+    //     .map(|(x, mut xs)| {
+    //         xs.insert(0, x);
+    //         xs
+    //     }))
+    // .map(|ei| ei.flatten())
 }
-*/

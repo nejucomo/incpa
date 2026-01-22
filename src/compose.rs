@@ -35,6 +35,14 @@ pub trait ParserCompose: ParserOutErr {
         self.then(other).map(|(val, _)| val)
     }
 
+    /// Parse `self`, ignore the output, then parse `other` and return its output
+    fn ignore_then<Q>(self, other: Q) -> impl ParserCompose<Output = Q::Output>
+    where
+        Q: ParserCompose<Error = Self::Error>,
+    {
+        self.then(other).map(|(_, val)| val)
+    }
+
     /// Attempt to parse `self`, and if it fails parse `other`
     fn or<Q>(self, other: Q) -> Or<Self, Q> {
         Or::new(self, other)

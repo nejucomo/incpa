@@ -7,10 +7,12 @@ use crate::{Input, Parser, ParserCompose, ParserOutErr};
 
 /// Specifies a parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
-#[new(visibility = "pub(crate)")]
+#[new(visibility = "pub")]
 pub struct MapOutput<P, F, O> {
-    inner: P,
-    f: F,
+    /// The inner parser
+    pub inner: P,
+    /// The mapping function
+    pub f: F,
     #[new(default)]
     ph: PhantomData<O>,
 }
