@@ -1,6 +1,7 @@
 use derive_new::new;
 
-use crate::state::{Outcome, OutcomeExt};
+use crate::map::{MapConsumed, MapNext, MapOutcome, MapParsed};
+use crate::state::Outcome;
 
 /// The [Ok] result of [ParserState::feed](crate::state::ParserState::feed)
 pub type FeedChomped<P, O> = Chomped<Outcome<P, O>>;
@@ -25,26 +26,8 @@ impl<T, E> Chomped<Result<T, E>> {
     }
 }
 
-/// Extension methods to map updates within other structures
-pub trait ChompedExt<T> {
-    /// The container type produced by mapping the update
-    type MapChomp<U>;
-
-    /// Map the consumed amount
-    fn map_consumed<F>(self, f: F) -> Self::MapChomp<T>
-    where
-        F: FnOnce(usize) -> usize;
-
-    /// Map the outcome
-    fn map_value<F, U>(self, f: F) -> Self::MapChomp<U>
-    where
-        F: FnOnce(T) -> U;
-}
-
-impl<T> ChompedExt<T> for Chomped<T> {
-    type MapChomp<U> = Chomped<U>;
-
-    fn map_consumed<F>(self, f: F) -> Self::MapChomp<T>
+impl<T> MapConsumed for Chomped<T> {
+    fn map_consumed<F>(self, f: F) -> Self
     where
         F: FnOnce(usize) -> usize,
     {
@@ -53,8 +36,12 @@ impl<T> ChompedExt<T> for Chomped<T> {
             value: self.value,
         }
     }
+}
 
-    fn map_value<F, U>(self, f: F) -> Self::MapChomp<U>
+impl<T> MapOutcome<T> for Chomped<T> {
+    type MappedOutcome<U> = Chomped<U>;
+
+    fn map_outcome<F, U>(self, f: F) -> Self::MappedOutcome<U>
     where
         F: FnOnce(T) -> U,
     {
@@ -65,21 +52,30 @@ impl<T> ChompedExt<T> for Chomped<T> {
     }
 }
 
-impl<P, O> OutcomeExt<P, O> for FeedChomped<P, O> {
-    type MappedOutcome<MOP, MOO> = FeedChomped<MOP, MOO>;
+impl<T, N> MapNext<N> for Chomped<T>
+where
+    T: MapNext<N>,
+{
+    type MappedNext<O> = Chomped<<T as MapNext<N>>::MappedNext<O>>;
 
-    fn map_parser<F, P2>(self, f: F) -> FeedChomped<P2, O>
+    fn map_next<F, U>(self, f: F) -> Self::MappedNext<U>
     where
-        F: FnOnce(P) -> P2,
+        F: FnOnce(N) -> U,
     {
-        self.map_value(|oc| oc.map_parser(f))
+        self.map_outcome(|oc| oc.map_next(f))
     }
+}
 
-    /// Map the output
-    fn map_output<F, O2>(self, f: F) -> FeedChomped<P, O2>
+impl<T, P> MapParsed<P> for Chomped<T>
+where
+    T: MapParsed<P>,
+{
+    type MappedParsed<Q> = Chomped<<T as MapParsed<P>>::MappedParsed<Q>>;
+
+    fn map_parsed<F, U>(self, f: F) -> Self::MappedParsed<U>
     where
-        F: FnOnce(O) -> O2,
+        F: FnOnce(P) -> U,
     {
-        self.map_value(|oc| oc.map_output(f))
+        self.map_outcome(|oc| oc.map_parsed(f))
     }
 }

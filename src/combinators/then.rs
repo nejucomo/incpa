@@ -7,7 +7,7 @@ pub use self::parser::ThenParser;
 
 use derive_new::new;
 
-use crate::{Input, Parser};
+use crate::{Input, Parser, ParserCompose};
 
 /// Parse `P` then `Q`
 #[derive(Copy, Clone, Debug, new)]
@@ -17,14 +17,21 @@ pub struct Then<P, Q> {
     q: Q,
 }
 
+impl<P, Q> ParserCompose for Then<P, Q>
+where
+    P: ParserCompose,
+    Q: ParserCompose<Error = P::Error>,
+{
+    type Output = (P::Output, Q::Output);
+    type Error = P::Error;
+}
+
 impl<P, Q, I> Parser<I> for Then<P, Q>
 where
     I: ?Sized + Input + 'static,
     P: Parser<I>,
     Q: Parser<I, Error = P::Error>,
 {
-    type Output = (P::Output, Q::Output);
-    type Error = P::Error;
     type State = ThenParser<P::State, P::Output, Q::State>;
 
     fn start_parser(self) -> Self::State {

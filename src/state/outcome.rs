@@ -1,20 +1,22 @@
+use crate::map::{MapNext, MapParsed};
+
 use self::Outcome::*;
 
 /// The non-error outcome of incremental parsing
 #[derive(Debug, PartialEq)]
-pub enum Outcome<P, O> {
+pub enum Outcome<S, P> {
     /// The parser updated its state; a full output has not yet been parsed
-    Next(P),
+    Next(S),
 
     /// The parser successfully parsed an item
-    Parsed(O),
+    Parsed(P),
 }
 
-impl<P, O, E> Outcome<P, Result<O, E>> {
+impl<S, O, E> Outcome<S, Result<O, E>> {
     /// Convert an [Outcome] with a [Result] output to a [Result] containing [Outcome]
     ///
-    /// This may be useful after [Outcome::map_output] if mapped to a [Result].
-    pub fn transpose_output(self) -> Result<Outcome<P, O>, E> {
+    /// This may be useful after [Outcome::map_parsed] if mapped to a [Result].
+    pub fn transpose_output(self) -> Result<Outcome<S, O>, E> {
         match self {
             Next(s) => Ok(Next(s)),
             Parsed(Ok(x)) => Ok(Parsed(x)),
@@ -23,44 +25,30 @@ impl<P, O, E> Outcome<P, Result<O, E>> {
     }
 }
 
-/// Extension methods to map outcomes within other structures
-pub trait OutcomeExt<P, O> {
-    /// The container type produced by mapping the outcome
-    type MappedOutcome<P2, O2>;
+impl<S, P> MapNext<S> for Outcome<S, P> {
+    type MappedNext<T> = Outcome<T, P>;
 
-    /// Map the parser state
-    fn map_parser<F, P2>(self, f: F) -> Self::MappedOutcome<P2, O>
+    fn map_next<F, U>(self, f: F) -> Self::MappedNext<U>
     where
-        F: FnOnce(P) -> P2;
-
-    /// Map the output
-    fn map_output<F, O2>(self, f: F) -> Self::MappedOutcome<P, O2>
-    where
-        F: FnOnce(O) -> O2;
-}
-
-impl<P, O> OutcomeExt<P, O> for Outcome<P, O> {
-    type MappedOutcome<P2, O2> = Outcome<P2, O2>;
-
-    /// Map the parser state
-    fn map_parser<F, P2>(self, f: F) -> Outcome<P2, O>
-    where
-        F: FnOnce(P) -> P2,
+        F: FnOnce(S) -> U,
     {
         match self {
-            Next(p) => Next(f(p)),
-            Parsed(x) => Parsed(x),
+            Next(s) => Next(f(s)),
+            Parsed(p) => Parsed(p),
         }
     }
+}
 
-    /// Map the output
-    fn map_output<F, O2>(self, f: F) -> Outcome<P, O2>
+impl<S, P> MapParsed<P> for Outcome<S, P> {
+    type MappedParsed<Q> = Outcome<S, Q>;
+
+    fn map_parsed<F, U>(self, f: F) -> Self::MappedParsed<U>
     where
-        F: FnOnce(O) -> O2,
+        F: FnOnce(P) -> U,
     {
         match self {
-            Next(p) => Next(p),
-            Parsed(x) => Parsed(f(x)),
+            Next(s) => Next(s),
+            Parsed(p) => Parsed(f(p)),
         }
     }
 }

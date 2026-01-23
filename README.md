@@ -19,7 +19,7 @@ The `incpa` project functionality is separated into multiple distinct crates:
 ```rust
 use incpa::UniversalParserError;
 use incpa::primitive::remaining;
-use incpa::Parser;
+use incpa::{Parser, ParserCompose};
 
 fn main() -> Result<(), UniversalParserError> {
     let parser = define_my_parser();
@@ -54,7 +54,7 @@ This crate is in the version 0.0.x phase of early proof of concept with unstable
 
 #### 0.1.0 Feature Goals
 
-- [x] A basic suite of general composition abstractions such as [Parser::then] and [Parser::or] with backtracking support. (As of v0.0.1.)
+- [x] A basic suite of general composition abstractions such as `Parser::then` and `Parser::or` with backtracking support. (As of v0.0.1.)
 - [x] Support for both string parsers and slice parsers (including byte slices). (As of v0.0.1.)
 - [x] Efficient streaming string parsing from byte-oriented I/O sources using UTF8 decoding. (As of v0.0.1.)
 - [ ] Tunable buffer management.
@@ -87,8 +87,8 @@ This release just fixed some missing `Cargo.toml` metadata: `homepage` and `repo
 
 Basic core structure with:
 
-- [Parser], [Parser::map], [Parser::map_error], [Parser::then], [Parser::or]
-- [state::ParserState]
+- `Parser`, `Parser::map`, `Parser::map_error`, `Parser::then`, `Parser::or`
+- `state::ParserState`
 - `incpa_byte::ByteParser`, hardcoded `incpa_byte::BufferManager` strategy (later moved to separate `incpa_byte` crate.
 
 </details>

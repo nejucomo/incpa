@@ -2,8 +2,9 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 
-use crate::state::{FeedChomped, OutcomeExt, ParserState};
-use crate::{Input, Parser, UniversalParserError};
+use crate::map::MapNext as _;
+use crate::state::{FeedChomped, ParserState};
+use crate::{Input, Parser, ParserCompose, UniversalParserError};
 
 /// Specifies a parser which maps its error
 #[derive(Copy, Clone, Debug, new)]
@@ -15,6 +16,16 @@ pub struct MapError<P, F, E> {
     ph: PhantomData<E>,
 }
 
+impl<P, F, E> ParserCompose for MapError<P, F, E>
+where
+    P: ParserCompose,
+    F: FnOnce(P::Error) -> E,
+    E: From<UniversalParserError>,
+{
+    type Output = P::Output;
+    type Error = E;
+}
+
 impl<P, F, E, I> Parser<I> for MapError<P, F, E>
 where
     P: Parser<I>,
@@ -22,8 +33,6 @@ where
     E: From<UniversalParserError>,
     I: ?Sized + Input,
 {
-    type Output = P::Output;
-    type Error = E;
     type State = MapErrorParser<P::State, F, E>;
 
     fn start_parser(self) -> Self::State {
@@ -51,7 +60,7 @@ where
         let MapError { inner, f, .. } = self.0;
 
         match inner.feed(input) {
-            Ok(up) => Ok(up.map_parser(|p| MapErrorParser(MapError::new(p, f)))),
+            Ok(up) => Ok(up.map_next(|p| MapErrorParser(MapError::new(p, f)))),
             Err(e) => Err(f(e)),
         }
     }

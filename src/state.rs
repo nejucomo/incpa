@@ -5,8 +5,8 @@ mod outcome;
 mod resultimpls;
 
 pub use self::backtrack::Backtrack;
-pub use self::chomped::{Chomped, ChompedExt, FeedChomped};
-pub use self::outcome::{Outcome, OutcomeExt};
+pub use self::chomped::{Chomped, FeedChomped};
+pub use self::outcome::Outcome;
 
 // ParserState below
 use std::future::Future;

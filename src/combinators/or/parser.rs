@@ -1,7 +1,8 @@
 use either::Either;
 
 use crate::Input;
-use crate::state::{Backtrack, FeedChomped, OutcomeExt, ParserState};
+use crate::map::{MapNext as _, MapParsed as _};
+use crate::state::{Backtrack, FeedChomped, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct OrParser<P, Q> {
@@ -33,16 +34,16 @@ where
         let OrParser { obp, q } = self;
 
         if let Some(bp) = obp {
-            let res = bp.feed(input).map_output(Left);
+            let res = bp.feed(input).map_parsed(Left);
             if res.is_ok() {
-                return res.map_parser(|bp| OrParser { obp: Some(bp), q });
+                return res.map_next(|bp| OrParser { obp: Some(bp), q });
             }
             // Else we hit an error, so drop `bp` and fall back to `q`:
         }
 
         q.feed(input)
-            .map_parser(|q| OrParser { obp: None, q })
-            .map_output(Right)
+            .map_next(|q| OrParser { obp: None, q })
+            .map_parsed(Right)
     }
 
     fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
