@@ -1,43 +1,55 @@
-use crate::state::{ChompedExt, OutcomeExt};
+use crate::map::{MapConsumed, MapNext, MapOutcome, MapParsed};
 
-impl<K, T, E> ChompedExt<T> for Result<K, E>
+impl<T, E, M> MapNext<M> for Result<T, E>
 where
-    K: ChompedExt<T>,
+    T: MapNext<M>,
 {
-    type MapChomp<U> = Result<K::MapChomp<U>, E>;
+    type MappedNext<N> = Result<<T as MapNext<M>>::MappedNext<N>, E>;
 
-    fn map_consumed<F>(self, f: F) -> Self::MapChomp<T>
+    fn map_next<F, N>(self, f: F) -> Self::MappedNext<N>
     where
-        F: FnOnce(usize) -> usize,
+        F: FnOnce(M) -> N,
     {
-        self.map(|k| k.map_consumed(f))
-    }
-
-    fn map_value<F, U>(self, f: F) -> Self::MapChomp<U>
-    where
-        F: FnOnce(T) -> U,
-    {
-        self.map(|k| k.map_value(f))
+        self.map(|t| t.map_next(f))
     }
 }
 
-impl<K, P, O, E> OutcomeExt<P, O> for Result<K, E>
+impl<T, E, M> MapParsed<M> for Result<T, E>
 where
-    K: OutcomeExt<P, O>,
+    T: MapParsed<M>,
 {
-    type MappedOutcome<P2, O2> = Result<<K as OutcomeExt<P, O>>::MappedOutcome<P2, O2>, E>;
+    type MappedParsed<N> = Result<<T as MapParsed<M>>::MappedParsed<N>, E>;
 
-    fn map_parser<F, P2>(self, f: F) -> Self::MappedOutcome<P2, O>
+    fn map_parsed<F, N>(self, f: F) -> Self::MappedParsed<N>
     where
-        F: FnOnce(P) -> P2,
+        F: FnOnce(M) -> N,
     {
-        self.map(|up| up.map_parser(f))
+        self.map(|t| t.map_parsed(f))
     }
+}
 
-    fn map_output<F, O2>(self, f: F) -> Self::MappedOutcome<P, O2>
+impl<T, E> MapConsumed for Result<T, E>
+where
+    T: MapConsumed,
+{
+    fn map_consumed<F>(self, f: F) -> Self
     where
-        F: FnOnce(O) -> O2,
+        F: FnOnce(usize) -> usize,
     {
-        self.map(|up| up.map_output(f))
+        self.map(|t| t.map_consumed(f))
+    }
+}
+
+impl<T, E, M> MapOutcome<M> for Result<T, E>
+where
+    T: MapOutcome<M>,
+{
+    type MappedOutcome<N> = Result<<T as MapOutcome<M>>::MappedOutcome<N>, E>;
+
+    fn map_outcome<F, N>(self, f: F) -> Self::MappedOutcome<N>
+    where
+        F: FnOnce(M) -> N,
+    {
+        self.map(|t| t.map_outcome(f))
     }
 }

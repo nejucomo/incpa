@@ -1,7 +1,8 @@
 use either::Either;
 
 use crate::Input;
-use crate::state::{Chomped, ChompedExt, FeedChomped, ParserState};
+use crate::map::{MapConsumed as _, MapOutcome as _};
+use crate::state::{Chomped, FeedChomped, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -53,7 +54,7 @@ where
                     .map_consumed(|c| c + consumed),
                 }
             }
-            Right(pval) => q.feed(input).map_value(|oc| match oc {
+            Right(pval) => q.feed(input).map_outcome(|oc| match oc {
                 Next(q) => Next(ThenParser {
                     porval: Right(pval),
                     q,

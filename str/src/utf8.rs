@@ -1,8 +1,9 @@
 //! UTF8 support
 
 use derive_more::From;
-use incpa::state::{ChompedExt as _, FeedChomped, OutcomeExt as _, ParserState};
-use incpa::{Parser, UniversalParserError};
+use incpa::map::{MapConsumed as _, MapNext as _};
+use incpa::state::{FeedChomped, ParserState};
+use incpa::{Parser, ParserCompose, UniversalParserError};
 use thiserror::Error;
 
 use crate::StrParser;
@@ -30,13 +31,20 @@ pub enum Utf8AdapterError<E> {
     StrParser(E),
 }
 
-impl<P> Parser<[u8]> for Utf8Adapter<P>
+impl<P> ParserCompose for Utf8Adapter<P>
 where
     P: StrParser,
     P::Error: From<UniversalParserError>,
 {
     type Output = P::Output;
     type Error = Utf8AdapterError<P::Error>;
+}
+
+impl<P> Parser<[u8]> for Utf8Adapter<P>
+where
+    P: StrParser,
+    P::Error: From<UniversalParserError>,
+{
     type State = Utf8AdapterState<P::State>;
 
     fn start_parser(self) -> Self::State {
@@ -55,7 +63,7 @@ where
         let s = std::str::from_utf8(input)?;
         let update = self.0.feed(s).map_err(Utf8AdapterError::StrParser)?;
         Ok(update
-            .map_parser(Utf8AdapterState)
+            .map_next(Utf8AdapterState)
             .map_consumed(|c| s.char_indices().nth(c).map(|(b, _)| b).unwrap_or(s.len())))
     }
 }

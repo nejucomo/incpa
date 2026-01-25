@@ -5,23 +5,26 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use crate::state::{Chomped, FeedChomped, ParserState};
-use crate::{Input, Parser, UniversalParserError};
+use crate::{Input, Parser, ParserCompose, UniversalParserError};
 
 /// Captures all remaining input
 ///
 /// # Warning
 ///
 /// This requires holding all input in memory, by definition.
-pub fn remaining<I: ?Sized + Input + ToOwned + 'static>()
+pub fn remaining<I: ?Sized + Input + ToOwned>()
 -> impl Parser<I, Output = I::Owned, Error = UniversalParserError> + Copy + Debug {
     Remaining(PhantomData)
 }
 
-struct Remaining<I: ?Sized + Input + ToOwned + 'static>(PhantomData<&'static I>);
+struct Remaining<I: ?Sized + Input + ToOwned>(PhantomData<Box<I>>);
 
-impl<I: ?Sized + Input + ToOwned + 'static> Parser<I> for Remaining<I> {
+impl<I: ?Sized + Input + ToOwned> ParserCompose for Remaining<I> {
     type Output = I::Owned;
     type Error = UniversalParserError;
+}
+
+impl<I: ?Sized + Input + ToOwned> Parser<I> for Remaining<I> {
     type State = Remaining<I>;
 
     fn start_parser(self) -> Self::State {
