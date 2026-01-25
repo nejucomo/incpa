@@ -2,8 +2,9 @@ use std::fmt::Debug;
 
 use test_case::test_case;
 
+use crate::Input;
 use crate::state::Outcome::{Next, Parsed};
-use crate::state::{Buffer, Chomped, ParserState};
+use crate::state::{Chomped, ParserState};
 
 use super::Literal;
 
@@ -14,7 +15,7 @@ where
     L: Literal<I> + PartialEq + Debug,
     L::Error: std::error::Error + Send + Sync + 'static,
     L::State: Debug,
-    I: ?Sized + Buffer,
+    I: ?Sized + Input,
 {
     let Chomped {
         consumed,

@@ -1,5 +1,5 @@
 /// A common interface many parsers use for manipulating input
-pub trait Buffer {
+pub trait Input {
     /// Produce an empty buffer
     fn empty() -> &'static Self
     where
@@ -29,7 +29,7 @@ pub trait Buffer {
     fn prefix_up_to(&self, n: usize) -> &Self;
 }
 
-impl Buffer for str {
+impl Input for str {
     fn empty() -> &'static Self
     where
         Self: 'static,
@@ -52,7 +52,7 @@ impl Buffer for str {
     }
 }
 
-impl<T> Buffer for [T] {
+impl<T> Input for [T] {
     fn empty() -> &'static Self
     where
         Self: 'static,

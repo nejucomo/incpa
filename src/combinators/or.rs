@@ -8,8 +8,7 @@ pub use self::parser::OrParser;
 use derive_new::new;
 use either::Either;
 
-use crate::Parser;
-use crate::state::Buffer;
+use crate::{Input, Parser};
 
 /// Parse `P` or if that fails, parse `Q`
 ///
@@ -23,7 +22,7 @@ pub struct Or<P, Q> {
 
 impl<P, Q, I> Parser<I> for Or<P, Q>
 where
-    I: ?Sized + Buffer + 'static,
+    I: ?Sized + Input + 'static,
     P: Parser<I>,
     Q: Parser<I, Error = P::Error>,
 {

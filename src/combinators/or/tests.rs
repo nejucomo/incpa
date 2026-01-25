@@ -3,8 +3,7 @@ use std::fmt::Debug;
 use either::Either::{self, Left, Right};
 use test_case::test_case;
 
-use crate::state::Buffer;
-use crate::{Literal, Parser};
+use crate::{Input, Literal, Parser};
 
 #[test_case("hello", "world", "hello world!" => Some(Left("hello")))]
 #[test_case("hello", "world", "world: hello!" => Some(Right("world")))]
@@ -19,7 +18,7 @@ fn a_or_b<A, B, I>(a: A, b: B, input: &I) -> Option<Either<A, B>>
 where
     A: Literal<I> + Copy + PartialEq + Debug,
     B: Literal<I, Error = A::Error> + Copy + PartialEq + Debug,
-    I: ?Sized + Buffer + 'static,
+    I: ?Sized + Input + 'static,
 {
     a.or(b).parse_all(input).ok()
 }

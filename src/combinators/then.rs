@@ -7,8 +7,7 @@ pub use self::parser::ThenParser;
 
 use derive_new::new;
 
-use crate::Parser;
-use crate::state::Buffer;
+use crate::{Input, Parser};
 
 /// Parse `P` then `Q`
 #[derive(Copy, Clone, Debug, new)]
@@ -20,7 +19,7 @@ pub struct Then<P, Q> {
 
 impl<P, Q, I> Parser<I> for Then<P, Q>
 where
-    I: ?Sized + Buffer + 'static,
+    I: ?Sized + Input + 'static,
     P: Parser<I>,
     Q: Parser<I, Error = P::Error>,
 {

@@ -1,6 +1,7 @@
 use either::Either;
 
-use crate::state::{Buffer, Chomped, ChompedExt, FeedChomped, ParserState};
+use crate::Input;
+use crate::state::{Chomped, ChompedExt, FeedChomped, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -19,7 +20,7 @@ impl<P, O, Q> ThenParser<P, O, Q> {
 
 impl<P, Q, I> ParserState<I> for ThenParser<P, P::Output, Q>
 where
-    I: ?Sized + Buffer + 'static,
+    I: ?Sized + Input + 'static,
     P: ParserState<I>,
     Q: ParserState<I, Error = P::Error>,
 {
