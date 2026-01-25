@@ -19,7 +19,10 @@ use crate::UniversalParserError::{self, ExpectedMoreInput};
 /// # Invariants
 ///
 /// This crate assumes every [ParserState] impl is deterministic, so that calling [ParserState::feed] or [ParserState::end_input] on two equivalent states with the same input parameters produces equivalent values.
-pub trait ParserState<I: ?Sized + Input>: Sized {
+pub trait ParserState<I>: Sized
+where
+    I: ?Sized + Input,
+{
     /// The type of output on successful parse
     type Output;
 
