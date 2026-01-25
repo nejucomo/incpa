@@ -8,3 +8,4 @@ repository.workspace = true
 
 [dependencies]
 derive-new.workspace = true
+thiserror.workspace = true

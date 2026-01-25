@@ -1,14 +1,14 @@
 use derive_new::new;
 
+use crate::Outcome;
 use crate::map::{MapConsumed, MapNext, MapOutcome, MapParsed};
-use crate::state::Outcome;
 
-/// The [Ok] result of [ParserState::feed](crate::state::ParserState::feed)
+/// The [Ok] result of [ParserState::feed](crate::ParserState::feed)
 pub type FeedChomped<P, O> = Chomped<Outcome<P, O>>;
 
 /// Tracks a number of elements consumed for a `value`
 ///
-/// The element units are implicitly defined by the `I` input parameter to [Parser](crate::Parser)
+/// The element units are implicitly defined by the `I` input parameter to [ParserState](crate::ParserState), e.g. for [`[T]`](slice) it is a number of elements, whereas for [str] it is number of bytes.
 #[derive(Debug, PartialEq, new)]
 pub struct Chomped<T> {
     /// The number of input units consumed
