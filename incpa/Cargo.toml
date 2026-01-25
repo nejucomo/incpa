@@ -1,0 +1,18 @@
+[package]
+name = "incpa"
+description = "an INCremental PArser composition crate"
+version.workspace = true
+edition.workspace = true
+license-file.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+derive-new.workspace = true
+either.workspace = true
+incpa-state.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+anyhow.workspace = true
+test-case.workspace = true
