@@ -9,7 +9,6 @@ mod literal;
 pub mod map;
 mod parser;
 pub mod primitive;
-pub mod state;
 
 pub use self::compose::ParserCompose;
 pub use self::error::UniversalParserError;
