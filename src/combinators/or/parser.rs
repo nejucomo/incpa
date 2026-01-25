@@ -1,8 +1,6 @@
 use either::Either;
-
-use crate::Input;
-use crate::map::{MapNext as _, MapParsed as _};
-use crate::state::{Backtrack, FeedChomped, ParserState};
+use incpa_state::map::{MapNext as _, MapParsed as _};
+use incpa_state::{Backtrack, FeedChomped, Input, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct OrParser<P, Q> {

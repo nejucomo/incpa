@@ -1,9 +1,10 @@
 use std::fmt::Debug;
 
 use either::Either::{self, Left, Right};
+use incpa_state::Input;
 use test_case::test_case;
 
-use crate::{Input, Literal, Parser};
+use crate::{Literal, Parser};
 
 #[test_case("hello", "world", "hello world!" => Some(Left("hello")))]
 #[test_case("hello", "world", "world: hello!" => Some(Right("world")))]

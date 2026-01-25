@@ -7,16 +7,16 @@ mod sliceimpl;
 mod strimpl;
 
 use derive_new::new;
+use incpa_state::{Chomped, FeedChomped, Input, ParserState};
 
-use crate::state::{Chomped, FeedChomped, ParserState};
-use crate::{Input, Parser};
+use crate::Parser;
 
 /// A [Literal] is any value which is a [Parser] for itself
 ///
 /// # Example
 ///
 /// ```
-/// use incpa::UniversalParserError;
+/// use incpa_state::UniversalParserError;
 /// use incpa::{Parser, Literal};
 ///
 /// fn main() -> Result<(), UniversalParserError> {
@@ -56,8 +56,8 @@ where
     type Error = L::Error;
 
     fn feed(self, input: &I) -> Result<FeedChomped<Self, L>, Self::Error> {
-        use crate::UniversalParserError::UnexpectedInput;
-        use crate::state::Outcome::{Next, Parsed};
+        use incpa_state::Outcome::{Next, Parsed};
+        use incpa_state::UniversalParserError::UnexpectedInput;
 
         let n = self.0.literal_len();
         let prefix = input.prefix_up_to(n);

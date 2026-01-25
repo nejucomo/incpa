@@ -4,8 +4,9 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use crate::state::{Chomped, FeedChomped, ParserState};
-use crate::{Input, Parser, ParserCompose, UniversalParserError};
+use incpa_state::{Chomped, FeedChomped, Input, ParserState, UniversalParserError};
+
+use crate::{Parser, ParserCompose};
 
 /// Captures all remaining input
 ///
@@ -51,7 +52,7 @@ where
     type Error = UniversalParserError;
 
     fn feed(self, _: &I) -> Result<FeedChomped<Self, I::Owned>, Self::Error> {
-        use crate::state::Outcome::Next;
+        use incpa_state::Outcome::Next;
 
         Ok(Chomped::new(0, Next(self)))
     }
@@ -61,10 +62,7 @@ where
     }
 }
 
-impl<I> Copy for Remaining<I>
-where
-    I: ?Sized + Input + ToOwned,
-{}
+impl<I> Copy for Remaining<I> where I: ?Sized + Input + ToOwned {}
 
 impl<I> Clone for Remaining<I>
 where

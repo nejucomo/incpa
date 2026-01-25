@@ -1,9 +1,10 @@
 use std::fmt::Debug;
 
+use incpa_state::Input;
 use test_case::test_case;
 
+use crate::Parser as _;
 use crate::primitive::remaining;
-use crate::{Input, Parser as _};
 
 #[test_case("hello world!")]
 #[test_case(b"hello world!".as_slice())]

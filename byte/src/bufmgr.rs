@@ -1,4 +1,4 @@
-use incpa::state::{Outcome, ParserState};
+use incpa_state::{Outcome, ParserState};
 
 /// Manage the buffering necessary for driving [ByteParser](crate::ByteParser) in an i/o agnostic manner
 #[derive(Debug, Default)]
@@ -52,7 +52,7 @@ impl BufferManager {
         E: From<P::Error>,
     {
         use Outcome::Parsed;
-        use incpa::state::Chomped;
+        use incpa_state::Chomped;
 
         let end = self.rstart + readcnt;
         let rslice = &self.buffer[..end];

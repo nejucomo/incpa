@@ -1,9 +1,10 @@
 use std::fmt::Debug;
 
+use incpa_state::Input;
 use test_case::test_case;
 
 use crate::primitive::remaining;
-use crate::{Input, Literal, Parser, ParserCompose as _};
+use crate::{Literal, Parser, ParserCompose as _};
 
 #[test_case("hello world!" => ("hello world!".to_string(), "".to_string()))]
 #[test_case(b"hello world!".as_slice() => (Vec::from(b"hello world!"), vec![]))]

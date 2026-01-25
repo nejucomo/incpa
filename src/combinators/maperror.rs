@@ -1,10 +1,10 @@
 use std::marker::PhantomData;
 
 use derive_new::new;
+use incpa_state::map::MapNext as _;
+use incpa_state::{FeedChomped, Input, ParserState, UniversalParserError};
 
-use crate::map::MapNext as _;
-use crate::state::{FeedChomped, ParserState};
-use crate::{Input, Parser, ParserCompose, UniversalParserError};
+use crate::{Parser, ParserCompose};
 
 /// Specifies a parser which maps its error
 #[derive(Copy, Clone, Debug, new)]

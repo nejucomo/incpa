@@ -7,8 +7,9 @@ pub use self::parser::OrParser;
 
 use derive_new::new;
 use either::Either;
+use incpa_state::Input;
 
-use crate::{Input, Parser, ParserCompose};
+use crate::{Parser, ParserCompose};
 
 /// Parse `P` or if that fails, parse `Q`
 ///

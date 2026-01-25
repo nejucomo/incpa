@@ -1,5 +1,6 @@
-use crate::{Literal, ParserCompose};
-use crate::{Parser, UniversalParserError};
+use incpa_state::UniversalParserError;
+
+use crate::{Literal, Parser, ParserCompose};
 
 use super::LiteralParser;
 

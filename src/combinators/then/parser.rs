@@ -1,8 +1,6 @@
 use either::Either;
-
-use crate::Input;
-use crate::map::{MapConsumed as _, MapOutcome as _};
-use crate::state::{Chomped, FeedChomped, ParserState};
+use incpa_state::map::{MapConsumed as _, MapOutcome as _};
+use incpa_state::{Chomped, FeedChomped, Input, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -29,8 +27,8 @@ where
     type Error = P::Error;
 
     fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
-        use crate::state::Outcome::{Next, Parsed};
         use Either::{Left, Right};
+        use incpa_state::Outcome::{Next, Parsed};
 
         let ThenParser { porval, q } = self;
 

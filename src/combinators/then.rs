@@ -6,8 +6,9 @@ mod parser;
 pub use self::parser::ThenParser;
 
 use derive_new::new;
+use incpa_state::Input;
 
-use crate::{Input, Parser, ParserCompose};
+use crate::{Parser, ParserCompose};
 
 /// Parse `P` then `Q`
 #[derive(Copy, Clone, Debug, new)]

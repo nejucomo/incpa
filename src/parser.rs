@@ -1,5 +1,6 @@
-use crate::state::ParserState;
-use crate::{Input, ParserCompose};
+use incpa_state::{Input, ParserState};
+
+use crate::ParserCompose;
 
 /// A [Parser] defines the syntax, grammar, or format to be parsed
 ///
@@ -18,8 +19,8 @@ where
 
     /// Parse an entire in-memory input to completion
     fn parse_all(self, input: &I) -> Result<Self::Output, Self::Error> {
-        use crate::state::Chomped;
-        use crate::state::Outcome::{Next, Parsed};
+        use incpa_state::Chomped;
+        use incpa_state::Outcome::{Next, Parsed};
 
         let Chomped { consumed, value } = self.start_parser().feed(input)?;
         match value {

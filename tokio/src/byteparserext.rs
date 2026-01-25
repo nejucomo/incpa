@@ -28,7 +28,7 @@ pub trait ByteParserExt: ByteParser {
         R: tokio::io::AsyncRead,
         E: From<<Self as ParserCompose>::Error> + From<std::io::Error>,
     {
-        use incpa::state::Outcome::{Next, Parsed};
+        use incpa_state::Outcome::{Next, Parsed};
         use tokio::io::AsyncReadExt;
 
         async move {

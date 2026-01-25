@@ -1,4 +1,5 @@
-use crate::UniversalParserError;
+use incpa_state::UniversalParserError;
+
 use crate::combinators::{MapError, MapOutput, Or, Then};
 
 /// A base-trait of parsers defining the output, error, and providing composition methods

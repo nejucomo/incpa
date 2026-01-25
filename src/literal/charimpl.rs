@@ -1,4 +1,6 @@
-use crate::{Parser, ParserCompose, UniversalParserError};
+use incpa_state::UniversalParserError;
+
+use crate::{Parser, ParserCompose};
 
 use super::{Literal, LiteralParser};
 

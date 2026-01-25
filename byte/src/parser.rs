@@ -1,5 +1,5 @@
 use incpa::Parser;
-use incpa::state::ParserState;
+use incpa_state::ParserState;
 
 use crate::BufferManager;
 

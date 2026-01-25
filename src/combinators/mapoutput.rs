@@ -1,10 +1,10 @@
 use std::marker::PhantomData;
 
 use derive_new::new;
+use incpa_state::map::MapOutcome as _;
+use incpa_state::{FeedChomped, Input, ParserState};
 
-use crate::map::MapOutcome as _;
-use crate::state::{FeedChomped, ParserState};
-use crate::{Input, Parser, ParserCompose};
+use crate::{Parser, ParserCompose};
 
 /// Specifies a parser which maps its output
 #[derive(Copy, Clone, Debug, new)]
@@ -53,7 +53,7 @@ where
     type Error = P::Error;
 
     fn feed(self, input: &I) -> Result<FeedChomped<Self, O>, Self::Error> {
-        use crate::state::Outcome::{Next, Parsed};
+        use incpa_state::Outcome::{Next, Parsed};
 
         let MapOutput { inner, f, .. } = self.0;
 
