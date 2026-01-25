@@ -12,19 +12,30 @@ use crate::{Input, Parser, ParserCompose, UniversalParserError};
 /// # Warning
 ///
 /// This requires holding all input in memory, by definition.
-pub fn remaining<I: ?Sized + Input + ToOwned>()
--> impl Parser<I, Output = I::Owned, Error = UniversalParserError> + Copy + Debug {
+pub fn remaining<I>()
+-> impl Parser<I, Output = I::Owned, Error = UniversalParserError> + Copy + Debug
+where
+    I: ?Sized + Input + ToOwned,
+{
     Remaining(PhantomData)
 }
 
-struct Remaining<I: ?Sized + Input + ToOwned>(PhantomData<Box<I>>);
+struct Remaining<I>(PhantomData<Box<I>>)
+where
+    I: ?Sized + Input + ToOwned;
 
-impl<I: ?Sized + Input + ToOwned> ParserCompose for Remaining<I> {
+impl<I> ParserCompose for Remaining<I>
+where
+    I: ?Sized + Input + ToOwned,
+{
     type Output = I::Owned;
     type Error = UniversalParserError;
 }
 
-impl<I: ?Sized + Input + ToOwned> Parser<I> for Remaining<I> {
+impl<I> Parser<I> for Remaining<I>
+where
+    I: ?Sized + Input + ToOwned,
+{
     type State = Remaining<I>;
 
     fn start_parser(self) -> Self::State {
@@ -32,7 +43,10 @@ impl<I: ?Sized + Input + ToOwned> Parser<I> for Remaining<I> {
     }
 }
 
-impl<I: ?Sized + Input + ToOwned> ParserState<I> for Remaining<I> {
+impl<I> ParserState<I> for Remaining<I>
+where
+    I: ?Sized + Input + ToOwned,
+{
     type Output = I::Owned;
     type Error = UniversalParserError;
 
@@ -47,15 +61,24 @@ impl<I: ?Sized + Input + ToOwned> ParserState<I> for Remaining<I> {
     }
 }
 
-impl<I: ?Sized + Input + ToOwned> Copy for Remaining<I> {}
+impl<I> Copy for Remaining<I>
+where
+    I: ?Sized + Input + ToOwned,
+{}
 
-impl<I: ?Sized + Input + ToOwned> Clone for Remaining<I> {
+impl<I> Clone for Remaining<I>
+where
+    I: ?Sized + Input + ToOwned,
+{
     fn clone(&self) -> Self {
         *self
     }
 }
 
-impl<I: ?Sized + Input + ToOwned> Debug for Remaining<I> {
+impl<I> Debug for Remaining<I>
+where
+    I: ?Sized + Input + ToOwned,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "remaining<I = {}>()", std::any::type_name::<I>())
     }

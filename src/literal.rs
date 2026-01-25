@@ -28,7 +28,10 @@ use crate::{Input, Parser};
 ///   Ok(())
 /// }
 /// ```
-pub trait Literal<I: ?Sized + Input>: Sized + Copy + Parser<I, Output = Self> {
+pub trait Literal<I>: Sized + Copy + Parser<I, Output = Self>
+where
+    I: ?Sized + Input,
+{
     /// The length of this literal in `I`'s units
     fn literal_len(self) -> usize;
 
@@ -44,7 +47,11 @@ pub trait Literal<I: ?Sized + Input>: Sized + Copy + Parser<I, Output = Self> {
 #[derive(Copy, Clone, Debug, new)]
 pub struct LiteralParser<L>(L);
 
-impl<I: ?Sized + Input, L: Literal<I>> ParserState<I> for LiteralParser<L> {
+impl<I, L> ParserState<I> for LiteralParser<L>
+where
+    I: ?Sized + Input,
+    L: Literal<I>,
+{
     type Output = L::Output;
     type Error = L::Error;
 

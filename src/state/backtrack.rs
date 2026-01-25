@@ -15,7 +15,11 @@ pub struct Backtrack<P> {
 
 // impl<P, I, O, E> Parser<I, O, E> for Backtrack<P> where P: Parser<I, O, E> {}
 
-impl<P: ParserState<I>, I: ?Sized + Input> ParserState<I> for Backtrack<P> {
+impl<P, I> ParserState<I> for Backtrack<P>
+where
+    P: ParserState<I>,
+    I: ?Sized + Input,
+{
     type Output = P::Output;
     type Error = P::Error;
 

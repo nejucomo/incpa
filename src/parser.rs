@@ -6,7 +6,10 @@ use crate::{Input, ParserCompose};
 /// Implementations can often specify the grammar to be parsed by [crate::primitive] types and the composition methods of this trait.
 ///
 /// The actual behind-the-scenes work of parsing is accomplished by creating [Parser::State] from [Parser::start_parser], then driving that.
-pub trait Parser<I: ?Sized + Input>: ParserCompose {
+pub trait Parser<I>: ParserCompose
+where
+    I: ?Sized + Input,
+{
     /// The initial [ParserState] to parse this specification
     type State: ParserState<I, Output = Self::Output, Error = Self::Error>;
 
