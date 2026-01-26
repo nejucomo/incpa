@@ -29,7 +29,7 @@ fn define_my_parser() -> impl Parser<str, Output=(&'static str, String), Error=U
 
 This [incpa](crate) provides an "all-batteries included" API by re-exporting multiple `incpa-` prefixed crates into one namespace. Projects which prefer having fewer direct dependencies or new projects might start by depending on just this top-level crate, while projects which want to exclude code and build-times can select the subset of re-exported crates they rely on directly. 
 
-Each of the mods in this crate re-export a crate with an exact naming correspondence, e.g. [parser] -> [incpa_parser], [state] -> [incpa_state] and so on.
+Each of the mods in this crate re-export a crate with an exact naming correspondence, e.g. the [parser] mod → the [incpa_parser] crate, the [state] mod → the [incpa_state] crate, and so on.
 
 ## Related Projects
 
