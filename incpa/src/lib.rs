@@ -50,3 +50,13 @@ pub mod tokio {
 
     pub use incpa_tokio::*;
 }
+
+pub mod recursive {
+    #![doc = include_str!("../../recursive/Description.md")]
+
+    //! # Re-export
+    //!
+    //! This mod is a re-export of all of [incpa_recursive]; see [Related Crates](crate#related_crates) about the crate relationships.
+
+    pub use incpa_recursive::*;
+}
