@@ -1,4 +1,4 @@
-#![doc = include_str!("../../README.md")]
+//! FIXME
 #![deny(missing_docs, unsafe_code)]
 
 mod compose;
