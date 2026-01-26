@@ -1,4 +1,4 @@
-//! support async streaming input via [tokio::io::AsyncRead] in `incpa` parsers
+#![doc = include_str!("../Description.md")]
 #![deny(missing_docs, unsafe_code)]
 mod byteparserext;
 
