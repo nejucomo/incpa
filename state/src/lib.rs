@@ -1,4 +1,5 @@
 #![doc = include_str!("../Description.md")]
+#![doc = include_str!("../../README-subcrate-link.md")]
 #![deny(unsafe_code, missing_docs)]
 
 mod backtrack;
