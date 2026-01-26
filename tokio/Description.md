@@ -1,1 +1,1 @@
-[ByteParserExt] for parsing from `tokio::io::AsyncRead` sources
+[TokioByteParser] for parsing from `tokio::io::AsyncRead` sources
