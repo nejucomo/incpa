@@ -1,4 +1,4 @@
-//! High-level parser composition and grammar specification
+#![doc = include_str!("../Description.md")]
 #![deny(missing_docs, unsafe_code)]
 
 mod compose;

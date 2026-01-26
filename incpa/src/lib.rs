@@ -1,7 +1,8 @@
 #![doc = include_str!("../../README.md")]
 #![deny(missing_docs, unsafe_code)]
 
-pub use incpa_parser as parser;
+pub mod parser;
+
 pub use incpa_parser::Parser;
 
 pub use incpa_state as state;
