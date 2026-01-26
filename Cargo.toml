@@ -10,7 +10,7 @@ repository = "https://github.com/nejucomo/incpa"
 resolver = "3"
 members = [
   "byte",
-  "incpa",
+  "parser",
   "state",
   "str",
   "tokio",
@@ -27,8 +27,8 @@ thiserror = "2.0.9"
 tokio = { version = "1.42.0", default-features = false }
 
 # Local crates:
-incpa = { path = "incpa", version = "0.0.3" }
 incpa-byte = { path = "byte", version = "0.0.3" }
+incpa-parser = { path = "parser", version = "0.0.3" }
 incpa-state = { path = "state", version = "0.0.3" }
 incpa-str = { path = "str", version = "0.0.3" }
 incpa-tokio = { path = "tokio", version = "0.0.3" }

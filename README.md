@@ -17,9 +17,9 @@ The `incpa` project functionality is separated into multiple distinct crates:
 ## Example
 
 ```rust
+use incpa_parser::{Parser, ParserCompose};
+use incpa_parser::primitive::remaining;
 use incpa_state::UniversalParserError;
-use incpa::{Parser, ParserCompose};
-use incpa::primitive::remaining;
 
 fn main() -> Result<(), UniversalParserError> {
     let parser = define_my_parser();

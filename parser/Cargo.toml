@@ -1,5 +1,5 @@
 [package]
-name = "incpa"
+name = "incpa-parser"
 description = "an INCremental PArser composition crate"
 version.workspace = true
 edition.workspace = true

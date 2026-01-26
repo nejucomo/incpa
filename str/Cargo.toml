@@ -10,5 +10,5 @@ repository.workspace = true
 [dependencies]
 derive_more = { workspace = true, features = ["from"] }
 incpa-state.workspace = true
-incpa.workspace = true
+incpa-parser.workspace = true
 thiserror.workspace = true

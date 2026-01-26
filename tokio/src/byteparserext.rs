@@ -1,7 +1,7 @@
 use std::future::Future;
 use std::pin::pin;
 
-use incpa::ParserCompose;
+use incpa_parser::ParserCompose;
 use incpa_byte::{BufferManager, ByteParser};
 
 /// Every [ByteParser] is a [ByteParserExt]

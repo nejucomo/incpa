@@ -9,4 +9,4 @@ repository.workspace = true
 
 [dependencies]
 incpa-state.workspace = true
-incpa.workspace = true
+incpa-parser.workspace = true

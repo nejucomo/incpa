@@ -17,7 +17,7 @@ use crate::Parser;
 ///
 /// ```
 /// use incpa_state::UniversalParserError;
-/// use incpa::{Parser, Literal};
+/// use incpa_parser::{Parser, Literal};
 ///
 /// fn main() -> Result<(), UniversalParserError> {
 ///   // &str is a Literal, so it can parse an input:
