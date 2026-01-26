@@ -1,4 +1,4 @@
-//! FIXME
+//! High-level parser composition and grammar specification
 #![deny(missing_docs, unsafe_code)]
 
 mod compose;
