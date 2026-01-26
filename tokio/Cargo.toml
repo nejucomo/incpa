@@ -8,6 +8,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-incpa.workspace = true
 incpa-byte.workspace = true
+incpa-state.workspace = true
+incpa-parser.workspace = true
 tokio = { workspace = true, default-features = false, features = ["io-util"] }

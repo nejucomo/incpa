@@ -1,4 +1,4 @@
-//! [StrParser] and common string parsers
+#![doc = include_str!("../Description.md")]
 #![deny(missing_docs, unsafe_code)]
 
 mod strparser;

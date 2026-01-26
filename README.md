@@ -2,24 +2,16 @@
 
 `incpa` is an <u>inc</u>remental <u>pa</u>rser composition crate.
 
-Incremental parsers process a chunk of input, then either produce an error, a parsed output, or an updated parser state ready for future input. This primitive, codified by [ParserState::feed](crate::state::ParserState::feed), allows the same parser definition to support parsing streaming input from async or sync sources, as well as other "incremental" use cases such as interactive REPL loop parsing.
+Incremental parsers process a chunk of input, then either produce an error, a parsed output, or an updated parser state ready for future input. This primitive, codified by [ParserState::feed](incpa_state::ParserState::feed), allows the same parser definition to support parsing streaming input from async or sync sources, as well as other "incremental" use cases such as interactive REPL loop parsing.
 
 The term "parser composition" emphasizes how sophisticated parsers can be defined by composing simpler parsers.
-
-## Related Crates
-
-The `incpa` project functionality is separated into multiple distinct crates:
-
-- [`incpa-byte`](https://docs.rs/incpa-byte): byte-oriented parsing, parsers, and input
-- [`incpa-str`](https://docs.rs/incpa-str): str-oriented parsing, parsers, and input
-- [`incpa-tokio`](https://docs.rs/incpa-tokio): support for async streaming input via [`tokio`](https://docs.rs/tokio)`::io::AsyncRead` sources
 
 ## Example
 
 ```rust
-use incpa::UniversalParserError;
-use incpa::primitive::remaining;
-use incpa::{Parser, ParserCompose};
+use incpa_parser::{Parser, ParserCompose};
+use incpa_parser::primitive::remaining;
+use incpa_state::UniversalParserError;
 
 fn main() -> Result<(), UniversalParserError> {
     let parser = define_my_parser();
@@ -33,11 +25,11 @@ fn define_my_parser() -> impl Parser<str, Output=(&'static str, String), Error=U
 }
 ```
 
-## Trade-offs
+## Related Crates
 
-There is a fundamental trade-off between streaming parsers, like `incpa`-based parsers, versus "zero-copy" parsers which parse values which refer back to the original input buffer.
+This [incpa](crate) provides an "all-batteries included" API by re-exporting multiple `incpa-` prefixed crates into one namespace. Projects which prefer having fewer direct dependencies or new projects might start by depending on just this top-level crate, while projects which want to exclude code and build-times can select the subset of re-exported crates they rely on directly. 
 
-Zero-copy parsers reduce the memory footprint and amount of copying at the cost of requiring all input to be held in memory, whereas streaming parsers can parse very large inputs at the cost of internally copying input where necessary.
+Each of the mods in this crate re-export a crate with an exact naming correspondence, e.g. the [parser] mod → the [incpa_parser] crate, the [state] mod → the [incpa_state] crate, and so on.
 
 ## Related Projects
 

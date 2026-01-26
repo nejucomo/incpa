@@ -1,4 +1,4 @@
-use incpa::Parser;
+use incpa_parser::Parser;
 
 use crate::utf8::Utf8Adapter;
 
@@ -16,7 +16,7 @@ pub trait StrParser: Parser<str> {
 
 #[test]
 fn test_hello_world_via_adapter() {
-    use incpa::Parser;
+    use incpa_parser::Parser;
 
     let strp = "Hello World!";
     let parsed = strp

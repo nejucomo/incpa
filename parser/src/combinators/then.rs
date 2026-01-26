@@ -1,0 +1,41 @@
+#[cfg(test)]
+mod tests;
+
+mod parser;
+
+pub use self::parser::ThenParser;
+
+use derive_new::new;
+use incpa_state::Input;
+
+use crate::{Parser, ParserCompose};
+
+/// Parse `P` then `Q`
+#[derive(Copy, Clone, Debug, new)]
+#[new(visibility = "pub(crate)")]
+pub struct Then<P, Q> {
+    p: P,
+    q: Q,
+}
+
+impl<P, Q> ParserCompose for Then<P, Q>
+where
+    P: ParserCompose,
+    Q: ParserCompose<Error = P::Error>,
+{
+    type Output = (P::Output, Q::Output);
+    type Error = P::Error;
+}
+
+impl<P, Q, I> Parser<I> for Then<P, Q>
+where
+    I: ?Sized + Input + 'static,
+    P: Parser<I>,
+    Q: Parser<I, Error = P::Error>,
+{
+    type State = ThenParser<P::State, P::Output, Q::State>;
+
+    fn start_parser(self) -> Self::State {
+        ThenParser::new(self.p.start_parser(), self.q.start_parser())
+    }
+}

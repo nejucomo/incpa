@@ -1,6 +1,5 @@
 [package]
-name = "incpa-byte"
-description = "byte-oriented parsing and input for `incpa` parsers"
+name = "incpa"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
@@ -8,5 +7,8 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-incpa-state.workspace = true
+incpa-byte.workspace = true
 incpa-parser.workspace = true
+incpa-state.workspace = true
+incpa-str.workspace = true
+incpa-tokio.workspace = true
