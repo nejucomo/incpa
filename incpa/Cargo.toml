@@ -13,3 +13,4 @@ incpa-recursive.workspace = true
 incpa-state.workspace = true
 incpa-str.workspace = true
 incpa-tokio.workspace = true
+paste.workspace = true
