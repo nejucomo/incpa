@@ -8,7 +8,9 @@ macro_rules! link_subcrate {
 
             //! # Re-export
             //!
-            #![doc = concat!("//! This mod is a re-export of all of [incpa_", stringify!($name), "]; see [Related Crates](crate#related_crates) about the crate relationships.")]
+            //! This mod is a re-export of all of
+            #![doc = concat!("[incpa_", stringify!($name), "];")]
+            //! see [Related Crates](crate#related_crates) about the crate relationships.
 
             paste::paste! {
                 pub use [<incpa_ $name>]::*;
