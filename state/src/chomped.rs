@@ -1,10 +1,9 @@
 use derive_new::new;
 
-use crate::Outcome;
 use crate::map::{MapConsumed, MapNext, MapOutcome, MapParsed};
 
-/// The [Ok] result of [ParserState::feed](crate::ParserState::feed)
-pub type FeedChomped<P, O> = Chomped<Outcome<P, O>>;
+/// A [Result] with a [Chomped] [Ok]
+pub type ChompedResult<T, E> = Result<Chomped<T>, E>;
 
 /// Tracks a number of elements consumed for a `value`
 ///

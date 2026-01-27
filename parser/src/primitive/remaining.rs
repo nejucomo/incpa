@@ -4,7 +4,7 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use incpa_state::{Chomped, FeedChomped, Input, ParserState, UniversalParserError};
+use incpa_state::{Chomped, ChompedResult, Input, Outcome, ParserState, UniversalParserError};
 
 use crate::{Parser, ParserCompose};
 
@@ -51,7 +51,7 @@ where
     type Output = I::Owned;
     type Error = UniversalParserError;
 
-    fn feed(self, _: &I) -> Result<FeedChomped<Self, I::Owned>, Self::Error> {
+    fn feed(self, _: &I) -> ChompedResult<Outcome<Self, I::Owned>, Self::Error> {
         use incpa_state::Outcome::Next;
 
         Ok(Chomped::new(0, Next(self)))

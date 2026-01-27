@@ -1,6 +1,6 @@
 use derive_new::new;
 
-use crate::{Chomped, FeedChomped, Input, ParserState};
+use crate::{Chomped, ChompedResult, Input, Outcome, ParserState};
 
 /// Try to parse `P`, but hold all input until a successful parse
 ///
@@ -22,7 +22,7 @@ where
     type Output = P::Output;
     type Error = P::Error;
 
-    fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
+    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
         use crate::Outcome::{Next, Parsed};
 
         let inner_input = input.drop_prefix(self.consumed);

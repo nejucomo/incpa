@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use crate::UniversalParserError::{self, ExpectedMoreInput};
-use crate::{FeedChomped, Input, Outcome};
+use crate::{ChompedResult, Input, Outcome};
 
 /// A [ParserState] represents in-progress parsing
 ///
@@ -21,7 +21,7 @@ where
     /// Feed an input reference to the parser to produce an update
     ///
     /// Precondition: `input` includes a suffix which has not been seen previously by this parser.
-    fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error>;
+    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error>;
 
     /// Inform the parser there is no more input; it either produces a pending value or expects more input
     ///

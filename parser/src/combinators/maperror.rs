@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use derive_new::new;
 use incpa_state::map::MapNext as _;
-use incpa_state::{FeedChomped, Input, ParserState, UniversalParserError};
+use incpa_state::{ChompedResult, Input, Outcome, ParserState, UniversalParserError};
 
 use crate::{Parser, ParserCompose};
 
@@ -56,7 +56,7 @@ where
     type Output = P::Output;
     type Error = E;
 
-    fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, E> {
+    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, E> {
         let MapError { inner, f, .. } = self.0;
 
         match inner.feed(input) {

@@ -1,6 +1,6 @@
 use either::Either;
 use incpa_state::map::{MapConsumed as _, MapOutcome as _};
-use incpa_state::{Chomped, FeedChomped, Input, ParserState};
+use incpa_state::{Chomped, ChompedResult, Input, Outcome, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct ThenParser<P, O, Q> {
@@ -26,7 +26,7 @@ where
     type Output = (P::Output, Q::Output);
     type Error = P::Error;
 
-    fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
+    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
         use Either::{Left, Right};
         use incpa_state::Outcome::{Next, Parsed};
 

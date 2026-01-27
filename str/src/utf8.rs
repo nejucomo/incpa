@@ -3,7 +3,7 @@
 use derive_more::From;
 use incpa_parser::{Parser, ParserCompose};
 use incpa_state::map::{MapConsumed as _, MapNext as _};
-use incpa_state::{FeedChomped, ParserState, UniversalParserError};
+use incpa_state::{ChompedResult, Outcome, ParserState, UniversalParserError};
 use thiserror::Error;
 
 use crate::StrParser;
@@ -59,7 +59,7 @@ where
     type Output = S::Output;
     type Error = Utf8AdapterError<S::Error>;
 
-    fn feed(self, input: &[u8]) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
+    fn feed(self, input: &[u8]) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
         let s = std::str::from_utf8(input)?;
         let update = self.0.feed(s).map_err(Utf8AdapterError::StrParser)?;
         Ok(update
