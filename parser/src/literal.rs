@@ -7,7 +7,7 @@ mod sliceimpl;
 mod strimpl;
 
 use derive_new::new;
-use incpa_state::{Chomped, FeedChomped, Input, ParserState};
+use incpa_state::{Chomped, ChompedResult, Input, Outcome, ParserState};
 
 use crate::Parser;
 
@@ -55,7 +55,7 @@ where
     type Output = L::Output;
     type Error = L::Error;
 
-    fn feed(self, input: &I) -> Result<FeedChomped<Self, L>, Self::Error> {
+    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, L>, Self::Error> {
         use incpa_state::Outcome::{Next, Parsed};
         use incpa_state::UniversalParserError::UnexpectedInput;
 

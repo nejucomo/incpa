@@ -1,6 +1,6 @@
 use either::Either;
 use incpa_state::map::{MapNext as _, MapParsed as _};
-use incpa_state::{Backtrack, FeedChomped, Input, ParserState};
+use incpa_state::{Backtrack, ChompedResult, Input, Outcome, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct OrParser<P, Q> {
@@ -26,7 +26,7 @@ where
     type Output = Either<P::Output, Q::Output>;
     type Error = P::Error;
 
-    fn feed(self, input: &I) -> Result<FeedChomped<Self, Self::Output>, Self::Error> {
+    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
         use Either::{Left, Right};
 
         let OrParser { obp, q } = self;
