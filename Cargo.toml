@@ -11,6 +11,7 @@ resolver = "3"
 members = [
   "byte",
   "incpa",
+  "ioe",
   "parser",
   "recursive",
   "state",
@@ -32,6 +33,7 @@ tokio = { version = "1.42.0", default-features = false }
 # Local crates:
 incpa = { path = "incpa", version = "0.0.3" }
 incpa-byte = { path = "byte", version = "0.0.3" }
+incpa-ioe = { path = "ioe", version = "0.0.3" }
 incpa-parser = { path = "parser", version = "0.0.3" }
 incpa-recursive = { path = "recursive", version = "0.0.3" }
 incpa-state = { path = "state", version = "0.0.3" }
