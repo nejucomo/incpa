@@ -1,15 +1,9 @@
-use incpa_state::UniversalParserError;
+use incpa_ioe::IncpaIOE;
 
 use crate::combinators::{MapError, MapOutput, Or, Then};
 
-/// A base-trait of parsers defining the output, error, and providing composition methods
-pub trait ParserCompose: Sized {
-    /// The type of output on successful parse
-    type Output;
-
-    /// The type of errors this parser detects
-    type Error: From<UniversalParserError>;
-
+/// A base-trait of parsers providing composition
+pub trait ParserCompose: IncpaIOE {
     /// Compose a new parser with mapped output
     fn map_output<F, O>(self, f: F) -> MapOutput<Self, F, O>
     where

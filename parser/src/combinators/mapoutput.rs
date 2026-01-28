@@ -1,8 +1,9 @@
 use std::marker::PhantomData;
 
 use derive_new::new;
+use incpa_ioe::IncpaIOE;
 use incpa_state::map::MapOutcome as _;
-use incpa_state::{ChompedResult, Input, Outcome, ParserState};
+use incpa_state::{ChompedResult, Outcome, ParserState};
 
 use crate::{Parser, ParserCompose};
 
@@ -16,19 +17,26 @@ pub struct MapOutput<P, F, O> {
     ph: PhantomData<O>,
 }
 
+impl<P, F, O> IncpaIOE for MapOutput<P, F, O>
+where
+    P: IncpaIOE,
+    F: FnOnce(P::Output) -> O,
+{
+    type Input = P::Input;
+    type Output = O;
+    type Error = P::Error;
+}
+
 impl<P, F, O> ParserCompose for MapOutput<P, F, O>
 where
     P: ParserCompose,
     F: FnOnce(P::Output) -> O,
 {
-    type Output = O;
-    type Error = P::Error;
 }
 
-impl<P, F, O, I> Parser<I> for MapOutput<P, F, O>
+impl<P, F, O> Parser for MapOutput<P, F, O>
 where
-    I: ?Sized + Input,
-    P: Parser<I>,
+    P: Parser,
     F: FnOnce(P::Output) -> O,
 {
     type State = MapOutputParser<P::State, F, O>;
@@ -43,16 +51,22 @@ where
 #[new(visibility = "pub(crate)")]
 pub struct MapOutputParser<P, F, O>(MapOutput<P, F, O>);
 
-impl<P, F, I, O> ParserState<I> for MapOutputParser<P, F, O>
+impl<P, F, O> IncpaIOE for MapOutputParser<P, F, O>
 where
-    I: ?Sized + Input,
-    P: ParserState<I>,
+    P: IncpaIOE,
     F: FnOnce(P::Output) -> O,
 {
+    type Input = P::Input;
     type Output = O;
     type Error = P::Error;
+}
 
-    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, O>, Self::Error> {
+impl<P, F, O> ParserState for MapOutputParser<P, F, O>
+where
+    P: ParserState,
+    F: FnOnce(P::Output) -> O,
+{
+    fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, O>, Self::Error> {
         use incpa_state::Outcome::{Next, Parsed};
 
         let MapOutput { inner, f, .. } = self.0;
@@ -63,7 +77,7 @@ where
         })
     }
 
-    fn end_input(self, final_input: &I) -> Result<O, Self::Error> {
+    fn end_input(self, final_input: &Self::Input) -> Result<O, Self::Error> {
         self.0.inner.end_input(final_input).map(self.0.f)
     }
 }

@@ -1,4 +1,5 @@
-use incpa_state::{Input, ParserState};
+use incpa_ioe::Input;
+use incpa_state::ParserState;
 
 use crate::ParserCompose;
 
@@ -7,18 +8,15 @@ use crate::ParserCompose;
 /// Implementations can often specify the grammar to be parsed by [crate::primitive] types and the composition methods of this trait.
 ///
 /// The actual behind-the-scenes work of parsing is accomplished by creating [Parser::State] from [Parser::start_parser], then driving that.
-pub trait Parser<I>: ParserCompose
-where
-    I: ?Sized + Input,
-{
+pub trait Parser: ParserCompose {
     /// The initial [ParserState] to parse this specification
-    type State: ParserState<I, Output = Self::Output, Error = Self::Error>;
+    type State: ParserState<Input = Self::Input, Output = Self::Output, Error = Self::Error>;
 
     /// Construct a state to drive low-level parsing
     fn start_parser(self) -> Self::State;
 
     /// Parse an entire in-memory input to completion
-    fn parse_all(self, input: &I) -> Result<Self::Output, Self::Error> {
+    fn parse_all(self, input: &Self::Input) -> Result<Self::Output, Self::Error> {
         use incpa_state::Chomped;
         use incpa_state::Outcome::{Next, Parsed};
 

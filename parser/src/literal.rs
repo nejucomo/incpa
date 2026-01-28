@@ -6,8 +6,10 @@ mod charimpl;
 mod sliceimpl;
 mod strimpl;
 
-use derive_new::new;
-use incpa_state::{Chomped, ChompedResult, Input, Outcome, ParserState};
+use std::marker::PhantomData;
+
+use incpa_ioe::{IncpaIOE, Input, UniversalParserError};
+use incpa_state::{Chomped, ChompedResult, Outcome, ParserState};
 
 use crate::Parser;
 
@@ -16,7 +18,7 @@ use crate::Parser;
 /// # Example
 ///
 /// ```
-/// use incpa_state::UniversalParserError;
+/// use incpa_ioe::UniversalParserError;
 /// use incpa_parser::{Parser, Literal};
 ///
 /// fn main() -> Result<(), UniversalParserError> {
@@ -28,7 +30,7 @@ use crate::Parser;
 ///   Ok(())
 /// }
 /// ```
-pub trait Literal<I>: Sized + Copy + Parser<I, Output = Self>
+pub trait Literal<I>: Sized + Copy + Parser<Input = I, Output = Self>
 where
     I: ?Sized + Input,
 {
@@ -44,28 +46,53 @@ where
 }
 
 /// Parse a literal value
-#[derive(Copy, Clone, Debug, new)]
-pub struct LiteralParser<L>(L);
+#[derive(Copy, Clone, Debug)]
+pub struct LiteralParser<I, L>
+where
+    I: ?Sized,
+{
+    literal: L,
+    _phantom: PhantomData<*const I>,
+}
 
-impl<I, L> ParserState<I> for LiteralParser<L>
+impl<I, L> LiteralParser<I, L>
+where
+    I: ?Sized,
+{
+    pub(crate) fn new(literal: L) -> Self {
+        LiteralParser {
+            literal,
+            _phantom: PhantomData,
+        }
+    }
+}
+
+impl<I, L> IncpaIOE for LiteralParser<I, L>
 where
     I: ?Sized + Input,
     L: Literal<I>,
 {
-    type Output = L::Output;
+    type Input = I;
+    type Output = L;
     type Error = L::Error;
+}
 
-    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, L>, Self::Error> {
+impl<I, L> ParserState for LiteralParser<I, L>
+where
+    I: ?Sized + Input,
+    L: Literal<I>,
+{
+    fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, L>, Self::Error> {
         use incpa_state::Outcome::{Next, Parsed};
-        use incpa_state::UniversalParserError::UnexpectedInput;
+        use UniversalParserError::UnexpectedInput;
 
-        let n = self.0.literal_len();
+        let n = self.literal.literal_len();
         let prefix = input.prefix_up_to(n);
 
         if prefix.len() < n {
             Ok(Chomped::new(0, Next(self)))
-        } else if self.0.literal_eq(prefix) {
-            Ok(Chomped::new(n, Parsed(self.0)))
+        } else if self.literal.literal_eq(prefix) {
+            Ok(Chomped::new(n, Parsed(self.literal)))
         } else {
             Err(Self::Error::from(UnexpectedInput))
         }

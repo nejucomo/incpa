@@ -1,8 +1,9 @@
 use std::marker::PhantomData;
 
 use derive_new::new;
+use incpa_ioe::{IncpaIOE, UniversalParserError};
 use incpa_state::map::MapNext as _;
-use incpa_state::{ChompedResult, Input, Outcome, ParserState, UniversalParserError};
+use incpa_state::{ChompedResult, Outcome, ParserState};
 
 use crate::{Parser, ParserCompose};
 
@@ -16,57 +17,57 @@ pub struct MapError<P, F, E> {
     ph: PhantomData<E>,
 }
 
+impl<P, F, E> IncpaIOE for MapError<P, F, E>
+where
+    P: IncpaIOE,
+    F: FnOnce(P::Error) -> E,
+    E: From<UniversalParserError>,
+{
+    type Input = P::Input;
+    type Output = P::Output;
+    type Error = E;
+}
+
 impl<P, F, E> ParserCompose for MapError<P, F, E>
 where
     P: ParserCompose,
     F: FnOnce(P::Error) -> E,
     E: From<UniversalParserError>,
 {
-    type Output = P::Output;
-    type Error = E;
 }
 
-impl<P, F, E, I> Parser<I> for MapError<P, F, E>
+impl<P, F, E> Parser for MapError<P, F, E>
 where
-    P: Parser<I>,
+    P: Parser,
     F: FnOnce(P::Error) -> E,
     E: From<UniversalParserError>,
-    I: ?Sized + Input,
 {
-    type State = MapErrorParser<P::State, F, E>;
+    type State = MapError<P::State, F, E>;
 
     fn start_parser(self) -> Self::State {
         let MapError { inner, f, .. } = self;
 
-        MapErrorParser(MapError::new(inner.start_parser(), f))
+        MapError::new(inner.start_parser(), f)
     }
 }
 
-#[derive(Copy, Clone, Debug, new)]
-#[new(visibility = "pub(crate)")]
-pub struct MapErrorParser<P, F, E>(MapError<P, F, E>);
-
-impl<P, F, E, I> ParserState<I> for MapErrorParser<P, F, E>
+impl<P, F, E> ParserState for MapError<P, F, E>
 where
-    P: ParserState<I>,
+    P: ParserState,
     F: FnOnce(P::Error) -> E,
     E: From<UniversalParserError>,
-    I: ?Sized + Input,
 {
-    type Output = P::Output;
-    type Error = E;
-
-    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, E> {
-        let MapError { inner, f, .. } = self.0;
+    fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, Self::Output>, E> {
+        let MapError { inner, f, .. } = self;
 
         match inner.feed(input) {
-            Ok(up) => Ok(up.map_next(|p| MapErrorParser(MapError::new(p, f)))),
+            Ok(up) => Ok(up.map_next(|p| MapError::new(p, f))),
             Err(e) => Err(f(e)),
         }
     }
 
-    fn end_input(self, final_input: &I) -> Result<Self::Output, E> {
-        let MapError { inner, f, .. } = self.0;
+    fn end_input(self, final_input: &Self::Input) -> Result<Self::Output, E> {
+        let MapError { inner, f, .. } = self;
 
         inner.end_input(final_input).map_err(f)
     }

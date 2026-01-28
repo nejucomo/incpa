@@ -1,6 +1,7 @@
 use either::Either;
+use incpa_ioe::IncpaIOE;
 use incpa_state::map::{MapNext as _, MapParsed as _};
-use incpa_state::{Backtrack, ChompedResult, Input, Outcome, ParserState};
+use incpa_state::{Backtrack, ChompedResult, Outcome, ParserState};
 
 #[derive(Copy, Clone, Debug)]
 pub struct OrParser<P, Q> {
@@ -17,16 +18,22 @@ impl<P, Q> OrParser<P, Q> {
     }
 }
 
-impl<P, Q, I> ParserState<I> for OrParser<P, Q>
+impl<P, Q> IncpaIOE for OrParser<P, Q>
 where
-    I: ?Sized + Input + 'static,
-    P: ParserState<I>,
-    Q: ParserState<I, Error = P::Error>,
+    P: IncpaIOE,
+    Q: IncpaIOE<Input = P::Input, Error = P::Error>,
 {
+    type Input = P::Input;
     type Output = Either<P::Output, Q::Output>;
     type Error = P::Error;
+}
 
-    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
+impl<P, Q> ParserState for OrParser<P, Q>
+where
+    P: ParserState,
+    Q: ParserState<Input = P::Input, Error = P::Error>,
+{
+    fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
         use Either::{Left, Right};
 
         let OrParser { obp, q } = self;
@@ -44,7 +51,7 @@ where
             .map_parsed(Right)
     }
 
-    fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
+    fn end_input(self, final_input: &Self::Input) -> Result<Self::Output, Self::Error> {
         use Either::{Left, Right};
 
         let OrParser { obp, q } = self;

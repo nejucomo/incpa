@@ -9,6 +9,7 @@ repository.workspace = true
 
 [dependencies]
 derive_more = { workspace = true, features = ["from"] }
-incpa-state.workspace = true
+incpa-ioe.workspace = true
 incpa-parser.workspace = true
+incpa-state.workspace = true
 thiserror.workspace = true

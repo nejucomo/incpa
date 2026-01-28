@@ -7,7 +7,7 @@ pub use self::parser::OrParser;
 
 use derive_new::new;
 use either::Either;
-use incpa_state::Input;
+use incpa_ioe::IncpaIOE;
 
 use crate::{Parser, ParserCompose};
 
@@ -21,20 +21,27 @@ pub struct Or<P, Q> {
     q: Q,
 }
 
-impl<P, Q> ParserCompose for Or<P, Q>
+impl<P, Q> IncpaIOE for Or<P, Q>
 where
-    P: ParserCompose,
-    Q: ParserCompose<Error = P::Error>,
+    P: IncpaIOE,
+    Q: IncpaIOE<Input = P::Input, Error = P::Error>,
 {
+    type Input = P::Input;
     type Output = Either<P::Output, Q::Output>;
     type Error = P::Error;
 }
 
-impl<P, Q, I> Parser<I> for Or<P, Q>
+impl<P, Q> ParserCompose for Or<P, Q>
 where
-    I: ?Sized + Input + 'static,
-    P: Parser<I>,
-    Q: Parser<I, Error = P::Error>,
+    P: ParserCompose,
+    Q: ParserCompose<Input = P::Input, Error = P::Error>,
+{
+}
+
+impl<P, Q> Parser for Or<P, Q>
+where
+    P: Parser,
+    Q: Parser<Input = P::Input, Error = P::Error>,
 {
     type State = OrParser<P::State, Q::State>;
 

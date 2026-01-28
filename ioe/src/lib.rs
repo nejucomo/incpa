@@ -1,14 +1,12 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+#![doc = include_str!("../Description.md")]
+#![doc = include_str!("../../README-subcrate-link.md")]
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod error;
+mod impls;
+mod input;
+mod ioe;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::error::UniversalParserError;
+pub use self::input::Input;
+pub use self::ioe::IncpaIOE;
