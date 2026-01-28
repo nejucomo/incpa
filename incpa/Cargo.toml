@@ -8,6 +8,7 @@ repository.workspace = true
 
 [dependencies]
 incpa-byte.workspace = true
+incpa-ioe.workspace = true
 incpa-parser.workspace = true
 incpa-recursive.workspace = true
 incpa-state.workspace = true

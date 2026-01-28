@@ -4,10 +4,10 @@ use incpa_state::ParserState;
 use crate::BufferManager;
 
 /// Every `Parser<[u8]>` is a [ByteParser]
-impl<S> ByteParser for S where S: Parser<[u8]> {}
+impl<S> ByteParser for S where S: Parser<Input = [u8]> {}
 
 /// Any [Parser] over `[u8]` input
-pub trait ByteParser: Parser<[u8]> {
+pub trait ByteParser: Parser<Input = [u8]> {
     /// Consume and parse all of input from `r`
     fn parse_reader<R, E>(self, r: R) -> Result<Self::Output, E>
     where

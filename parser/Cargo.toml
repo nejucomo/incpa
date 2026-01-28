@@ -11,6 +11,7 @@ repository.workspace = true
 derive-new.workspace = true
 either.workspace = true
 incpa-state.workspace = true
+incpa-ioe.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]

@@ -4,7 +4,8 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use incpa_state::{Chomped, ChompedResult, Input, Outcome, ParserState, UniversalParserError};
+use incpa_ioe::{IncpaIOE, Input, UniversalParserError};
+use incpa_state::{Chomped, ChompedResult, Outcome, ParserState};
 
 use crate::{Parser, ParserCompose};
 
@@ -14,7 +15,7 @@ use crate::{Parser, ParserCompose};
 ///
 /// This requires holding all input in memory, by definition.
 pub fn remaining<I>()
--> impl Parser<I, Output = I::Owned, Error = UniversalParserError> + Copy + Debug
+-> impl Parser<Input = I, Output = I::Owned, Error = UniversalParserError> + Copy + Debug
 where
     I: ?Sized + Input + ToOwned,
 {
@@ -25,15 +26,22 @@ struct Remaining<I>(PhantomData<Box<I>>)
 where
     I: ?Sized + Input + ToOwned;
 
-impl<I> ParserCompose for Remaining<I>
+impl<I> IncpaIOE for Remaining<I>
 where
     I: ?Sized + Input + ToOwned,
 {
+    type Input = I;
     type Output = I::Owned;
     type Error = UniversalParserError;
 }
 
-impl<I> Parser<I> for Remaining<I>
+impl<I> ParserCompose for Remaining<I>
+where
+    I: ?Sized + Input + ToOwned,
+{
+}
+
+impl<I> Parser for Remaining<I>
 where
     I: ?Sized + Input + ToOwned,
 {
@@ -44,20 +52,17 @@ where
     }
 }
 
-impl<I> ParserState<I> for Remaining<I>
+impl<I> ParserState for Remaining<I>
 where
     I: ?Sized + Input + ToOwned,
 {
-    type Output = I::Owned;
-    type Error = UniversalParserError;
-
-    fn feed(self, _: &I) -> ChompedResult<Outcome<Self, I::Owned>, Self::Error> {
+    fn feed(self, _: &Self::Input) -> ChompedResult<Outcome<Self, I::Owned>, Self::Error> {
         use incpa_state::Outcome::Next;
 
         Ok(Chomped::new(0, Next(self)))
     }
 
-    fn end_input(self, final_input: &I) -> Result<I::Owned, Self::Error> {
+    fn end_input(self, final_input: &Self::Input) -> Result<I::Owned, Self::Error> {
         Ok(final_input.to_owned())
     }
 }

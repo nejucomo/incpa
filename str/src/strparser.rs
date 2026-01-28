@@ -2,10 +2,10 @@ use incpa_parser::Parser;
 
 use crate::utf8::Utf8Adapter;
 
-impl<P> StrParser for P where P: Parser<str> {}
+impl<P> StrParser for P where P: Parser<Input = str> {}
 
 /// A parser of `&str` input
-pub trait StrParser: Parser<str> {
+pub trait StrParser: Parser<Input = str> {
     /// Convert into a `Parser<[u8]>` that expects UTF8 byte input.
     ///
     /// See `incpa-byte` for a convenient way to read `std::io::Read` inputs, and `incpa-tokio` for a convenient way to read `tokio::io::AsyncRead` inputs.

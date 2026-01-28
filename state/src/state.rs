@@ -1,34 +1,26 @@
 use std::future::Future;
 
-use crate::UniversalParserError::{self, ExpectedMoreInput};
-use crate::{ChompedResult, Input, Outcome};
+use incpa_ioe::{IncpaIOE, UniversalParserError::ExpectedMoreInput};
+
+use crate::{ChompedResult, Outcome};
 
 /// A [ParserState] represents in-progress parsing
 ///
 /// # Invariants
 ///
 /// This crate assumes every [ParserState] impl is deterministic, so that calling [ParserState::feed] or [ParserState::end_input] on two equivalent states with the same input parameters produces equivalent values.
-pub trait ParserState<I>: Sized
-where
-    I: ?Sized + Input,
-{
-    /// The type of output on successful parse
-    type Output;
-
-    /// The type of errors this parser detects
-    type Error: From<UniversalParserError>;
-
+pub trait ParserState: IncpaIOE {
     /// Feed an input reference to the parser to produce an update
     ///
     /// Precondition: `input` includes a suffix which has not been seen previously by this parser.
-    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error>;
+    fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error>;
 
     /// Inform the parser there is no more input; it either produces a pending value or expects more input
     ///
     /// The default implementation simply returns the [ExpectedMoreInput] error.
     ///
     /// Precondition: all of `final_input` must have been seen by a prior call to [ParserState::feed]
-    fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
+    fn end_input(self, final_input: &Self::Input) -> Result<Self::Output, Self::Error> {
         let _ = final_input;
         Err(Self::Error::from(ExpectedMoreInput))
     }

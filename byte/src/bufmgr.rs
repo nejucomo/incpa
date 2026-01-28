@@ -48,7 +48,7 @@ impl BufferManager {
         readcnt: usize,
     ) -> Result<Outcome<P, P::Output>, E>
     where
-        P: ParserState<[u8]>,
+        P: ParserState<Input = [u8]>,
         E: From<P::Error>,
     {
         use Outcome::Parsed;

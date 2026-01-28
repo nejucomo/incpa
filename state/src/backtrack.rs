@@ -1,6 +1,8 @@
 use derive_new::new;
 
-use crate::{Chomped, ChompedResult, Input, Outcome, ParserState};
+use incpa_ioe::{IncpaIOE, Input};
+
+use crate::{Chomped, ChompedResult, Outcome, ParserState};
 
 /// Try to parse `P`, but hold all input until a successful parse
 ///
@@ -12,17 +14,20 @@ pub struct Backtrack<P> {
     consumed: usize,
 }
 
-// impl<P, I, O, E> Parser<I, O, E> for Backtrack<P> where P: Parser<I, O, E> {}
-
-impl<P, I> ParserState<I> for Backtrack<P>
+impl<P> IncpaIOE for Backtrack<P>
 where
-    P: ParserState<I>,
-    I: ?Sized + Input,
+    P: IncpaIOE,
 {
+    type Input = P::Input;
     type Output = P::Output;
     type Error = P::Error;
+}
 
-    fn feed(self, input: &I) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
+impl<P> ParserState for Backtrack<P>
+where
+    P: ParserState,
+{
+    fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
         use crate::Outcome::{Next, Parsed};
 
         let inner_input = input.drop_prefix(self.consumed);
@@ -44,7 +49,7 @@ where
         }
     }
 
-    fn end_input(self, final_input: &I) -> Result<Self::Output, Self::Error> {
+    fn end_input(self, final_input: &Self::Input) -> Result<Self::Output, Self::Error> {
         self.inner.end_input(final_input.drop_prefix(self.consumed))
     }
 }
