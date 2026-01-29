@@ -1,45 +1,54 @@
 use either::Either;
 use incpa_ioe::{IncpaIOE, Input};
-use incpa_state::map::{MapConsumed as _, MapOutcome as _};
-use incpa_state::{Chomped, ChompedResult, Outcome, ParserState};
 
+use crate::map::{MapConsumed as _, MapOutcome as _};
+use crate::{Chomped, ChompedResult, Outcome, ParserState};
+
+/// The state of parsing `P` then `Q`
 #[derive(Copy, Clone, Debug)]
-pub struct ThenParser<P, O, Q> {
-    porval: Either<P, O>,
+pub struct ThenState<P, Q>
+where
+    P: IncpaIOE,
+    Q: IncpaIOE<Input = P::Input, Error = P::Error>,
+{
+    porval: Either<P, P::Output>,
     q: Q,
 }
 
-impl<P, O, Q> ThenParser<P, O, Q> {
-    pub(super) fn new(p: P, q: Q) -> Self {
-        ThenParser {
+impl<P, Q> ThenState<P, Q>
+where
+    P: IncpaIOE,
+    Q: IncpaIOE<Input = P::Input, Error = P::Error>,
+{
+    /// Construct a new [ThenState]
+    pub fn new(p: P, q: Q) -> Self {
+        ThenState {
             porval: Either::Left(p),
             q,
         }
     }
 }
 
-impl<P, Q> IncpaIOE for ThenParser<P, P::Output, Q>
+impl<P, Q> IncpaIOE for ThenState<P, Q>
 where
     P: IncpaIOE,
     Q: IncpaIOE<Input = P::Input, Error = P::Error>,
-    P::Input: 'static,
 {
     type Input = P::Input;
     type Output = (P::Output, Q::Output);
     type Error = P::Error;
 }
 
-impl<P, Q> ParserState for ThenParser<P, P::Output, Q>
+impl<P, Q> ParserState for ThenState<P, Q>
 where
     P: ParserState,
     Q: ParserState<Input = P::Input, Error = P::Error>,
-    P::Input: 'static,
 {
     fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
+        use crate::Outcome::{Next, Parsed};
         use Either::{Left, Right};
-        use incpa_state::Outcome::{Next, Parsed};
 
-        let ThenParser { porval, q } = self;
+        let ThenState { porval, q } = self;
 
         match porval {
             Left(p) => {
@@ -51,9 +60,9 @@ where
                 match outcome {
                     Next(p) => Ok(Chomped {
                         consumed,
-                        value: Next(ThenParser::new(p, q)),
+                        value: Next(ThenState::new(p, q)),
                     }),
-                    Parsed(pval) => ThenParser {
+                    Parsed(pval) => ThenState {
                         porval: Right(pval),
                         q,
                     }
@@ -62,7 +71,7 @@ where
                 }
             }
             Right(pval) => q.feed(input).map_outcome(|oc| match oc {
-                Next(q) => Next(ThenParser {
+                Next(q) => Next(ThenState {
                     porval: Right(pval),
                     q,
                 }),
@@ -73,7 +82,10 @@ where
 
     fn end_input(self, final_input: &Self::Input) -> Result<Self::Output, Self::Error> {
         let (pval, input) = self.porval.either(
-            |p| p.end_input(final_input).map(|pval| (pval, Self::Input::empty())),
+            |p| {
+                p.end_input(final_input)
+                    .map(|pval| (pval, final_input.empty_suffix()))
+            },
             |pval| Ok((pval, final_input)),
         )?;
         let qval = self.q.end_input(input)?;

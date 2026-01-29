@@ -4,10 +4,11 @@ mod tests;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
+use incpa_compose::ParserCompose;
 use incpa_ioe::{IncpaIOE, Input, UniversalParserError};
 use incpa_state::{Chomped, ChompedResult, Outcome, ParserState};
 
-use crate::{Parser, ParserCompose};
+use crate::Parser;
 
 /// Captures all remaining input
 ///
@@ -35,11 +36,7 @@ where
     type Error = UniversalParserError;
 }
 
-impl<I> ParserCompose for Remaining<I>
-where
-    I: ?Sized + Input + ToOwned,
-{
-}
+impl<I> ParserCompose for Remaining<I> where I: ?Sized + Input + ToOwned {}
 
 impl<I> Parser for Remaining<I>
 where

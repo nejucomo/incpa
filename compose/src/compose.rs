@@ -1,6 +1,6 @@
 use incpa_ioe::IncpaIOE;
 
-use crate::combinators::{MapError, MapOutput, Or, Then};
+use crate::{MapError, MapOutput, Or, Then};
 
 /// A base-trait of parsers providing composition
 pub trait ParserCompose: IncpaIOE {
@@ -30,3 +30,12 @@ pub trait ParserCompose: IncpaIOE {
         Or::new(self, other)
     }
 }
+
+// `std` foreign impls
+impl ParserCompose for char {}
+
+impl ParserCompose for &str {}
+
+impl<T> ParserCompose for &[T] where T: PartialEq {}
+
+impl<T, const K: usize> ParserCompose for &[T; K] where T: PartialEq {}

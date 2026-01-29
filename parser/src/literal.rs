@@ -47,27 +47,27 @@ where
 
 /// Parse a literal value
 #[derive(Copy, Clone, Debug)]
-pub struct LiteralParser<I, L>
+pub struct LiteralState<I, L>
 where
     I: ?Sized,
 {
     literal: L,
-    _phantom: PhantomData<*const I>,
+    ph: PhantomData<Box<I>>,
 }
 
-impl<I, L> LiteralParser<I, L>
+impl<I, L> LiteralState<I, L>
 where
     I: ?Sized,
 {
     pub(crate) fn new(literal: L) -> Self {
-        LiteralParser {
+        LiteralState {
             literal,
-            _phantom: PhantomData,
+            ph: PhantomData,
         }
     }
 }
 
-impl<I, L> IncpaIOE for LiteralParser<I, L>
+impl<I, L> IncpaIOE for LiteralState<I, L>
 where
     I: ?Sized + Input,
     L: Literal<I>,
@@ -77,14 +77,14 @@ where
     type Error = L::Error;
 }
 
-impl<I, L> ParserState for LiteralParser<I, L>
+impl<I, L> ParserState for LiteralState<I, L>
 where
     I: ?Sized + Input,
     L: Literal<I>,
 {
     fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, L>, Self::Error> {
-        use incpa_state::Outcome::{Next, Parsed};
         use UniversalParserError::UnexpectedInput;
+        use incpa_state::Outcome::{Next, Parsed};
 
         let n = self.literal.literal_len();
         let prefix = input.prefix_up_to(n);

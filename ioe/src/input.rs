@@ -1,9 +1,9 @@
 /// A common interface many parsers use for manipulating input
 pub trait Input {
-    /// Produce an empty buffer
-    fn empty() -> &'static Self
-    where
-        Self: 'static;
+    /// Produce an empty buffer with the same lifetime as `self`
+    fn empty_suffix(&self) -> &Self {
+        self.drop_prefix(self.len())
+    }
 
     /// Return a number of "items" contained in the referenced input
     fn len(&self) -> usize;
@@ -30,13 +30,6 @@ pub trait Input {
 }
 
 impl Input for str {
-    fn empty() -> &'static Self
-    where
-        Self: 'static,
-    {
-        ""
-    }
-
     fn len(&self) -> usize {
         self.len()
     }
@@ -53,13 +46,6 @@ impl Input for str {
 }
 
 impl<T> Input for [T] {
-    fn empty() -> &'static Self
-    where
-        Self: 'static,
-    {
-        &[]
-    }
-
     fn len(&self) -> usize {
         <[T]>::len(self)
     }

@@ -1,6 +1,6 @@
-use crate::{Parser, ParserCompose};
+use crate::Parser;
 
-use super::{Literal, LiteralParser};
+use super::{Literal, LiteralState};
 
 impl<T, const K: usize> Literal<[T]> for &[T; K]
 where
@@ -15,19 +15,13 @@ where
     }
 }
 
-impl<T, const K: usize> ParserCompose for &[T; K]
-where
-    T: PartialEq,
-{
-}
-
 impl<'a, T, const K: usize> Parser for &'a [T; K]
 where
     T: PartialEq,
 {
-    type State = LiteralParser<[T], &'a [T; K]>;
+    type State = LiteralState<[T], &'a [T; K]>;
 
     fn start_parser(self) -> Self::State {
-        LiteralParser::new(self)
+        LiteralState::new(self)
     }
 }
