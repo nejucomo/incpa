@@ -1,6 +1,6 @@
 use incpa_ioe::IncpaIOE;
 
-use crate::{MapError, MapOutput, Or, Then};
+use crate::{EitherOr, MapError, MapOutput, Or, Then};
 
 /// A base-trait of parsers providing composition
 pub trait ParserCompose: IncpaIOE {
@@ -26,8 +26,19 @@ pub trait ParserCompose: IncpaIOE {
     }
 
     /// Attempt to parse `self`, and if it fails parse `other`
-    fn or<Q>(self, other: Q) -> Or<Self, Q> {
+    fn or<Q>(self, other: Q) -> Or<Self, Q>
+    where
+        Q: ParserCompose<Input = Self::Input, Output = Self::Output, Error = Self::Error>,
+    {
         Or::new(self, other)
+    }
+
+    /// Attempt to parse `self`, and if it fails parse `other`
+    fn either_or<Q>(self, other: Q) -> EitherOr<Self, Q>
+    where
+        Q: ParserCompose<Input = Self::Input, Error = Self::Error>,
+    {
+        EitherOr::new(self, other)
     }
 }
 

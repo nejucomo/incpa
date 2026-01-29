@@ -8,4 +8,5 @@ repository.workspace = true
 
 [dependencies]
 derive-new.workspace = true
+either.workspace = true
 incpa-ioe.workspace = true
