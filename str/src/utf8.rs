@@ -1,8 +1,9 @@
 //! UTF8 support
 
 use derive_more::From;
+use incpa_compose::ParserCompose;
 use incpa_ioe::{IncpaIOE, UniversalParserError};
-use incpa_parser::{Parser, ParserCompose};
+use incpa_parser::Parser;
 use incpa_state::map::{MapConsumed as _, MapNext as _};
 use incpa_state::{ChompedResult, Outcome, ParserState};
 use thiserror::Error;

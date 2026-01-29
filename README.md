@@ -9,7 +9,8 @@ The term "parser composition" emphasizes how sophisticated parsers can be define
 ## Example
 
 ```rust
-use incpa_parser::{Parser, ParserCompose};
+use incpa_compose::ParserCompose;
+use incpa_parser::Parser;
 use incpa_parser::primitive::remaining;
 use incpa_ioe::UniversalParserError;
 

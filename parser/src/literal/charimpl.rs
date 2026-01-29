@@ -1,6 +1,6 @@
-use crate::{Parser, ParserCompose};
+use crate::Parser;
 
-use super::{Literal, LiteralParser};
+use super::{Literal, LiteralState};
 
 impl Literal<str> for char {
     fn literal_len(self) -> usize {
@@ -12,13 +12,10 @@ impl Literal<str> for char {
     }
 }
 
-impl ParserCompose for char {
-}
-
 impl Parser for char {
-    type State = LiteralParser<str, char>;
+    type State = LiteralState<str, char>;
 
     fn start_parser(self) -> Self::State {
-        LiteralParser::new(self)
+        LiteralState::new(self)
     }
 }

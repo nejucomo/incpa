@@ -7,3 +7,5 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
+derive-new.workspace = true
+incpa-ioe.workspace = true

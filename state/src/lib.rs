@@ -8,6 +8,7 @@ mod outcome;
 mod resultimpls;
 mod state;
 
+pub mod compose;
 pub mod map;
 
 pub use self::backtrack::Backtrack;

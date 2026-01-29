@@ -1,7 +1,6 @@
+use incpa_compose::ParserCompose;
 use incpa_ioe::Input;
 use incpa_state::ParserState;
-
-use crate::ParserCompose;
 
 /// A [Parser] defines the syntax, grammar, or format to be parsed
 ///

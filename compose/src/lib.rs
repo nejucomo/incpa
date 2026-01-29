@@ -1,14 +1,15 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+#![doc = include_str!("../Description.md")]
+#![doc = include_str!("../../README-subcrate-link.md")]
+#![deny(unsafe_code, missing_docs)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod compose;
+mod maperror;
+mod mapoutput;
+mod or;
+mod then;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use self::compose::ParserCompose;
+pub use self::maperror::MapError;
+pub use self::mapoutput::MapOutput;
+pub use self::or::Or;
+pub use self::then::Then;
