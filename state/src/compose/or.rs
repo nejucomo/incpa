@@ -1,6 +1,7 @@
+use incpa_ioe::IncpaIOE;
+
 use crate::map::MapNext as _;
 use crate::{Backtrack, ChompedResult, Outcome, ParserState};
-use incpa_ioe::IncpaIOE;
 
 /// The [ParserState] for parsing `P` then `Q`
 #[derive(Copy, Clone, Debug)]
