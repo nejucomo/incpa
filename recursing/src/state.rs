@@ -1,7 +1,7 @@
 use incpa_ioe::{IncpaIOE, UniversalParserError::ExpectedMoreInput};
-use incpa_state::{ChompedResult, Outcome};
+use incpa_state::{ChompedResult, ParserState};
 
-use crate::{Continuation, RecursingControl};
+use crate::{Continuation, RecursingOutcome, RecursiveState};
 
 pub trait RecursingState<R>: IncpaIOE {
     type Continuation: Continuation<Self, R>;
@@ -17,4 +17,10 @@ pub trait RecursingState<R>: IncpaIOE {
     }
 }
 
-pub type RecursingOutcome<S, C, O> = Outcome<RecursingControl<S, C>, O>;
+pub trait AutoRecursingState<O>: Clone + RecursingState<O, Output = O> {
+    fn into_parser_state(self) -> impl ParserState<Output = O> {
+        RecursiveState::new(self)
+    }
+}
+
+impl<B, O> AutoRecursingState<O> for B where B: Clone + RecursingState<O, Output = O> {}
