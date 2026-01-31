@@ -11,7 +11,6 @@ incpa-byte.workspace = true
 incpa-compose.workspace = true
 incpa-ioe.workspace = true
 incpa-parser.workspace = true
-incpa-recursing.workspace = true
 incpa-state.workspace = true
 incpa-str.workspace = true
 incpa-tokio.workspace = true
