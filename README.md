@@ -9,10 +9,9 @@ The term "parser composition" emphasizes how sophisticated parsers can be define
 ## Example
 
 ```rust
-use incpa_compose::ParserCompose;
-use incpa_parser::Parser;
+use incpa_parser::{Parser, ParserCompose as _};
 use incpa_parser::primitive::remaining;
-use incpa_ioe::UniversalParserError;
+use incpa_state::UniversalParserError;
 
 fn main() -> Result<(), UniversalParserError> {
     let parser = define_my_parser();
@@ -21,7 +20,7 @@ fn main() -> Result<(), UniversalParserError> {
     Ok(())
 }
 
-fn define_my_parser() -> impl Parser<Input=str, Output=(&'static str, String), Error=UniversalParserError> {
+fn define_my_parser() -> impl Parser<str, Output=(&'static str, String), Error=UniversalParserError> {
     "Hello".then(remaining())
 }
 ```

@@ -1,11 +1,9 @@
 //! UTF8 support
 
 use derive_more::From;
-use incpa_compose::ParserCompose;
-use incpa_ioe::{IncpaIOE, UniversalParserError};
 use incpa_parser::Parser;
 use incpa_state::map::{MapConsumed as _, MapNext as _};
-use incpa_state::{ChompedResult, Outcome, ParserState};
+use incpa_state::{ChompedResult, Outcome, ParserState, UniversalParserError};
 use thiserror::Error;
 
 use crate::StrParser;
@@ -33,50 +31,28 @@ pub enum Utf8AdapterError<E> {
     StrParser(E),
 }
 
-impl<P> IncpaIOE for Utf8Adapter<P>
-where
-    P: StrParser,
-    P::Error: From<UniversalParserError>,
-{
-    type Input = [u8];
-    type Output = P::Output;
-    type Error = Utf8AdapterError<P::Error>;
-}
-
-impl<P> ParserCompose for Utf8Adapter<P>
-where
-    P: StrParser,
-    P::Error: From<UniversalParserError>,
-{
-}
-
-impl<P> Parser for Utf8Adapter<P>
+impl<P> Parser<[u8]> for Utf8Adapter<P>
 where
     P: StrParser,
     P::Error: From<UniversalParserError>,
 {
     type State = Utf8AdapterState<P::State>;
+    type Output = P::Output;
+    type Error = Utf8AdapterError<P::Error>;
 
     fn start_parser(self) -> Self::State {
         Utf8AdapterState::from(self.0.start_parser())
     }
 }
 
-impl<S> IncpaIOE for Utf8AdapterState<S>
+impl<S> ParserState for Utf8AdapterState<S>
 where
     S: ParserState<Input = str>,
-    S::Error: From<UniversalParserError>,
 {
     type Input = [u8];
     type Output = S::Output;
     type Error = Utf8AdapterError<S::Error>;
-}
 
-impl<S> ParserState for Utf8AdapterState<S>
-where
-    S: ParserState<Input = str>,
-    S::Error: From<UniversalParserError>,
-{
     fn feed(self, input: &[u8]) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
         let s = std::str::from_utf8(input)?;
         let update = self.0.feed(s).map_err(Utf8AdapterError::StrParser)?;

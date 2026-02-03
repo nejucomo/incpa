@@ -20,10 +20,7 @@ macro_rules! link_subcrate {
 }
 
 link_subcrate!(byte);
-link_subcrate!(compose);
-link_subcrate!(ioe);
 link_subcrate!(parser);
-link_subcrate!(recursing);
 link_subcrate!(state);
 link_subcrate!(str);
 link_subcrate!(tokio);

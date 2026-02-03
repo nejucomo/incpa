@@ -10,11 +10,8 @@ repository = "https://github.com/nejucomo/incpa"
 resolver = "3"
 members = [
   "byte",
-  "compose",
   "incpa",
-  "ioe",
   "parser",
-  "recursing",
   "state",
   "str",
   "tokio",
@@ -34,10 +31,7 @@ tokio = { version = "1.42.0", default-features = false }
 # Local crates:
 incpa = { path = "incpa", version = "0.0.3" }
 incpa-byte = { path = "byte", version = "0.0.3" }
-incpa-compose = { path = "compose", version = "0.0.3" }
-incpa-ioe = { path = "ioe", version = "0.0.3" }
 incpa-parser = { path = "parser", version = "0.0.3" }
-incpa-recursing = { path = "recursing", version = "0.0.3" }
 incpa-state = { path = "state", version = "0.0.3" }
 incpa-str = { path = "str", version = "0.0.3" }
 incpa-tokio = { path = "tokio", version = "0.0.3" }

@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
-use incpa_compose::ParserCompose as _;
-use incpa_ioe::Input;
+use incpa_state::Input;
 use test_case::test_case;
 
+use crate::compose::ParserCompose as _;
 use crate::primitive::remaining;
 use crate::{Literal, Parser};
 

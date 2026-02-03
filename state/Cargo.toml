@@ -9,6 +9,4 @@ repository.workspace = true
 [dependencies]
 derive-new.workspace = true
 either.workspace = true
-incpa-compose.workspace = true
-incpa-ioe.workspace = true
 thiserror.workspace = true

@@ -1,8 +1,9 @@
 use std::fmt::Debug;
 
-use incpa_ioe::Input;
+use incpa_state::Input;
 use test_case::test_case;
 
+use crate::compose::ParserCompose as _;
 use crate::{Literal, Parser};
 
 #[test_case("hello", "world", "hello world!" => Some("hello"))]

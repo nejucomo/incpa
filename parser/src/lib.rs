@@ -2,11 +2,12 @@
 #![doc = include_str!("../../README-subcrate-link.md")]
 #![deny(missing_docs, unsafe_code)]
 
-mod compimpls;
+mod compose;
 mod literal;
 mod parser;
 
 pub mod primitive;
 
+pub use self::compose::ParserCompose;
 pub use self::literal::Literal;
 pub use self::parser::Parser;
