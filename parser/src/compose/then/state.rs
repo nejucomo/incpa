@@ -1,15 +1,14 @@
 use either::Either;
-use incpa_ioe::{IncpaIOE, Input};
 
-use crate::map::{MapConsumed as _, MapOutcome as _};
-use crate::{Chomped, ChompedResult, Outcome, ParserState};
+use incpa_state::map::{MapConsumed as _, MapOutcome as _};
+use incpa_state::{Chomped, ChompedResult, Input as _, Outcome, ParserState};
 
 /// The state of parsing `P` then `Q`
 #[derive(Copy, Clone, Debug)]
 pub struct ThenState<P, Q>
 where
-    P: IncpaIOE,
-    Q: IncpaIOE<Input = P::Input, Error = P::Error>,
+    P: ParserState,
+    Q: ParserState<Input = P::Input, Error = P::Error>,
 {
     porval: Either<P, P::Output>,
     q: Q,
@@ -17,8 +16,8 @@ where
 
 impl<P, Q> ThenState<P, Q>
 where
-    P: IncpaIOE,
-    Q: IncpaIOE<Input = P::Input, Error = P::Error>,
+    P: ParserState,
+    Q: ParserState<Input = P::Input, Error = P::Error>,
 {
     /// Construct a new [ThenState]
     pub fn new(p: P, q: Q) -> Self {
@@ -29,24 +28,18 @@ where
     }
 }
 
-impl<P, Q> IncpaIOE for ThenState<P, Q>
-where
-    P: IncpaIOE,
-    Q: IncpaIOE<Input = P::Input, Error = P::Error>,
-{
-    type Input = P::Input;
-    type Output = (P::Output, Q::Output);
-    type Error = P::Error;
-}
-
 impl<P, Q> ParserState for ThenState<P, Q>
 where
     P: ParserState,
     Q: ParserState<Input = P::Input, Error = P::Error>,
 {
+    type Input = P::Input;
+    type Output = (P::Output, Q::Output);
+    type Error = P::Error;
+
     fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
-        use crate::Outcome::{Next, Parsed};
         use Either::{Left, Right};
+        use Outcome::{Next, Parsed};
 
         let ThenState { porval, q } = self;
 
@@ -84,7 +77,7 @@ where
         let (pval, input) = self.porval.either(
             |p| {
                 p.end_input(final_input)
-                    .map(|pval| (pval, final_input.empty_suffix()))
+                    .map(|pval| (pval, final_input.empty_prefix()))
             },
             |pval| Ok((pval, final_input)),
         )?;

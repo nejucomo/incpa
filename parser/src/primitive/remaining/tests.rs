@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use incpa_ioe::Input;
+use incpa_state::Input;
 use test_case::test_case;
 
 use crate::Parser as _;

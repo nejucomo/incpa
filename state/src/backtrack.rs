@@ -1,8 +1,6 @@
 use derive_new::new;
 
-use incpa_ioe::{IncpaIOE, Input};
-
-use crate::{Chomped, ChompedResult, Outcome, ParserState};
+use crate::{Chomped, ChompedResult, Input as _, Outcome, ParserState};
 
 /// Try to parse `P`, but hold all input until a successful parse
 ///
@@ -14,19 +12,14 @@ pub struct Backtrack<P> {
     consumed: usize,
 }
 
-impl<P> IncpaIOE for Backtrack<P>
-where
-    P: IncpaIOE,
-{
-    type Input = P::Input;
-    type Output = P::Output;
-    type Error = P::Error;
-}
-
 impl<P> ParserState for Backtrack<P>
 where
     P: ParserState,
 {
+    type Input = P::Input;
+    type Output = P::Output;
+    type Error = P::Error;
+
     fn feed(self, input: &Self::Input) -> ChompedResult<Outcome<Self, Self::Output>, Self::Error> {
         use crate::Outcome::{Next, Parsed};
 

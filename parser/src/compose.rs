@@ -1,9 +1,20 @@
-use incpa_ioe::IncpaIOE;
+//! [ParserCompose] and supporting types
+mod maperror;
+mod mapoutput;
+mod or;
+mod then;
 
-use crate::{EitherOr, MapError, MapOutput, Or, Then};
+use incpa_state::Input;
 
-/// A base-trait of parsers providing composition
-pub trait ParserCompose: IncpaIOE {
+use crate::Parser;
+
+pub use self::maperror::MapError;
+pub use self::mapoutput::MapOutput;
+pub use self::or::Or;
+pub use self::then::Then;
+
+/// Every [Parser] also provides this composition interface by blanket impl
+pub trait ParserCompose<I: ?Sized + Input>: Parser<I> {
     /// Compose a new parser with mapped output
     fn map_output<F, O>(self, f: F) -> MapOutput<Self, F, O>
     where
@@ -28,25 +39,15 @@ pub trait ParserCompose: IncpaIOE {
     /// Attempt to parse `self`, and if it fails parse `other`
     fn or<Q>(self, other: Q) -> Or<Self, Q>
     where
-        Q: ParserCompose<Input = Self::Input, Output = Self::Output, Error = Self::Error>,
+        Q: ParserCompose<I, Output = Self::Output, Error = Self::Error>,
     {
         Or::new(self, other)
     }
-
-    /// Attempt to parse `self`, and if it fails parse `other`
-    fn either_or<Q>(self, other: Q) -> EitherOr<Self, Q>
-    where
-        Q: ParserCompose<Input = Self::Input, Error = Self::Error>,
-    {
-        EitherOr::new(self, other)
-    }
 }
 
-// `std` foreign impls
-impl ParserCompose for char {}
-
-impl ParserCompose for &str {}
-
-impl<T> ParserCompose for &[T] where T: PartialEq {}
-
-impl<T, const K: usize> ParserCompose for &[T; K] where T: PartialEq {}
+impl<P, I> ParserCompose<I> for P
+where
+    P: Parser<I>,
+    I: ?Sized + Input,
+{
+}

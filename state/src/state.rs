@@ -1,15 +1,23 @@
 use std::future::Future;
 
-use incpa_ioe::{IncpaIOE, UniversalParserError::ExpectedMoreInput};
-
-use crate::{ChompedResult, Outcome};
+use crate::UniversalParserError::{self, ExpectedMoreInput};
+use crate::{ChompedResult, Input, Outcome};
 
 /// A [ParserState] represents in-progress parsing
 ///
 /// # Invariants
 ///
 /// This crate assumes every [ParserState] impl is deterministic, so that calling [ParserState::feed] or [ParserState::end_input] on two equivalent states with the same input parameters produces equivalent values.
-pub trait ParserState: IncpaIOE {
+pub trait ParserState: Sized {
+    /// The type of input consumed
+    type Input: ?Sized + Input;
+
+    /// The type of output on successful parse
+    type Output;
+
+    /// The type of errors this parser detects
+    type Error: From<UniversalParserError>;
+
     /// Feed an input reference to the parser to produce an update
     ///
     /// Precondition: `input` includes a suffix which has not been seen previously by this parser.

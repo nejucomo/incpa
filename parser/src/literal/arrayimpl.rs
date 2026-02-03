@@ -1,6 +1,7 @@
-use crate::Parser;
+use incpa_state::UniversalParserError;
 
-use super::{Literal, LiteralState};
+use crate::literal::state::LiteralState;
+use crate::{Literal, Parser};
 
 impl<T, const K: usize> Literal<[T]> for &[T; K]
 where
@@ -15,11 +16,13 @@ where
     }
 }
 
-impl<'a, T, const K: usize> Parser for &'a [T; K]
+impl<T, const K: usize> Parser<[T]> for &[T; K]
 where
     T: PartialEq,
 {
-    type State = LiteralState<[T], &'a [T; K]>;
+    type State = LiteralState<[T], Self>;
+    type Output = Self;
+    type Error = UniversalParserError;
 
     fn start_parser(self) -> Self::State {
         LiteralState::new(self)

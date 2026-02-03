@@ -2,9 +2,8 @@ use std::fmt::Debug;
 
 use test_case::test_case;
 
-use incpa_ioe::Input;
 use incpa_state::Outcome::{Next, Parsed};
-use incpa_state::{Chomped, ParserState};
+use incpa_state::{Chomped, Input, ParserState};
 
 use super::Literal;
 
