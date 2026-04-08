@@ -29,7 +29,7 @@ where
     type Error = E;
 
     fn start_parser(self) -> Self::State {
-        todo!()
+        MapError::new(self.inner.start_parser(), self.f)
     }
 }
 
