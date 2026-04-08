@@ -3,7 +3,7 @@ use crate::{ChompedResult, Input, Outcome, ParserState, UniversalParserError};
 
 /// A type alias for a heap-allocated, type-erased [ParserState]
 ///
-/// This is the concrete state type used by [crate::recursive::Recursive] parsers, and is
+/// This is the concrete state type produced by recursive parsers, and is
 /// the mechanism by which the infinite type-level recursion in a recursive grammar is broken.
 ///
 /// See [DynParserState] for details on the underlying trait.

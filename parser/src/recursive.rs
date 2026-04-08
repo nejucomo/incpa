@@ -86,8 +86,9 @@ pub(crate) struct RecursiveState<I: ?Sized, O, E> {
 }
 
 impl<I: ?Sized, O, E> RecursiveState<I, O, E> {
-    /// Initialise the inner state if it has not been initialised yet
-    fn init_inner(inner: Option<BoxedParserState<I, O, E>>, cell: &Rc<FactoryCell<I, O, E>>) -> BoxedParserState<I, O, E> {
+    /// Return the inner boxed state, calling the factory to create it if this is the
+    /// first invocation (i.e. `inner` is `None`).
+    fn get_or_create_inner(inner: Option<BoxedParserState<I, O, E>>, cell: &Rc<FactoryCell<I, O, E>>) -> BoxedParserState<I, O, E> {
         inner.unwrap_or_else(|| {
             let factory = cell
                 .get()
@@ -109,7 +110,7 @@ where
 
     fn feed(self, input: &I) -> ChompedResult<Outcome<Self, O>, E> {
         let Self { cell, inner } = self;
-        let state = Self::init_inner(inner, &cell);
+        let state = Self::get_or_create_inner(inner, &cell);
         state
             .feed_dyn(input)
             .map_next(|next| RecursiveState {
@@ -120,7 +121,7 @@ where
 
     fn end_input(self, final_input: &I) -> Result<O, E> {
         let Self { cell, inner } = self;
-        let state = Self::init_inner(inner, &cell);
+        let state = Self::get_or_create_inner(inner, &cell);
         state.end_input(final_input)
     }
 }
