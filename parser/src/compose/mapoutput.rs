@@ -28,7 +28,7 @@ where
     type Error = P::Error;
 
     fn start_parser(self) -> Self::State {
-        todo!()
+        MapOutput::new(self.inner.start_parser(), self.f)
     }
 }
 
@@ -56,3 +56,4 @@ where
         self.inner.end_input(final_input).map(self.f)
     }
 }
+
